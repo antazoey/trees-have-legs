@@ -59,7 +59,7 @@ class Clock:
 
 
 class Images:
-    BASE_PATH = Path(__file__).parent / "gfx"
+    BASE_PATH = Path(__file__).parent.parent / "gfx"
 
     @classmethod
     def load(cls, name: str):
