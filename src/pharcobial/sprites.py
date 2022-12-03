@@ -10,6 +10,8 @@ from pharcobial.utils import GameDisplay
 class Direction(Enum):
     LEFT = "left"
     RIGHT = "right"
+    UP = "up"
+    DOWN = "down"
 
 
 class Player(Sprite):
@@ -25,14 +27,18 @@ class Player(Sprite):
         self.x = display.width / 2
         self.y = display.height / 2
 
-        self.delta_x = 0
-        self.delta_y = 0
         self.facing = Direction.LEFT
+        self.moving = False
 
         super().__init__()
 
     def draw(self):
-        image_id = f"{self.character}-{self.facing.value}"
+        suffix = (
+            Direction.LEFT.value
+            if self.facing in (Direction.LEFT, Direction.UP)
+            else Direction.RIGHT.value
+        )
+        image_id = f"{self.character}-{suffix}"
         self.display.show_image(image_id, self.x, self.y)
 
     def handle_event(self, event):
@@ -44,37 +50,57 @@ class Player(Sprite):
         """
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                self.delta_x = -self.display.block_size
-                self.delta_y = 0
-                self.facing = Direction.LEFT
-            elif event.key == pygame.K_RIGHT:
-                self.delta_x = self.display.block_size
-                self.delta_y = 0
-                self.facing = Direction.RIGHT
-            elif event.key == pygame.K_UP:
-                self.delta_y = -self.display.block_size
-                self.delta_x = 0
-            elif event.key == pygame.K_DOWN:
-                self.delta_y = self.display.block_size
-                self.delta_x = 0
+            # Start moving
+            key_map = {
+                pygame.K_LEFT: Direction.LEFT,
+                pygame.K_RIGHT: Direction.RIGHT,
+                pygame.K_UP: Direction.UP,
+                pygame.K_DOWN: Direction.DOWN,
+            }
+            self.facing = key_map.get(event.key) or self.facing
+            self._handle_environment()
 
-        # Stops moving when KEYUP
         elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                self.delta_x = 0
-                self.delta_y = 0
-            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                self.delta_x = 0
-                self.delta_y = 0
+            # Stop moving
+            self.moving = event.key not in (
+                pygame.K_LEFT,
+                pygame.K_RIGHT,
+                pygame.K_UP,
+                pygame.K_DOWN,
+            )
+            self.moving = False
+
+    def _handle_environment(self) -> bool:
+        # Check if hitting a boundary
+        coordinate = self.x if self.facing in (Direction.LEFT, Direction.RIGHT) else self.y
+        amount = (
+            self.display.block_size
+            if self.facing in (Direction.RIGHT, Direction.DOWN)
+            else -self.display.block_size
+        )
+        new_coordinate = coordinate + amount
+
+        if self.facing in (Direction.LEFT, Direction.UP):
+            self.moving = new_coordinate >= self.display.block_size
+        elif self.facing == Direction.RIGHT:
+            self.moving = new_coordinate <= self.display.width - self.display.block_size * 4
+        elif self.facing == Direction.DOWN:
+            self.moving = new_coordinate <= self.display.height - self.display.block_size * 4
+
+        return self.moving
 
     def move(self):
-        """
-        Change the character's coordinated.
-        Should be called every game loop to support holding keys down.
-        """
-        self.x += self.delta_x
-        self.y += self.delta_y
+        if not self.moving or not self._handle_environment():
+            return
+
+        if self.facing == Direction.LEFT:
+            self.x -= self.display.block_size
+        elif self.facing == Direction.RIGHT:
+            self.x += self.display.block_size
+        elif self.facing == Direction.UP:
+            self.y -= self.display.block_size
+        elif self.facing == Direction.DOWN:
+            self.y += self.display.block_size
 
     def eat(self, edible: "Edible"):
         threshold = 20
