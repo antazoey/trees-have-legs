@@ -1,2 +1,2 @@
 play:
-	python src/main.py
+	python src/pharcobial/main.py

@@ -2,8 +2,8 @@ from functools import cached_property
 
 import pygame
 
-from sprites import Edible, Pharma
-from utils import Clock, GameDisplay
+from pharcobial.sprites import Edible, Pharma
+from pharcobial.utils import Clock, GameDisplay
 
 
 class App:

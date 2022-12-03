@@ -3,7 +3,7 @@ import random
 import pygame
 from pygame.sprite import Sprite
 
-from utils import GameDisplay
+from pharcobial.utils import GameDisplay
 
 
 class Pharma(Sprite):

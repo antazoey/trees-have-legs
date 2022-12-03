@@ -1,3 +1,6 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+
 [project]
 name = "Pharcobial"
 version = "1.0.0"
@@ -21,9 +24,10 @@ use_parentheses = true
 [tool.poetry]
 name = "pharcobial"
 version = "1.0.0"
-description = ""
+description = "A game."
 authors = ["unparalleled-js <yingthi@live.com>"]
 readme = "README.md"
+include = ["src/pharcobial"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -35,7 +39,3 @@ isort = "^5.10.1"
 flake8 = "^6.0.0"
 mypy = "^0.991"
 pytest = "^7.2.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
