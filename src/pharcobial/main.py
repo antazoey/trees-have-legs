@@ -37,7 +37,7 @@ class App:
             self.display.clear()
             self.edible.draw()
             for event in pygame.event.get():
-                self.player.handle_movement(event)
+                self.player.handle_event(event)
 
             self.player.move()
             self.player.draw()

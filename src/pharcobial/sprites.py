@@ -27,7 +27,14 @@ class Player(Sprite):
     def draw(self):
         self.display.show_image(self.character, self.x, self.y)
 
-    def handle_movement(self, event):
+    def handle_event(self, event):
+        """
+        Handle when a user presses a key. If the user holds a key,
+        the character continuously moves that direction. This method
+        gets called once for the event whereas ``move()`` gets called
+        every game loop.
+        """
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 self.delta_x = -self.display.block_size
@@ -52,6 +59,10 @@ class Player(Sprite):
                 self.delta_y = 0
 
     def move(self):
+        """
+        Change the character's coordinated.
+        Should be called every game loop to support holding keys down.
+        """
         self.x += self.delta_x
         self.y += self.delta_y
 
@@ -68,10 +79,20 @@ class Edible:
         self.display = display
         self.x = random.randrange(20, display.width - display.block_size - 10, 10)
         self.y = random.randrange(20, display.height - display.block_size - 10, 10)
+        self.show_text_iterations_remaining = 0
+        self.text_timer_amount = 20
 
     def draw(self):
         edible = [self.x, self.y, self.display.block_size, self.display.block_size]
         self.display.draw("red", edible)
+        if self.show_text_iterations_remaining > 0:
+            self.display.show_text(
+                "You've eaten an edible!",
+                "black",
+                self.display.width / 10,
+                self.display.height / 10,
+            )
+            self.show_text_iterations_remaining -= 1
 
     def move(self):
         self.x = random.randrange(20, self.display.width - self.display.block_size - 10, 10)
@@ -80,9 +101,4 @@ class Edible:
 
     def digest(self):
         self.move()
-        self.display.show_text(
-            "You've eaten an edible!",
-            "black",
-            self.display.width / 10,
-            self.display.height / 10,
-        )
+        self.show_text_iterations_remaining = self.text_timer_amount
