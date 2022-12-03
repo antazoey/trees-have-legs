@@ -17,9 +17,10 @@ NAME = str(__file__).split(os.path.sep)[0].replace(".py", "").capitalize()
 
 
 class GameDisplay:
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, width: int, height: int, block_size: int) -> None:
         self.width = width
         self.height = height
+        self.block_size = block_size
         self.display = pygame.display.set_mode((width, height))
         self.font = pygame.font.SysFont(None, 25)
         pygame.display.set_caption(NAME)
@@ -33,6 +34,15 @@ class GameDisplay:
 
     def draw(self, color: str, sprite: Sprite):
         pygame.draw.rect(self.display, RGB[color], sprite)
+
+
+class Clock:
+    def __init__(self, fps: int):
+        self._clock = pygame.time.Clock()
+        self.fps = fps
+    
+    def tick(self):
+        self._clock.tick(self.fps)
 
 
 class Pharma(Sprite):
@@ -56,16 +66,16 @@ class Pharma(Sprite):
     def handle_movement(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                self.delta_x = -self.block_size
+                self.delta_x = -self.display.block_size
                 self.delta_y = 0
             elif event.key == pygame.K_RIGHT:
-                self.delta_x = self.block_size
+                self.delta_x = self.display.block_size
                 self.delta_y = 0
             elif event.key == pygame.K_UP:
-                self.delta_y = -self.block_size
+                self.delta_y = -self.display.block_size
                 self.delta_x = 0
             elif event.key == pygame.K_DOWN:
-                self.delta_y = self.block_size
+                self.delta_y = self.display.block_size
                 self.delta_x = 0
 
         # Stops moving when KEYUP
@@ -94,20 +104,20 @@ class Edible:
         self.y = random.randrange(20, display.height - display.block_size - 10, 10)
 
     def draw(self):
-        edible = [self.x, self.y, self.block_size, self.block_size]
+        edible = [self.x, self.y, self.display.block_size, self.display.block_size]
         self.display.draw("red", edible)
 
     def move(self):
-        self.x = random.randrange(20, self.display_width - self.block_size - 10, 10)
-        self.y = random.randrange(20, self.display_height - self.block_size - 10, 10)
+        self.x = random.randrange(20, self.display.width - self.display.block_size - 10, 10)
+        self.y = random.randrange(20, self.display.height - self.display.block_size - 10, 10)
         self.draw()
 
     def edible_message_to_screen(self):
         self.display.message_to_screen(
             "You've eaten an edible!",
             RGB["black"],
-            self.width / 10,
-            self.height / 10,
+            self.display.width / 10,
+            self.display.height / 10,
         )
 
 
@@ -121,13 +131,9 @@ class App:
         font_size: int = 25,
     ):
         pygame.init()
-        self.width = width
-        self.height = height
-        self.display = GameDisplay()
-        self.clock = pygame.time.Clock()
-        self.block_size = block_size
-        self.fps = fps
+        self.display = GameDisplay(width, height, block_size)
         self.font = pygame.font.SysFont(None, font_size)
+        self.clock = Clock(fps)
         self.game_exit = False
         self.game_over = False
 
@@ -152,8 +158,8 @@ class App:
             self.player.move()
             self.player.draw()
             self.player.eat(self.edible)
-            self.pygame.display.update()
-            self.clock.tick(self.FPS)
+            pygame.display.update()
+            self.clock.tick()
 
     def end(self):
         self.display.clear()
