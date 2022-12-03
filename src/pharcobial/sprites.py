@@ -1,9 +1,15 @@
 import random
+from enum import Enum
 
 import pygame
 from pygame.sprite import Sprite
 
 from pharcobial.utils import GameDisplay
+
+
+class Direction(Enum):
+    LEFT = "left"
+    RIGHT = "right"
 
 
 class Player(Sprite):
@@ -21,11 +27,13 @@ class Player(Sprite):
 
         self.delta_x = 0
         self.delta_y = 0
+        self.facing = Direction.LEFT
 
         super().__init__()
 
     def draw(self):
-        self.display.show_image(self.character, self.x, self.y)
+        image_id = f"{self.character}-{self.facing.value}"
+        self.display.show_image(image_id, self.x, self.y)
 
     def handle_event(self, event):
         """
@@ -39,9 +47,11 @@ class Player(Sprite):
             if event.key == pygame.K_LEFT:
                 self.delta_x = -self.display.block_size
                 self.delta_y = 0
+                self.facing = Direction.LEFT
             elif event.key == pygame.K_RIGHT:
                 self.delta_x = self.display.block_size
                 self.delta_y = 0
+                self.facing = Direction.RIGHT
             elif event.key == pygame.K_UP:
                 self.delta_y = -self.display.block_size
                 self.delta_x = 0
