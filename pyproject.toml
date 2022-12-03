@@ -1,0 +1,41 @@
+[project]
+name = "Pharcobial"
+version = "1.0.0"
+
+[tool.mypy]
+exclude = ["build/", "dist/"]
+check_untyped_defs = true
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
+
+[tool.isort]
+line_length = 100
+force_grid_wrap = 0
+include_trailing_comma = true
+multi_line_output = 3
+use_parentheses = true
+
+[tool.poetry]
+name = "pharcobial"
+version = "1.0.0"
+description = ""
+authors = ["unparalleled-js <yingthi@live.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pygame = "^2.1.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+isort = "^5.10.1"
+flake8 = "^6.0.0"
+mypy = "^0.991"
+pytest = "^7.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
