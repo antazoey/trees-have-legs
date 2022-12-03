@@ -6,13 +6,14 @@ from pygame.sprite import Sprite
 from pharcobial.utils import GameDisplay
 
 
-class Pharma(Sprite):
+class Player(Sprite):
     """
     The main character.
     """
 
-    def __init__(self, display: GameDisplay):
+    def __init__(self, display: GameDisplay, character: str = "pharma"):
         self.display = display
+        self.character = character
 
         # Put in middle of screen
         self.x = display.width / 2
@@ -24,7 +25,7 @@ class Pharma(Sprite):
         super().__init__()
 
     def draw(self):
-        self.display.show_image("pharma", self.x, self.y)
+        self.display.show_image(self.character, self.x, self.y)
 
     def handle_movement(self, event):
         if event.type == pygame.KEYDOWN:

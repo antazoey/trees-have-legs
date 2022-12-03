@@ -2,7 +2,7 @@ from functools import cached_property
 
 import pygame
 
-from pharcobial.sprites import Edible, Pharma
+from pharcobial.sprites import Edible, Player
 from pharcobial.utils import Clock, GameDisplay
 
 
@@ -23,7 +23,7 @@ class App:
 
     @cached_property
     def player(self):
-        return Pharma(self.display)
+        return Player(self.display)
 
     @cached_property
     def edible(self):
