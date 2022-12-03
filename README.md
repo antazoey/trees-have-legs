@@ -1,3 +1,5 @@
 # Pharcobial
 
-A game.
+A game (WIP).
+
+Run `make` to play.
