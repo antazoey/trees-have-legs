@@ -1,5 +1,6 @@
 import os
 from typing import Dict, Tuple
+from pathlib import Path
 
 import pygame
 from pygame.sprite import Sprite
@@ -20,20 +21,25 @@ class GameDisplay:
         self.width = width
         self.height = height
         self.block_size = block_size
-        self.display = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((width, height))
         self.font = pygame.font.SysFont(None, font_size)
         pygame.display.set_caption(NAME)
 
-    def show_text(self, msg: str, color: str, x: int, y: int):
+    def show_image(self, image_id: str, x: int, y: int):
+        image = Images.load(image_id)
+        rect = image.get_rect()
+        self.screen.blit(image, (x, y))
+        pygame.display.flip()
 
-        screen_text = self.font.render(msg, True, self.RGB[color])
-        self.display.blit(screen_text, [x, y])
+    def show_text(self, msg: str, color: str, x: int, y: int):
+        text = self.font.render(msg, True, self.RGB[color])
+        self.screen.blit(text, [x, y])
 
     def clear(self):
-        self.display.fill(self.RGB["white"])
+        self.screen.fill(self.RGB["white"])
 
     def draw(self, color: str, sprite: Sprite):
-        pygame.draw.rect(self.display, self.RGB[color], sprite)
+        pygame.draw.rect(self.screen, self.RGB[color], sprite)
 
     def turn_off(self):
         self.clear()
@@ -50,3 +56,12 @@ class Clock:
 
     def tick(self):
         self._clock.tick(self.fps)
+
+
+class Images:
+    BASE_PATH = Path(__file__).parent / "gfx"
+
+    @classmethod
+    def load(cls, name: str):
+        path = cls.BASE_PATH / f"{name}.png"
+        return pygame.image.load(str(path))

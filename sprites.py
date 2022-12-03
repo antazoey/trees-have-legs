@@ -7,6 +7,10 @@ from utils import GameDisplay
 
 
 class Pharma(Sprite):
+    """
+    The main character.
+    """
+
     def __init__(self, display: GameDisplay):
         self.display = display
 
@@ -21,8 +25,7 @@ class Pharma(Sprite):
         super().__init__()
 
     def draw(self):
-        pharma = [self.lead_x, self.lead_y, self.display.block_size, self.display.block_size]
-        self.display.draw("green", pharma)
+        self.display.show_image("pharma", self.lead_x, self.lead_y)
 
     def handle_movement(self, event):
         if event.type == pygame.KEYDOWN:
@@ -53,7 +56,10 @@ class Pharma(Sprite):
         self.lead_y += self.delta_y
 
     def eat(self, edible: "Edible"):
-        if self.lead_x == edible.x and self.lead_y == edible.y:
+        threshold = 20
+        x_range = range(edible.x - threshold, edible.x + threshold)
+        y_range = range(edible.y - threshold, edible.y + threshold)
+        if x_range and self.lead_y in y_range:
             edible.digest()
 
 
