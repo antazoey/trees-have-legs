@@ -1,6 +1,6 @@
 import os
-from typing import Dict, Tuple
 from pathlib import Path
+from typing import Dict, Tuple
 
 import pygame
 from pygame.sprite import Sprite
@@ -27,7 +27,6 @@ class GameDisplay:
 
     def show_image(self, image_id: str, x: int, y: int):
         image = Images.load(image_id)
-        rect = image.get_rect()
         self.screen.blit(image, (x, y))
         pygame.display.flip()
 
