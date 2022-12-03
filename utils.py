@@ -34,10 +34,12 @@ class GameDisplay:
 
     def draw(self, color: str, sprite: Sprite):
         pygame.draw.rect(self.display, self.RGB[color], sprite)
-    
+
     def turn_off(self):
         self.clear()
-        self.show_text("Game over, prcess C to play again or Q to quit", "red", self.width / 2, self.height / 2)
+        self.show_text(
+            "Game over, prcess C to play again or Q to quit", "red", self.width / 2, self.height / 2
+        )
         pygame.display.update()
 
 
