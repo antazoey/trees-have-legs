@@ -15,9 +15,8 @@ class Pharma(Sprite):
         self.display = display
 
         # Put in middle of screen
-        self.lead_x = display.width / 2
-        self.lead_y = display.height / 2
-        self.head = [self.lead_x, self.lead_y]
+        self.x = display.width / 2
+        self.y = display.height / 2
 
         self.delta_x = 0
         self.delta_y = 0
@@ -25,7 +24,7 @@ class Pharma(Sprite):
         super().__init__()
 
     def draw(self):
-        self.display.show_image("pharma", self.lead_x, self.lead_y)
+        self.display.show_image("pharma", self.x, self.y)
 
     def handle_movement(self, event):
         if event.type == pygame.KEYDOWN:
@@ -52,14 +51,14 @@ class Pharma(Sprite):
                 self.delta_y = 0
 
     def move(self):
-        self.lead_x += self.delta_x
-        self.lead_y += self.delta_y
+        self.x += self.delta_x
+        self.y += self.delta_y
 
     def eat(self, edible: "Edible"):
         threshold = 20
         x_range = range(edible.x - threshold, edible.x + threshold)
         y_range = range(edible.y - threshold, edible.y + threshold)
-        if x_range and self.lead_y in y_range:
+        if self.x in x_range and self.y in y_range:
             edible.digest()
 
 
