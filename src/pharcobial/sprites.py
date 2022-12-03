@@ -29,17 +29,31 @@ class Player(Sprite):
 
         self.facing = Direction.LEFT
         self.moving = False
+        self.move_image_id: int = 0
 
         super().__init__()
 
     def draw(self):
+        image_id = self._get_image_id()
+        self.display.show_image(image_id, self.x, self.y)
+
+    def _get_image_id(self) -> str:
         suffix = (
             Direction.LEFT.value
             if self.facing in (Direction.LEFT, Direction.UP)
             else Direction.RIGHT.value
         )
-        image_id = f"{self.character}-{suffix}"
-        self.display.show_image(image_id, self.x, self.y)
+
+        if self.moving and self.move_image_id != 1:
+            self.move_image_id = 1
+            suffix = f"{suffix}-walk-{self.move_image_id}"
+        elif self.moving:
+            self.move_image_id = 2
+            suffix = f"{suffix}-walk-{self.move_image_id}"
+        else:
+            self.move_image_id = 0
+
+        return f"{self.character}-{suffix}"
 
     def handle_event(self, event):
         """
