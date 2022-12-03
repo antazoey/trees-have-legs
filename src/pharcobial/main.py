@@ -11,12 +11,11 @@ class App:
         self,
         width: int = 800,
         height: int = 600,
-        block_size: int = 10,
         fps: int = 20,
         font_size: int = 25,
     ):
         pygame.init()
-        self.display = GameDisplay(width, height, block_size, font_size)
+        self.display = GameDisplay(width, height, font_size)
         self.clock = Clock(fps)
         self.game_exit = False
         self.game_over = False
@@ -46,7 +45,7 @@ class App:
             self.clock.tick()
 
     def end(self):
-        self.turn_off()
+        self.display.turn_off()
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:

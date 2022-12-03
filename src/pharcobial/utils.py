@@ -7,6 +7,14 @@ from pygame.sprite import Sprite
 
 Color = Tuple[int, int, int]
 NAME = str(__file__).split(os.path.sep)[0].replace(".py", "").capitalize()
+DEFAULT_BLOCK_SIZE = 10
+
+
+class BaseSprite(Sprite):
+    x: int = 0
+    y: int = 0
+    height: int = DEFAULT_BLOCK_SIZE
+    width: int = DEFAULT_BLOCK_SIZE
 
 
 class GameDisplay:
@@ -17,12 +25,14 @@ class GameDisplay:
         "green": (0, 155, 0),
     }
 
-    def __init__(self, width: int, height: int, block_size: int, font_size: int) -> None:
+    def __init__(
+        self, width: int, height: int, font_size: int, block_size: int = DEFAULT_BLOCK_SIZE
+    ) -> None:
         self.width = width
         self.height = height
         self.block_size = block_size
         self.screen = pygame.display.set_mode((width, height))
-        self.font = pygame.font.SysFont(None, font_size)
+        self.font = pygame.font.SysFont("comic-sans", font_size)
         pygame.display.set_caption(NAME)
 
     def show_image(self, image_id: str, x: int, y: int):
@@ -37,13 +47,17 @@ class GameDisplay:
     def clear(self):
         self.screen.fill(self.RGB["white"])
 
-    def draw(self, color: str, sprite: Sprite):
-        pygame.draw.rect(self.screen, self.RGB[color], sprite)
+    def draw(self, color: str, sprite: BaseSprite):
+        data = [sprite.x, sprite.y, sprite.height, sprite.width]
+        pygame.draw.rect(self.screen, self.RGB[color], data)
 
     def turn_off(self):
         self.clear()
         self.show_text(
-            "Game over, prcess C to play again or Q to quit", "red", self.width / 2, self.height / 2
+            "Game over, prcess C to play again or Q to quit",
+            "red",
+            self.width // 2,
+            self.height // 2,
         )
         pygame.display.update()
 

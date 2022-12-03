@@ -2,9 +2,8 @@ import random
 from enum import Enum
 
 import pygame
-from pygame.sprite import Sprite
 
-from pharcobial.utils import GameDisplay
+from pharcobial.utils import BaseSprite, GameDisplay
 
 
 class Direction(Enum):
@@ -14,7 +13,7 @@ class Direction(Enum):
     DOWN = "down"
 
 
-class Player(Sprite):
+class Player(BaseSprite):
     """
     The main character.
     """
@@ -24,8 +23,8 @@ class Player(Sprite):
         self.character = character
 
         # Put in middle of screen
-        self.x = display.width / 2
-        self.y = display.height / 2
+        self.x = display.width // 2
+        self.y = display.height // 2
 
         self.facing = Direction.LEFT
         self.moving = False
@@ -124,7 +123,7 @@ class Player(Sprite):
             edible.digest()
 
 
-class Edible:
+class Edible(BaseSprite):
     def __init__(self, display: GameDisplay):
         self.display = display
         self.x = random.randrange(20, display.width - display.block_size - 10, 10)
@@ -133,14 +132,13 @@ class Edible:
         self.text_timer_amount = 20
 
     def draw(self):
-        edible = [self.x, self.y, self.display.block_size, self.display.block_size]
-        self.display.draw("red", edible)
+        self.display.draw("red", self)
         if self.show_text_iterations_remaining > 0:
             self.display.show_text(
                 "You've eaten an edible!",
                 "black",
-                self.display.width / 10,
-                self.display.height / 10,
+                self.display.width // 10,
+                self.display.height // 10,
             )
             self.show_text_iterations_remaining -= 1
 
