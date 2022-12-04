@@ -1,16 +1,9 @@
 import random
-from enum import Enum
 
 import pygame
 
-from pharcobial.utils import BaseSprite, Coordinates, GameDisplay
-
-
-class Direction(Enum):
-    LEFT = "left"
-    RIGHT = "right"
-    UP = "up"
-    DOWN = "down"
+from pharcobial.display import GameDisplay
+from pharcobial.models import BaseSprite, Coordinates, Direction
 
 
 class Player(BaseSprite):

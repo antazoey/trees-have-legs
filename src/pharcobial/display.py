@@ -1,28 +1,19 @@
-import os
-from collections import namedtuple
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import pygame
-from pygame.sprite import Sprite
 
-Color = Tuple[int, int, int]
-NAME = str(__file__).split(os.path.sep)[0].replace(".py", "").capitalize()
-DEFAULT_BLOCK_SIZE = 16
+from pharcobial.constants import DEFAULT_BLOCK_SIZE, NAME
+from pharcobial.models import Color, Coordinates
 
 
-Coordinates = namedtuple("Coordinates", ("x", "y"))
+class Images:
+    BASE_PATH = Path(__file__).parent.parent.parent / "gfx"
 
-
-class BaseSprite(Sprite):
-    x: int = 0
-    y: int = 0
-    height: int = DEFAULT_BLOCK_SIZE
-    width: int = DEFAULT_BLOCK_SIZE
-
-    @property
-    def coordinates(self) -> Coordinates:
-        return Coordinates(self.x, self.y)
+    @classmethod
+    def load(cls, name: str):
+        path = cls.BASE_PATH / f"{name}.png"
+        return pygame.image.load(str(path))
 
 
 class GameDisplay:
@@ -86,21 +77,3 @@ class GameDisplay:
             self.height // 2,
         )
         pygame.display.update()
-
-
-class Clock:
-    def __init__(self, fps: int):
-        self._clock = pygame.time.Clock()
-        self.fps = fps
-
-    def tick(self):
-        self._clock.tick(self.fps)
-
-
-class Images:
-    BASE_PATH = Path(__file__).parent.parent.parent / "gfx"
-
-    @classmethod
-    def load(cls, name: str):
-        path = cls.BASE_PATH / f"{name}.png"
-        return pygame.image.load(str(path))

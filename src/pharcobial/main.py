@@ -3,8 +3,17 @@ from typing import List
 
 import pygame
 
+from pharcobial.display import GameDisplay
 from pharcobial.sprites import Monster, Player
-from pharcobial.utils import Clock, GameDisplay
+
+
+class Clock:
+    def __init__(self, fps: int):
+        self._clock = pygame.time.Clock()
+        self.fps = fps
+
+    def tick(self):
+        self._clock.tick(self.fps)
 
 
 class App:
@@ -38,7 +47,6 @@ class App:
 
             self.player.move()
             self.draw()
-
             pygame.display.update()
             self.clock.tick()
 
