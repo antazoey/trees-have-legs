@@ -1,13 +1,17 @@
 import os
+from collections import namedtuple
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 import pygame
 from pygame.sprite import Sprite
 
 Color = Tuple[int, int, int]
 NAME = str(__file__).split(os.path.sep)[0].replace(".py", "").capitalize()
-DEFAULT_BLOCK_SIZE = 10
+DEFAULT_BLOCK_SIZE = 16
+
+
+Coordinates = namedtuple("Coordinates", ("x", "y"))
 
 
 class BaseSprite(Sprite):
@@ -15,6 +19,10 @@ class BaseSprite(Sprite):
     y: int = 0
     height: int = DEFAULT_BLOCK_SIZE
     width: int = DEFAULT_BLOCK_SIZE
+
+    @property
+    def coordinates(self) -> Coordinates:
+        return Coordinates(self.x, self.y)
 
 
 class GameDisplay:
@@ -35,25 +43,43 @@ class GameDisplay:
         self.font = pygame.font.SysFont("comic-sans", font_size)
         pygame.display.set_caption(NAME)
 
-    def show_image(self, image_id: str, x: int, y: int):
+    def draw_image(self, image_id: str, coordinates: Coordinates):
         image = Images.load(image_id)
-        self.screen.blit(image, (x, y))
+        self.screen.blit(image, coordinates)
         pygame.display.flip()
 
-    def show_text(self, msg: str, color: str, x: int, y: int):
+    def draw_text(self, msg: str, color: str, x: int, y: int):
         text = self.font.render(msg, True, self.RGB[color])
         self.screen.blit(text, [x, y])
+
+    def draw_background(self, skip_coordinates: List[Coordinates]):
+        # TODO: This aint working right
+        for x in range(0, self.width, self.block_size):
+            for y in range(0, self.height, self.block_size):
+                coordinate = Coordinates(x, y)
+                if coordinate in skip_coordinates:
+                    continue
+
+                self.draw_rect("white", coordinate)
 
     def clear(self):
         self.screen.fill(self.RGB["white"])
 
-    def draw(self, color: str, sprite: BaseSprite):
-        data = [sprite.x, sprite.y, sprite.height, sprite.width]
+    def draw_rect(
+        self,
+        color: str,
+        coordinates: Coordinates,
+        width: int | None = None,
+        height: int | None = None,
+    ):
+        width = width if width is not None else self.block_size
+        height = height if height is not None else self.block_size
+        data = [*coordinates, width, height]
         pygame.draw.rect(self.screen, self.RGB[color], data)
 
     def turn_off(self):
         self.clear()
-        self.show_text(
+        self.draw_text(
             "Game over, prcess C to play again or Q to quit",
             "red",
             self.width // 2,

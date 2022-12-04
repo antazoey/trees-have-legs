@@ -3,7 +3,7 @@ from enum import Enum
 
 import pygame
 
-from pharcobial.utils import BaseSprite, GameDisplay
+from pharcobial.utils import BaseSprite, Coordinates, GameDisplay
 
 
 class Direction(Enum):
@@ -25,6 +25,7 @@ class Player(BaseSprite):
         # Put in middle of screen
         self.x = display.width // 2
         self.y = display.height // 2
+        self.previous_coordinates: Coordinates | None = None
 
         self.facing = Direction.LEFT
         self.moving = False
@@ -33,8 +34,12 @@ class Player(BaseSprite):
         super().__init__()
 
     def draw(self):
+        if self.previous_coordinates:
+            size = self.display.block_size * 2
+            self.display.draw_rect("white", self.previous_coordinates, width=size, height=size)
+
         image_id = self._get_image_id()
-        self.display.show_image(image_id, self.x, self.y)
+        self.display.draw_image(image_id, self.coordinates)
 
     def _get_image_id(self) -> str:
         suffix = (
@@ -61,26 +66,20 @@ class Player(BaseSprite):
         gets called once for the event whereas ``move()`` gets called
         every game loop.
         """
-
-        if event.type == pygame.KEYDOWN:
+        key_map = {
+            pygame.K_LEFT: Direction.LEFT,
+            pygame.K_RIGHT: Direction.RIGHT,
+            pygame.K_UP: Direction.UP,
+            pygame.K_DOWN: Direction.DOWN,
+        }
+        if event.type == pygame.KEYDOWN and event.key in key_map:
             # Start moving
-            key_map = {
-                pygame.K_LEFT: Direction.LEFT,
-                pygame.K_RIGHT: Direction.RIGHT,
-                pygame.K_UP: Direction.UP,
-                pygame.K_DOWN: Direction.DOWN,
-            }
-            self.facing = key_map.get(event.key) or self.facing
+            self.facing = key_map[event.key]
             self._handle_environment()
 
         elif event.type == pygame.KEYUP:
             # Stop moving
-            self.moving = event.key not in (
-                pygame.K_LEFT,
-                pygame.K_RIGHT,
-                pygame.K_UP,
-                pygame.K_DOWN,
-            )
+            self.moving = event.key not in list(key_map.keys())
             self.moving = False
 
     def _handle_environment(self) -> bool:
@@ -94,17 +93,20 @@ class Player(BaseSprite):
         new_coordinate = coordinate + amount
 
         if self.facing in (Direction.LEFT, Direction.UP):
-            self.moving = new_coordinate >= self.display.block_size
+            self.moving = new_coordinate >= 0
         elif self.facing == Direction.RIGHT:
-            self.moving = new_coordinate <= self.display.width - self.display.block_size * 4
+            self.moving = new_coordinate <= self.display.width - self.display.block_size * 2
         elif self.facing == Direction.DOWN:
-            self.moving = new_coordinate <= self.display.height - self.display.block_size * 4
+            self.moving = new_coordinate <= self.display.height - self.display.block_size * 2
 
         return self.moving
 
     def move(self):
         if not self.moving or not self._handle_environment():
             return
+
+        if self.coordinates:
+            self.previous_coordinates = self.coordinates
 
         if self.facing == Direction.LEFT:
             self.x -= self.display.block_size
@@ -115,38 +117,14 @@ class Player(BaseSprite):
         elif self.facing == Direction.DOWN:
             self.y += self.display.block_size
 
-    def eat(self, edible: "Edible"):
-        threshold = 20
-        x_range = range(edible.x - threshold, edible.x + threshold)
-        y_range = range(edible.y - threshold, edible.y + threshold)
-        if self.x in x_range and self.y in y_range:
-            edible.digest()
 
-
-class Edible(BaseSprite):
+class RandomlyAppearing(BaseSprite):
     def __init__(self, display: GameDisplay):
         self.display = display
         self.x = random.randrange(20, display.width - display.block_size - 10, 10)
         self.y = random.randrange(20, display.height - display.block_size - 10, 10)
-        self.show_text_iterations_remaining = 0
-        self.text_timer_amount = 20
 
+
+class Monster(RandomlyAppearing):
     def draw(self):
-        self.display.draw("red", self)
-        if self.show_text_iterations_remaining > 0:
-            self.display.show_text(
-                "You've eaten an edible!",
-                "black",
-                self.display.width // 10,
-                self.display.height // 10,
-            )
-            self.show_text_iterations_remaining -= 1
-
-    def move(self):
-        self.x = random.randrange(20, self.display.width - self.display.block_size - 10, 10)
-        self.y = random.randrange(20, self.display.height - self.display.block_size - 10, 10)
-        self.draw()
-
-    def digest(self):
-        self.move()
-        self.show_text_iterations_remaining = self.text_timer_amount
+        self.display.draw_image("bush-monster", self.coordinates)
