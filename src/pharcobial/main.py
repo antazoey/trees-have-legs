@@ -39,11 +39,11 @@ class App:
 
     @cached_property
     def monsters(self) -> List[Monster]:
-        return [Monster(self.display) for _ in range(self.num_monsters)]
+        return [Monster(self.display, index) for index in range(self.num_monsters)]
 
     @cached_property
     def motion_granter(self) -> MotionGranter:
-        return MotionGranter(self.display, self.monsters)
+        return MotionGranter(self.display)
 
     def main(self):
         self.display.clear()

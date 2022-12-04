@@ -1,11 +1,9 @@
 from dataclasses import dataclass
 from functools import cached_property
-from typing import List
 
 from pharcobial._types import Coordinates, Direction
 from pharcobial.constants import DEFAULT_BLOCK_SIZE
 from pharcobial.display import GameDisplay
-from pharcobial.monster import Monster
 
 
 @dataclass
@@ -70,9 +68,8 @@ class MotionRequest:
 
 
 class MotionGranter:
-    def __init__(self, display: GameDisplay, monsters: List[Monster]):
+    def __init__(self, display: GameDisplay):
         self.display = display
-        self.monsters = monsters
 
     def can_move(self, request: MotionRequest) -> bool:
         return self._is_in_bounds(request) and self._is_clear_from_monsters(request)
@@ -81,4 +78,4 @@ class MotionGranter:
         return request.check_bounds(self.display.width, self.display.height)
 
     def _is_clear_from_monsters(self, request: MotionRequest) -> bool:
-        return not any(request.check_proximity(m.coordinates) for m in self.monsters)
+        return not any(request.check_proximity(m) for m in self.display.beacon.monsters.values())

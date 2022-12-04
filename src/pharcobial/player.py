@@ -35,6 +35,7 @@ class Player(BaseSprite):
 
         image_id = self._get_image_id()
         self.display.draw_image(image_id, self.coordinates)
+        self.display.beacon.player = self.coordinates
 
     def _get_image_id(self) -> str:
         suffix = (

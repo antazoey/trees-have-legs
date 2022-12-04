@@ -16,6 +16,11 @@ class Images:
         return pygame.image.load(str(path))
 
 
+class Beacon:
+    player: Coordinates | None = None
+    monsters: Dict[int, Coordinates] = {}
+
+
 class GameDisplay:
     RGB: Dict[str, Color] = {
         "white": (255, 255, 255),
@@ -32,6 +37,7 @@ class GameDisplay:
         self.block_size = block_size
         self.screen = pygame.display.set_mode((width, height))
         self.font = pygame.font.SysFont("comic-sans", font_size)
+        self.beacon = Beacon()
         pygame.display.set_caption(NAME)
 
     def draw_image(self, image_id: str, coordinates: Coordinates):
