@@ -18,7 +18,7 @@ class Clock:
         self._clock.tick(self.fps)
 
 
-class App:
+class Game:
     def __init__(
         self,
         width: int = 800,
@@ -39,7 +39,9 @@ class App:
 
     @cached_property
     def monsters(self) -> List[Monster]:
-        return [Monster(self.display, index) for index in range(self.num_monsters)]
+        return [
+            Monster(self.display, self.motion_granter, index) for index in range(self.num_monsters)
+        ]
 
     @cached_property
     def motion_granter(self) -> MotionGranter:
@@ -48,25 +50,34 @@ class App:
     def main(self):
         self.display.clear()
         while not self.game_exit:
-            for event in pygame.event.get():
-                self.player.handle_event(event)
-
-            self.player.move()
+            self.update_player()
+            self.update_monsters()
             self.draw()
             pygame.display.update()
             self.clock.tick()
 
+    def update_player(self):
+        for event in pygame.event.get():
+            self.player.handle_event(event)
+
+        self.player.move()
+
+    def update_monsters(self):
+        for monster in self.monsters:
+            monster.move()
+
     def draw(self):
         self.player.draw()
-
         for monster in self.monsters:
             monster.draw()
 
 
 def run():
-    game = App()
-    game.main()
-    pygame.quit()
+    game = Game()
+    try:
+        game.main()
+    except KeyboardInterrupt:
+        pygame.quit()
 
 
 if __name__ == "__main__":

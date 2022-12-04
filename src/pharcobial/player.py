@@ -1,8 +1,9 @@
 import pygame
 
-from pharcobial._types import BaseSprite, Coordinates, Direction
+from pharcobial._types import Direction
+from pharcobial.basesprite import BaseSprite
 from pharcobial.display import GameDisplay
-from pharcobial.motion import MotionGranter, MotionRequest
+from pharcobial.motion import MotionGranter
 
 
 class Player(BaseSprite):
@@ -13,26 +14,18 @@ class Player(BaseSprite):
     def __init__(
         self, display: GameDisplay, motion_granter: MotionGranter, character: str = "pharma"
     ):
-        self.display = display
-        self.motion_granter = motion_granter
+        super().__init__(display, motion_granter)
         self.character = character
 
         # Put in middle of screen
         self.x = display.width // 2
         self.y = display.height // 2
-        self.previous_coordinates: Coordinates | None = None
 
-        self.facing = Direction.LEFT
         self.moving = False
         self.move_image_id: int = 0
 
-        super().__init__()
-
     def draw(self):
-        if self.previous_coordinates:
-            size = self.display.block_size * 2
-            self.display.draw_rect("white", self.previous_coordinates, width=size, height=size)
-
+        self.clear_previous_spot()
         image_id = self._get_image_id()
         self.display.draw_image(image_id, self.coordinates)
         self.display.beacon.player = self.coordinates
@@ -71,20 +64,21 @@ class Player(BaseSprite):
         if event.type == pygame.KEYDOWN and event.key in key_map:
             # Start moving
             self.facing = key_map[event.key]
-            self._handle_environment()
+            self.moving = self.can_move
 
         elif event.type == pygame.KEYUP:
             # Stop moving
             self.moving = event.key not in list(key_map.keys())
             self.moving = False
 
-    def _handle_environment(self) -> bool:
-        request = MotionRequest(start_coordinates=self.coordinates, direction=self.facing)
-        self.moving = self.motion_granter.can_move(request)
-        return self.moving
-
     def move(self):
-        if not self.moving or not self._handle_environment():
+        if not self.moving:
+            # Was not moving.
+            return
+
+        # Check if can move.
+        self.moving = self.can_move
+        if not self.moving:
             return
 
         if self.coordinates:
