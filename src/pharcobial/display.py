@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 import pygame
 
+from pharcobial._types import Color, Coordinates
 from pharcobial.constants import DEFAULT_BLOCK_SIZE, NAME
-from pharcobial.models import Color, Coordinates
 
 
 class Images:
@@ -42,16 +42,6 @@ class GameDisplay:
     def draw_text(self, msg: str, color: str, x: int, y: int):
         text = self.font.render(msg, True, self.RGB[color])
         self.screen.blit(text, [x, y])
-
-    def draw_background(self, skip_coordinates: List[Coordinates]):
-        # TODO: This aint working right
-        for x in range(0, self.width, self.block_size):
-            for y in range(0, self.height, self.block_size):
-                coordinate = Coordinates(x, y)
-                if coordinate in skip_coordinates:
-                    continue
-
-                self.draw_rect("white", coordinate)
 
     def clear(self):
         self.screen.fill(self.RGB["white"])

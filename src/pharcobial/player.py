@@ -1,9 +1,8 @@
-import random
-
 import pygame
 
+from pharcobial._types import BaseSprite, Coordinates, Direction
 from pharcobial.display import GameDisplay
-from pharcobial.models import BaseSprite, Coordinates, Direction
+from pharcobial.motion import MotionGranter, MotionRequest
 
 
 class Player(BaseSprite):
@@ -11,8 +10,11 @@ class Player(BaseSprite):
     The main character.
     """
 
-    def __init__(self, display: GameDisplay, character: str = "pharma"):
+    def __init__(
+        self, display: GameDisplay, motion_granter: MotionGranter, character: str = "pharma"
+    ):
         self.display = display
+        self.motion_granter = motion_granter
         self.character = character
 
         # Put in middle of screen
@@ -76,22 +78,8 @@ class Player(BaseSprite):
             self.moving = False
 
     def _handle_environment(self) -> bool:
-        # Check if hitting a boundary
-        coordinate = self.x if self.facing in (Direction.LEFT, Direction.RIGHT) else self.y
-        amount = (
-            self.display.block_size
-            if self.facing in (Direction.RIGHT, Direction.DOWN)
-            else -self.display.block_size
-        )
-        new_coordinate = coordinate + amount
-
-        if self.facing in (Direction.LEFT, Direction.UP):
-            self.moving = new_coordinate >= 0
-        elif self.facing == Direction.RIGHT:
-            self.moving = new_coordinate <= self.display.width - self.display.block_size * 2
-        elif self.facing == Direction.DOWN:
-            self.moving = new_coordinate <= self.display.height - self.display.block_size * 2
-
+        request = MotionRequest(start_coordinates=self.coordinates, direction=self.facing)
+        self.moving = self.motion_granter.can_move(request)
         return self.moving
 
     def move(self):
@@ -109,15 +97,3 @@ class Player(BaseSprite):
             self.y -= self.display.block_size
         elif self.facing == Direction.DOWN:
             self.y += self.display.block_size
-
-
-class RandomlyAppearing(BaseSprite):
-    def __init__(self, display: GameDisplay):
-        self.display = display
-        self.x = random.randrange(20, display.width - display.block_size - 10, 10)
-        self.y = random.randrange(20, display.height - display.block_size - 10, 10)
-
-
-class Monster(RandomlyAppearing):
-    def draw(self):
-        self.display.draw_image("bush-monster", self.coordinates)

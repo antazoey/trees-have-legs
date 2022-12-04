@@ -4,7 +4,9 @@ from typing import List
 import pygame
 
 from pharcobial.display import GameDisplay
-from pharcobial.sprites import Monster, Player
+from pharcobial.monster import Monster
+from pharcobial.motion import MotionGranter
+from pharcobial.player import Player
 
 
 class Clock:
@@ -33,11 +35,15 @@ class App:
 
     @cached_property
     def player(self) -> Player:
-        return Player(self.display)
+        return Player(self.display, self.motion_granter)
 
     @cached_property
     def monsters(self) -> List[Monster]:
         return [Monster(self.display) for _ in range(self.num_monsters)]
+
+    @cached_property
+    def motion_granter(self) -> MotionGranter:
+        return MotionGranter(self.display, self.monsters)
 
     def main(self):
         self.display.clear()
