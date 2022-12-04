@@ -20,7 +20,6 @@ class App:
         self.display = GameDisplay(width, height, font_size)
         self.clock = Clock(fps)
         self.game_exit = False
-        self.game_over = False
         self.num_monsters = num_monsters
 
     @cached_property
@@ -34,10 +33,6 @@ class App:
     def main(self):
         self.display.clear()
         while not self.game_exit:
-            while self.game_over:
-                self.end()
-                continue
-
             for event in pygame.event.get():
                 self.player.handle_event(event)
 
@@ -52,17 +47,6 @@ class App:
 
         for monster in self.monsters:
             monster.draw()
-
-    def end(self):
-        self.display.turn_off()
-
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    self.game_exit = True
-                    self.game_over = False
-                if event.key == pygame.K_c:
-                    run()
 
 
 def run():
