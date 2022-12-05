@@ -23,9 +23,19 @@ class Player(BaseSprite):
 
         self.moving = False
         self.move_image_id: int = 0
+        self.speed = 0.3
+        self.movement_x = 0
+        self.movement_y = 0
+
+        self.keys_down= {
+            Direction.LEFT: False,
+            Direction.RIGHT: False,
+            Direction.UP: False,
+            Direction.DOWN: False,
+        }
 
     def draw(self):
-        self.clear_previous_spot()
+        #self.clear_previous_spot()
         image_id = self._get_image_id()
         self.display.draw_image(image_id, self.coordinates)
         self.display.beacon.player = self.coordinates
@@ -64,17 +74,28 @@ class Player(BaseSprite):
         if event.type == pygame.KEYDOWN and event.key in key_map:
             # Start moving
             self.facing = key_map[event.key]
+            
+            self.keys_down[self.facing] = True
             self.moving = self.can_move
 
         elif event.type == pygame.KEYUP:
+            if event.key in key_map:
+                self.keys_down[key_map[event.key]] = False
             # Stop moving
-            self.moving = event.key not in list(key_map.keys())
-            self.moving = False
+            #self.moving = False
 
     def move(self):
-        if not self.moving:
-            # Was not moving.
-            return
+        movement_length = self.display.block_size * self.speed
+
+        # Update potential movement
+        if self.keys_down[Direction.LEFT]:
+            self.movement_x -= 1
+        if self.keys_down[Direction.RIGHT]:
+            self.movement_x += 1
+        if self.keys_down[Direction.UP]:
+            self.movement_y -= 1
+        if self.keys_down[Direction.DOWN]:
+            self.movement_y += 1
 
         # Check if can move.
         self.moving = self.can_move
@@ -84,11 +105,9 @@ class Player(BaseSprite):
         if self.coordinates:
             self.previous_coordinates = self.coordinates
 
-        if self.facing == Direction.LEFT:
-            self.x -= self.display.block_size
-        elif self.facing == Direction.RIGHT:
-            self.x += self.display.block_size
-        elif self.facing == Direction.UP:
-            self.y -= self.display.block_size
-        elif self.facing == Direction.DOWN:
-            self.y += self.display.block_size
+        self.x += self.movement_x * movement_length
+        self.y += self.movement_y * movement_length
+        
+        # Reset movement.
+        self.movement_x = 0
+        self.movement_y = 0

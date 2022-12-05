@@ -35,7 +35,7 @@ class GameDisplay:
         self.width = width
         self.height = height
         self.block_size = block_size
-        self.screen = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF)
         self.font = pygame.font.SysFont("comic-sans", font_size)
         self.beacon = Beacon()
         pygame.display.set_caption(NAME)

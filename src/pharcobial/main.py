@@ -23,7 +23,7 @@ class Game:
         self,
         width: int = 800,
         height: int = 600,
-        fps: int = 20,
+        fps: int = 60,
         font_size: int = 25,
         num_monsters: int = 3,
     ):
@@ -67,9 +67,10 @@ class Game:
             monster.move()
 
     def draw(self):
-        self.player.draw()
+        self.display.clear()
         for monster in self.monsters:
             monster.draw()
+        self.player.draw()
 
 
 def run():

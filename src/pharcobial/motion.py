@@ -46,6 +46,7 @@ class MotionRequest:
         return False
 
     def check_proximity(self, coordinates: Coordinates) -> bool:
+        return False
         is_near = self.new_coordinates.x in self._make_range(
             coordinates.x
         ) and self.new_coordinates.y in self._make_range(coordinates.y, multiplier=4)

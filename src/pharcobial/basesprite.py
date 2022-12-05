@@ -16,6 +16,7 @@ class BaseSprite(Sprite):
     y: int = 0
     height: int = DEFAULT_BLOCK_SIZE
     width: int = DEFAULT_BLOCK_SIZE
+    speed: float = 0
 
     def __init__(self, display: "GameDisplay", motion_granter: MotionGranter) -> None:
         super().__init__()
