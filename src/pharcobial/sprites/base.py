@@ -15,10 +15,6 @@ class BaseSprite(Sprite):
     speed: float = 0
     uses_events: bool = False
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.previous_coordinates: Coordinates | None = None
-
     @property
     def coordinates(self) -> Coordinates:
         return Coordinates(self.x, self.y)

@@ -1,16 +1,13 @@
 from abc import abstractmethod
+from functools import cached_property
 
-from pharcobial._types import Coordinates, DrawInfo
+from pharcobial._types import DrawInfo
 from pharcobial.constants import BLOCK_SIZE
 
 from .base import BaseSprite
 
 
 class Adversary(BaseSprite):
-    def __init__(self) -> None:
-        super().__init__()
-        self.previous_coordinates: Coordinates | None = None
-
     @abstractmethod
     def get_image_id(self) -> str:
         """
@@ -27,6 +24,10 @@ class BushMonster(Adversary):
         self.monster_id = monster_id
         self.speed = 0.2
 
+    @cached_property
+    def movement_length(self) -> int:
+        return round(BLOCK_SIZE * self.speed)
+
     def get_image_id(self) -> str:
         return "bush-monster"
 
@@ -38,27 +39,22 @@ class BushMonster(Adversary):
         The monster is always moving towards the player.
         """
 
-        movement_length: int = round(BLOCK_SIZE * self.speed)
-
         player = self.sprite_map["player"]
-        if not player:
-            return
 
         new_x = self.x
         new_y = self.y
 
         # Handle x
         if player.x > self.x:
-            new_x = self.x + movement_length
+            new_x = self.x + min(self.movement_length, player.x - self.x)
         elif player.x < self.x:
-            new_x = self.x - movement_length
+            new_x = self.x - min(self.movement_length, self.x - player.x)
 
         # Handle y
         if player.y > self.y:
-            new_y = self.y + movement_length
+            new_y = self.y + min(self.movement_length, player.y - self.y)
         elif player.y < self.y:
-            new_y = self.y - movement_length
+            new_y = self.y - min(self.movement_length, self.y - player.y)
 
-        self.previous_coordinates = self.coordinates
         self.x = new_x
         self.y = new_y

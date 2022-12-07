@@ -108,9 +108,6 @@ class Player(BaseSprite):
         if self.keys_down[Direction.DOWN]:
             self.movement_y += 1
 
-        if self.coordinates:
-            self.previous_coordinates = self.coordinates
-
         self.x += round(self.movement_x * movement_length)
         self.y += round(self.movement_y * movement_length)
 
