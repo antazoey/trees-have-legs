@@ -21,8 +21,7 @@ class Player(BaseSprite):
         self.x = display.width // 2
         self.y = display.height // 2
 
-        self.moving = False
-        self.move_image_id: int = 0
+        self.move_image_id: int = -1
         self.speed = 0.3
         self.movement_x = 0
         self.movement_y = 0
@@ -34,8 +33,11 @@ class Player(BaseSprite):
             Direction.DOWN: False,
         }
 
+    @property
+    def moving(self) -> bool:
+        return any(x for x in self.keys_down.values())
+
     def draw(self):
-        # self.clear_previous_spot()
         image_id = self._get_image_id()
         self.display.draw_image(image_id, self.coordinates)
         self.display.beacon.player = self.coordinates
@@ -46,15 +48,15 @@ class Player(BaseSprite):
             if self.facing in (Direction.LEFT, Direction.UP)
             else Direction.RIGHT.value
         )
-
-        if self.moving and self.move_image_id != 1:
-            self.move_image_id = 1
-            suffix = f"{suffix}-walk-{self.move_image_id}"
-        elif self.moving:
-            self.move_image_id = 2
-            suffix = f"{suffix}-walk-{self.move_image_id}"
-        else:
-            self.move_image_id = 0
+        if self.moving:
+            self.move_image_id += 1
+            frame_rate = round(self.speed * self.display.block_size)
+            if self.move_image_id in range(frame_rate):
+                suffix = f"{suffix}-walk-1"
+            elif self.move_image_id in range(frame_rate, frame_rate * 2 + 1):
+                suffix = f"{suffix}-walk-2"
+            else:
+                self.move_image_id = -1
 
         return f"{self.character}-{suffix}"
 
@@ -74,17 +76,16 @@ class Player(BaseSprite):
         if event.type == pygame.KEYDOWN and event.key in key_map:
             # Start moving
             self.facing = key_map[event.key]
-
             self.keys_down[self.facing] = True
-            self.moving = self.can_move
 
         elif event.type == pygame.KEYUP:
             if event.key in key_map:
                 self.keys_down[key_map[event.key]] = False
-            # Stop moving
-            # self.moving = False
 
     def move(self):
+        if not self.moving:
+            return
+
         movement_length = self.display.block_size * self.speed
 
         # Update potential movement
@@ -96,11 +97,6 @@ class Player(BaseSprite):
             self.movement_y -= 1
         if self.keys_down[Direction.DOWN]:
             self.movement_y += 1
-
-        # Check if can move.
-        self.moving = self.can_move
-        if not self.moving:
-            return
 
         if self.coordinates:
             self.previous_coordinates = self.coordinates
