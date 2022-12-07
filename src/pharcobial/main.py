@@ -6,6 +6,7 @@ import pygame  # type: ignore
 from pharcobial.collision import CollisionDetector
 from pharcobial.display import GameDisplay
 from pharcobial.monster import Monster
+from pharcobial.options import GameOptions, get_game_options
 from pharcobial.player import Player
 
 
@@ -19,19 +20,12 @@ class Clock:
 
 
 class Game:
-    def __init__(
-        self,
-        width: int = 800,
-        height: int = 600,
-        fps: int = 60,
-        font_size: int = 25,
-        num_monsters: int = 3,
-    ):
+    def __init__(self, options: GameOptions):
         pygame.init()
-        self.display = GameDisplay(width, height, font_size)
-        self.clock = Clock(fps)
+        self.display = GameDisplay(options.width, options.height, options.font_size)
+        self.clock = Clock(options.fps)
         self.game_exit = False
-        self.num_monsters = num_monsters
+        self.num_monsters = options.num_monsters
 
     @cached_property
     def player(self) -> Player:
@@ -75,7 +69,8 @@ class Game:
 
 
 def run():
-    game = Game()
+    options = get_game_options()
+    game = Game(options)
     try:
         game.main()
     except KeyboardInterrupt:

@@ -23,6 +23,10 @@ class Monster(RandomlyAppearing):
         self.display.beacon.monsters[self.monster_id] = self.coordinates
 
     def move(self):
+        """
+        The monster is always moving towards the player.
+        """
+
         movement_length: int = round(self.display.block_size * self.speed)
 
         player = self.display.beacon.player
@@ -43,13 +47,6 @@ class Monster(RandomlyAppearing):
             new_y = self.y + movement_length
         elif player.y < self.y:
             new_y = self.y - movement_length
-
-        # TODO: Ensure is not same as other monster
-        # other_monsters = {
-        #     k: c for k, c in self.display.beacon.monsters.items() if k != self.monster_id
-        # }
-        # for other in other_monsters:
-        #     if o
 
         self.previous_coordinates = self.coordinates
         self.x = new_x
