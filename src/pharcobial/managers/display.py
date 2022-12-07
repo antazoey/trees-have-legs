@@ -3,12 +3,14 @@ from typing import Dict
 
 import pygame  # type: ignore
 
-from pharcobial._types import Color, Coordinates
-from pharcobial.constants import DEFAULT_BLOCK_SIZE, NAME
+from pharcobial._types import Color, Coordinates, DrawInfo
+from pharcobial.constants import BLOCK_SIZE, NAME
+
+from .base import BaseManager
 
 
 class Images:
-    BASE_PATH = Path(__file__).parent.parent.parent / "gfx"
+    BASE_PATH = Path(__file__).parent.parent.parent.parent / "gfx"
 
     @classmethod
     def load(cls, name: str):
@@ -16,7 +18,11 @@ class Images:
         return pygame.image.load(str(path))
 
 
-class GameDisplay:
+class Display:
+    """
+    A class used for displaying text or images on the actual screen.
+    """
+
     RGB: Dict[str, Color] = {
         "white": (255, 255, 255),
         "black": (0, 0, 0),
@@ -25,12 +31,20 @@ class GameDisplay:
     }
 
     def __init__(
-        self, width: int, height: int, font_size: int, block_size: int = DEFAULT_BLOCK_SIZE
+        self,
+        width: int,
+        height: int,
+        font_size: int,
+        full_screen: bool = False,
     ) -> None:
         self.width = width
         self.height = height
-        self.block_size = block_size
-        self.screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.FULLSCREEN)
+
+        modes = pygame.DOUBLEBUF
+        if full_screen:
+            modes |= pygame.FULLSCREEN
+
+        self.screen = pygame.display.set_mode((width, height), modes)
         self.font = pygame.font.SysFont("comic-sans", font_size)
         pygame.display.set_caption(NAME)
 
@@ -53,8 +67,8 @@ class GameDisplay:
         width: int | None = None,
         height: int | None = None,
     ):
-        width = width if width is not None else self.block_size
-        height = height if height is not None else self.block_size
+        width = width if width is not None else BLOCK_SIZE
+        height = height if height is not None else BLOCK_SIZE
         data = [*coordinates, width, height]
         pygame.draw.rect(self.screen, self.RGB[color], data)
 
@@ -67,3 +81,23 @@ class GameDisplay:
             self.height // 2,
         )
         pygame.display.update()
+
+
+class DisplayManager(BaseManager):
+    def __init__(self) -> None:
+        super().__init__()
+        self.window_width = self.options.window_width
+        self.window_height = self.options.window_height
+        self.main = Display(
+            self.window_width,
+            self.window_height,
+            self.options.font_size,
+            full_screen=self.options.full_screen,
+        )
+        self.active = self.main
+
+    def draw(self, draw_info: DrawInfo):
+        return self.active.draw_image(draw_info.image_id, draw_info.coordinates)
+
+
+display_manager = DisplayManager()

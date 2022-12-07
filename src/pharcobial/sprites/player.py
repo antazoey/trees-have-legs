@@ -2,9 +2,9 @@ import re
 
 import pygame  # type: ignore
 
-from pharcobial._types import Direction
-from pharcobial.basesprite import BaseSprite
-from pharcobial.display import GameDisplay
+from pharcobial._types import Direction, DrawInfo
+from pharcobial.constants import BLOCK_SIZE
+from pharcobial.sprites.base import BaseSprite
 
 IMAGE_ID_PATTERN = re.compile(r"(pharma-(left|right))(-walk(-\d)?)?")
 
@@ -14,14 +14,9 @@ class Player(BaseSprite):
     The main character.
     """
 
-    def __init__(self, display: GameDisplay, character: str = "pharma"):
-        super().__init__(display)
+    def __init__(self, character: str = "pharma"):
+        super().__init__()
         self.character = character
-
-        # Put in middle of screen
-        self.x = display.width // 2
-        self.y = display.height // 2
-
         self.move_image_id: int = -1
         self.speed = 0.24
         self.movement_x = 0
@@ -43,10 +38,8 @@ class Player(BaseSprite):
     def get_sprite_id(self) -> str:
         return "player"
 
-    def draw(self):
-        image_id = self._get_image_id()
-        self.display.draw_image(image_id, self.coordinates)
-        super().draw()
+    def get_draw_info(self) -> DrawInfo:
+        return DrawInfo(image_id=self._get_image_id(), coordinates=self.coordinates)
 
     def _get_image_id(self) -> str:
         if not self.moving and self.active_image_id is not None:
@@ -72,7 +65,7 @@ class Player(BaseSprite):
             suffix = Direction.LEFT.value
 
         self.move_image_id += 1
-        frame_rate = round(self.speed * self.display.block_size)
+        frame_rate = round(self.speed * BLOCK_SIZE)
         if self.move_image_id in range(frame_rate):
             suffix = f"{suffix}-walk-1"
         elif self.move_image_id in range(frame_rate, frame_rate * 2 + 1):
@@ -108,7 +101,7 @@ class Player(BaseSprite):
         if not self.moving:
             return
 
-        movement_length = self.display.block_size * self.speed
+        movement_length = BLOCK_SIZE * self.speed
 
         # Update potential movement
         if self.keys_down[Direction.LEFT]:
