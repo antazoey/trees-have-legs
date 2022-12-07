@@ -23,7 +23,7 @@ class Game:
         pygame.init()
         self.display = GameDisplay(options.width, options.height, options.font_size)
         self.clock = Clock(options.fps)
-        self.game_exit = False
+        self.running = False
         self.player = Player(self.display)
 
         # Register all initial sprites here
@@ -34,16 +34,24 @@ class Game:
 
     def run(self):
         self.display.clear()
-        while not self.game_exit:
+        self.running = True
+        while self.running:
             self.handle_events()
             self.update_sprites()
             self.draw_sprites()
             pygame.display.update()
             self.clock.tick()
 
+        pygame.quit()
+
     def handle_events(self):
         for sprite in [e for e in self.registered_sprites if e.uses_events]:
             for event in pygame.event.get():
+
+                # Handle game-level events
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    self.running = False
+
                 sprite.handle_event(event)
 
     def update_sprites(self):
