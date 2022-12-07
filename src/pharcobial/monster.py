@@ -4,15 +4,12 @@ from pharcobial._types import Coordinates
 from pharcobial.basesprite import RandomlyAppearing
 
 if TYPE_CHECKING:
-    from pharcobial.collision import CollisionDetector
     from pharcobial.display import GameDisplay
 
 
 class Monster(RandomlyAppearing):
-    def __init__(
-        self, display: "GameDisplay", collision_detector: "CollisionDetector", monster_id: int
-    ):
-        super().__init__(display, collision_detector)
+    def __init__(self, display: "GameDisplay", monster_id: int):
+        super().__init__(display)
         self.monster_id = monster_id
         self.previous_coordinates: Coordinates | None = None
         self.speed = 0.2

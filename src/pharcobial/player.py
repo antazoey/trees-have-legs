@@ -2,7 +2,6 @@ import pygame  # type: ignore
 
 from pharcobial._types import Direction
 from pharcobial.basesprite import BaseSprite
-from pharcobial.collision import CollisionDetector
 from pharcobial.display import GameDisplay
 
 
@@ -11,10 +10,8 @@ class Player(BaseSprite):
     The main character.
     """
 
-    def __init__(
-        self, display: GameDisplay, collision_detector: CollisionDetector, character: str = "pharma"
-    ):
-        super().__init__(display, collision_detector)
+    def __init__(self, display: GameDisplay, character: str = "pharma"):
+        super().__init__(display)
         self.character = character
 
         # Put in middle of screen
@@ -48,7 +45,7 @@ class Player(BaseSprite):
     def _get_image_id(self) -> str:
         suffix = (
             Direction.LEFT.value
-            if self.facing in (Direction.LEFT, Direction.UP)
+            if self.keys_down[Direction.LEFT] or self.keys_down[Direction.UP]
             else Direction.RIGHT.value
         )
         if self.moving:
@@ -78,12 +75,11 @@ class Player(BaseSprite):
         }
         if event.type == pygame.KEYDOWN and event.key in key_map:
             # Start moving
-            self.facing = key_map[event.key]
-            self.keys_down[self.facing] = True
+            self.keys_down[key_map[event.key]] = True
 
-        elif event.type == pygame.KEYUP:
-            if event.key in key_map:
-                self.keys_down[key_map[event.key]] = False
+        elif event.type == pygame.KEYUP and event.key in key_map:
+            # Stop moving
+            self.keys_down[key_map[event.key]] = False
 
     def move(self):
         if not self.moving:

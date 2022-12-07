@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING
 
 from pygame.sprite import Sprite  # type: ignore
 
-from pharcobial._types import Coordinates, Direction
-from pharcobial.collision import CollisionDetector, MotionRequest
+from pharcobial._types import Coordinates
 from pharcobial.constants import DEFAULT_BLOCK_SIZE
 
 if TYPE_CHECKING:
@@ -28,21 +27,14 @@ class BaseSprite(Sprite):
     width: int = DEFAULT_BLOCK_SIZE
     speed: float = 0
 
-    def __init__(self, display: "GameDisplay", collision_detector: CollisionDetector) -> None:
+    def __init__(self, display: "GameDisplay") -> None:
         super().__init__()
         self.display = display
-        self.collision_detector = collision_detector
         self.previous_coordinates: Coordinates | None = None
-        self.facing = Direction.LEFT
 
     @property
     def coordinates(self) -> Coordinates:
         return Coordinates(self.x, self.y)
-
-    @property
-    def can_move(self) -> bool:
-        request = MotionRequest(start_coordinates=self.coordinates, direction=self.facing)
-        return self.collision_detector.can_move(request)
 
     @property
     def beacon_ref(self) -> Beacon:
@@ -64,7 +56,7 @@ class BaseSprite(Sprite):
 
 
 class RandomlyAppearing(BaseSprite):
-    def __init__(self, display: "GameDisplay", collision_detector: CollisionDetector):
-        super().__init__(display, collision_detector)
+    def __init__(self, display: "GameDisplay"):
+        super().__init__(display)
         self.x = random.randrange(20, display.width - display.block_size - 10, 10)
         self.y = random.randrange(20, display.height - display.block_size - 10, 10)
