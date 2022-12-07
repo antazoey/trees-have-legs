@@ -1,8 +1,12 @@
+import re
+
 import pygame  # type: ignore
 
 from pharcobial._types import Direction
 from pharcobial.basesprite import BaseSprite
 from pharcobial.display import GameDisplay
+
+IMAGE_ID_PATTERN = re.compile(r"(pharma-(left|right))(-walk(-\d)?)?")
 
 
 class Player(BaseSprite):
@@ -22,6 +26,7 @@ class Player(BaseSprite):
         self.speed = 0.3
         self.movement_x = 0
         self.movement_y = 0
+        self.active_image_id: str | None = None
 
         self.keys_down = {
             Direction.LEFT: False,
@@ -43,22 +48,28 @@ class Player(BaseSprite):
         super().draw()
 
     def _get_image_id(self) -> str:
+        if not self.moving and self.active_image_id is not None:
+            # Return a standing-still image of the last direction facing.
+            match = re.match(IMAGE_ID_PATTERN, self.active_image_id)
+            assert match  # For mypy
+            return match.groups()[0]
+
         suffix = (
             Direction.LEFT.value
             if self.keys_down[Direction.LEFT] or self.keys_down[Direction.UP]
             else Direction.RIGHT.value
         )
-        if self.moving:
-            self.move_image_id += 1
-            frame_rate = round(self.speed * self.display.block_size)
-            if self.move_image_id in range(frame_rate):
-                suffix = f"{suffix}-walk-1"
-            elif self.move_image_id in range(frame_rate, frame_rate * 2 + 1):
-                suffix = f"{suffix}-walk-2"
-            else:
-                self.move_image_id = -1
+        self.move_image_id += 1
+        frame_rate = round(self.speed * self.display.block_size)
+        if self.move_image_id in range(frame_rate):
+            suffix = f"{suffix}-walk-1"
+        elif self.move_image_id in range(frame_rate, frame_rate * 2 + 1):
+            suffix = f"{suffix}-walk-2"
+        else:
+            self.move_image_id = -1
 
-        return f"{self.character}-{suffix}"
+        self.active_image_id = f"{self.character}-{suffix}"
+        return self.active_image_id
 
     def handle_event(self, event):
         """
