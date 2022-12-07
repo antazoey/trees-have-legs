@@ -32,7 +32,7 @@ class Game:
             *[Monster(self.display, i) for i in range(options.num_monsters)],
         ]
 
-    def main(self):
+    def run(self):
         self.display.clear()
         while not self.game_exit:
             self.handle_events()
@@ -56,14 +56,14 @@ class Game:
             sprite.draw()
 
 
-def run():
+def main():
     try:
         options = get_game_options()
         game = Game(options)
-        game.main()
+        game.run()
     except KeyboardInterrupt:
         pygame.quit()
 
 
 if __name__ == "__main__":
-    run()
+    main()
