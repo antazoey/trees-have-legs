@@ -57,10 +57,9 @@ class SpriteManager(BaseManager):
             sprite.update()
 
     def draw(self):
-        self.display.active.clear()
         for sprite in self.sprite_map.values():
             draw_info = sprite.get_draw_info()
-            self.display.draw(draw_info)
+            self.display.draw_sprite(draw_info)
 
 
 sprite_manager = SpriteManager()

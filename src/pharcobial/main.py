@@ -19,10 +19,12 @@ class Game(BaseManager):
                 self.running = False
                 break
 
+            self.map.update()
             self.sprites.update()
-            self.sprites.draw()
-            self.display.active.update()
-            self.clock.tick()
+
+            with self.display.in_same_cycle():
+                self.map.draw()
+                self.sprites.draw()
 
         pygame.quit()
 

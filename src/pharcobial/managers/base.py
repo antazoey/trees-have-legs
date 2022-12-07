@@ -6,6 +6,7 @@ if TYPE_CHECKING:
     from .clock import ClockManager
     from .display import DisplayManager
     from .event import EventManager
+    from .image import ImageManager
     from .map import MapManager
     from .options import OptionsManager
     from .sprite import SpriteManager
@@ -30,6 +31,10 @@ class BaseManager:
     @cached_property
     def events(self) -> "EventManager":
         return cast("EventManager", self.get_manager("event"))
+
+    @cached_property
+    def images(self) -> "ImageManager":
+        return cast("ImageManager", self.get_manager("image"))
 
     @cached_property
     def map(self) -> "MapManager":
