@@ -5,7 +5,7 @@ from pharcobial._types import GameAction
 from .base import BaseManager
 
 
-class EventProcessor(BaseManager):
+class EventManager(BaseManager):
     def process_next(self) -> GameAction:
         for event in pygame.event.get():
 
@@ -20,4 +20,4 @@ class EventProcessor(BaseManager):
         return GameAction.CONTINUE
 
 
-event_processor = EventProcessor()
+event_manager = EventManager()

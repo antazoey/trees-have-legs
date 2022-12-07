@@ -1,11 +1,13 @@
 from functools import cached_property
-from typing import TYPE_CHECKING
+from importlib import import_module
+from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
-    from .clock import Clock
+    from .clock import ClockManager
     from .display import DisplayManager
-    from .events import EventProcessor
-    from .options import OptionsParser
+    from .event import EventManager
+    from .map import MapManager
+    from .options import OptionsManager
     from .sprite import SpriteManager
 
 
@@ -14,32 +16,33 @@ class BaseManager:
     A way to do dependency injection between all the managers.
     """
 
-    @cached_property
-    def clock(self) -> "Clock":
-        from .clock import clock as c
+    def __init__(self) -> None:
+        self.root_module = ".".join(BaseManager.__module__.split(".")[:-1])
 
-        return c
+    @cached_property
+    def clock(self) -> "ClockManager":
+        return cast("ClockManager", self.get_manager("clock"))
 
     @cached_property
     def display(self) -> "DisplayManager":
-        from .display import display_manager as dm
-
-        return dm
+        return cast("DisplayManager", self.get_manager("display"))
 
     @cached_property
-    def events(self) -> "EventProcessor":
-        from .events import event_processor as ep
-
-        return ep
+    def events(self) -> "EventManager":
+        return cast("EventManager", self.get_manager("event"))
 
     @cached_property
-    def options(self) -> "OptionsParser":
-        from .options import options_parser as op
+    def map(self) -> "MapManager":
+        return cast("MapManager", self.get_manager("map"))
 
-        return op
+    @cached_property
+    def options(self) -> "OptionsManager":
+        return cast("OptionsManager", self.get_manager("options"))
 
     @cached_property
     def sprites(self) -> "SpriteManager":
-        from .sprite import sprite_manager as sm
+        return cast("SpriteManager", self.get_manager("sprite"))
 
-        return sm
+    def get_manager(self, name: str) -> "BaseManager":
+        module = import_module(f"{self.root_module}.{name}")
+        return getattr(module, f"{name}_manager")

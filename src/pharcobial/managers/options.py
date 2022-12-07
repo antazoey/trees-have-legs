@@ -19,7 +19,7 @@ class GameOptions:
     num_monsters: int = 3
 
 
-class OptionsParser(BaseManager):
+class OptionsManager(BaseManager):
     @cached_property
     def options(self):
         """
@@ -81,4 +81,4 @@ class OptionsParser(BaseManager):
             raise  # err_backup
 
 
-options_parser = OptionsParser()
+options_manager = OptionsManager()

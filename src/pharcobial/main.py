@@ -6,6 +6,7 @@ from pharcobial.managers.base import BaseManager
 
 class Game(BaseManager):
     def __init__(self):
+        super().__init__()
         pygame.init()
         self.running = False
 
