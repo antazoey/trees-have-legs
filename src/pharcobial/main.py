@@ -69,9 +69,9 @@ class Game:
 
 
 def run():
-    options = get_game_options()
-    game = Game(options)
     try:
+        options = get_game_options()
+        game = Game(options)
         game.main()
     except KeyboardInterrupt:
         pygame.quit()
