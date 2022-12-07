@@ -65,6 +65,9 @@ class Player(BaseSprite):
             suffix = Direction.LEFT.value
         elif self.keys_down[Direction.DOWN]:
             suffix = Direction.RIGHT.value
+        elif self.active_image_id is not None:
+            # Use the previous image ID if it exists
+            return self.active_image_id
         else:
             suffix = Direction.LEFT.value
 
