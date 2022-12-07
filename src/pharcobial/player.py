@@ -23,7 +23,7 @@ class Player(BaseSprite):
         self.y = display.height // 2
 
         self.move_image_id: int = -1
-        self.speed = 0.3
+        self.speed = 0.24
         self.movement_x = 0
         self.movement_y = 0
         self.active_image_id: str | None = None
