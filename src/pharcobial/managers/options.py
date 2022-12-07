@@ -5,18 +5,25 @@ from typing import Any
 
 from .base import BaseManager
 
+DEFAULT_WIDTH = 1200
+DEFAULT_HEIGHT = 800
+DEFAULT_FPS = 60
+DEFAULT_FONT_SIZE = 25
+DEFAULT_FULL_SCREEN = False
+DEFAULT_NUM_MONSTERS = 3
+
 
 @dataclass
 class GameOptions:
     # Core settings
-    window_width: int = 800
-    window_height: int = 600
-    fps: int = 60
-    font_size: int = 25
-    full_screen: bool = False
+    window_width: int = DEFAULT_WIDTH
+    window_height: int = DEFAULT_HEIGHT
+    fps: int = DEFAULT_FPS
+    font_size: int = DEFAULT_FONT_SIZE
+    full_screen: bool = DEFAULT_FULL_SCREEN
 
     # Game settings
-    num_monsters: int = 3
+    num_monsters: int = DEFAULT_NUM_MONSTERS
 
 
 class OptionsManager(BaseManager):
@@ -30,14 +37,24 @@ class OptionsManager(BaseManager):
 
         # Add core settings
         parser.add_argument(
-            "--window-width", action="store", default=800, help="Window width", type=int
+            "--window-width", action="store", default=DEFAULT_WIDTH, help="Window width", type=int
         )
         parser.add_argument(
-            "--window-height", action="store", default=600, help="Window height", type=int
+            "--window-height",
+            action="store",
+            default=DEFAULT_HEIGHT,
+            help="Window height",
+            type=int,
         )
-        parser.add_argument("--fps", action="store", default=60, help="Frames per second", type=int)
-        parser.add_argument("--font-size", action="store", default=25, help="Font size", type=int)
-        parser.add_argument("--full-screen", action="store_true", default=False, help="Full screen")
+        parser.add_argument(
+            "--fps", action="store", default=DEFAULT_FPS, help="Frames per second", type=int
+        )
+        parser.add_argument(
+            "--font-size", action="store", default=DEFAULT_FONT_SIZE, help="Font size", type=int
+        )
+        parser.add_argument(
+            "--full-screen", action="store_true", default=DEFAULT_FULL_SCREEN, help="Full screen"
+        )
 
         # Add game settings
         parser.add_argument(

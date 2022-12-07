@@ -30,8 +30,8 @@ class SpriteManager(BaseManager):
         character = Player()
 
         # Put in middle of screen
-        character.x = self.display.window_width // 2
-        character.y = self.display.window_height // 2
+        character.x = self.display.width // 2
+        character.y = self.display.height // 2
 
         return character
 
@@ -41,8 +41,8 @@ class SpriteManager(BaseManager):
     def create_adversary(self, type_key: str, **kwargs) -> Adversary:
         if type_key == "bush-monster":
             monster = BushMonster(**kwargs)
-            monster.x = random.randrange(20, self.display.window_width - BLOCK_SIZE - 10, 10)
-            monster.y = random.randrange(20, self.display.window_height - BLOCK_SIZE - 10, 10)
+            monster.x = random.randrange(20, self.display.width - BLOCK_SIZE - 10, 10)
+            monster.y = random.randrange(20, self.display.height - BLOCK_SIZE - 10, 10)
             return monster
 
         else:

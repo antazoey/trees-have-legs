@@ -39,19 +39,30 @@ class Display:
         font_size: int,
         full_screen: bool = False,
     ) -> None:
-        self.width = width
-        self.height = height
 
         modes = pygame.DOUBLEBUF
         if full_screen:
             modes |= pygame.FULLSCREEN
 
-        self.screen = pygame.display.set_mode((width, height), modes)
-        self.font = pygame.font.SysFont("comic-sans", font_size)
+        # The root is the root window and should not have anything rendered to it
+        # besides self.screen.
+        self.window = pygame.display.set_mode((width, height), modes)
 
+        # self.screen is scaled up to the window size to properly increase the size of all images.
+        self.width = width // 2
+        self.height = height // 2
+        self.screen = pygame.Surface((self.width, self.height))
+
+        self.font = pygame.font.SysFont("comic-sans", font_size)
         self.image_cache: Dict = {}
+        self.map_pointer = (0, 0)
 
         pygame.display.set_caption(NAME)
+
+    def update(self):
+        screen = pygame.transform.scale(self.screen, (self.width * 2, self.height * 2))
+        self.window.blit(screen, (0, 0))
+        pygame.display.update()
 
     def draw_image(
         self, image_id: str, coordinates: Coordinates, orientation: Direction | None = None
@@ -102,29 +113,25 @@ class Display:
         data = [*coordinates, width, height]
         pygame.draw.rect(self.screen, self.RGB[color], data)
 
-    def turn_off(self):
-        self.clear()
-        self.draw_text(
-            "Game over, prcess C to play again or Q to quit",
-            "red",
-            self.width // 2,
-            self.height // 2,
-        )
-        pygame.display.update()
-
 
 class DisplayManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
-        self.window_width = self.options.window_width
-        self.window_height = self.options.window_height
         self.main = Display(
-            self.window_width,
-            self.window_height,
+            self.options.window_width,
+            self.options.window_height,
             self.options.font_size,
             full_screen=self.options.full_screen,
         )
         self.active = self.main
+
+    @property
+    def width(self) -> int:
+        return self.active.width
+
+    @property
+    def height(self) -> int:
+        return self.active.height
 
     def draw(self, draw_info: DrawInfo):
         return self.active.draw_image(

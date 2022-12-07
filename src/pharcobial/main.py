@@ -21,7 +21,7 @@ class Game(BaseManager):
 
             self.sprites.update()
             self.sprites.draw()
-            pygame.display.update()
+            self.display.active.update()
             self.clock.tick()
 
         pygame.quit()
