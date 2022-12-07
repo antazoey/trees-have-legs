@@ -27,6 +27,7 @@ class Player(BaseSprite):
         self.movement_x = 0
         self.movement_y = 0
         self.active_image_id: str | None = None
+        self.uses_events: bool = True
 
         self.keys_down = {
             Direction.LEFT: False,
@@ -92,7 +93,7 @@ class Player(BaseSprite):
             # Stop moving
             self.keys_down[key_map[event.key]] = False
 
-    def move(self):
+    def update(self):
         if not self.moving:
             return
 

@@ -21,7 +21,7 @@ class Monster(RandomlyAppearing):
         self.display.draw_image("bush-monster", self.coordinates)
         super().draw()
 
-    def move(self):
+    def update(self):
         """
         The monster is always moving towards the player.
         """

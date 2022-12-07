@@ -1,8 +1,8 @@
-from functools import cached_property
 from typing import List
 
 import pygame  # type: ignore
 
+from pharcobial.basesprite import BaseSprite
 from pharcobial.display import GameDisplay
 from pharcobial.monster import Monster
 from pharcobial.options import GameOptions, get_game_options
@@ -24,42 +24,36 @@ class Game:
         self.display = GameDisplay(options.width, options.height, options.font_size)
         self.clock = Clock(options.fps)
         self.game_exit = False
-        self.num_monsters = options.num_monsters
+        self.player = Player(self.display)
 
-    @cached_property
-    def player(self) -> Player:
-        return Player(self.display)
-
-    @cached_property
-    def monsters(self) -> List[Monster]:
-        return [Monster(self.display, index) for index in range(self.num_monsters)]
+        # Register all initial sprites here
+        self.registered_sprites: List[BaseSprite] = [
+            Player(self.display),
+            *[Monster(self.display, i) for i in range(options.num_monsters)],
+        ]
 
     def main(self):
         self.display.clear()
         while not self.game_exit:
-            self.update_player()
-            self.update_monsters()
-            self.draw()
+            self.handle_events()
+            self.update_sprites()
+            self.draw_sprites()
             pygame.display.update()
             self.clock.tick()
 
-    def update_player(self):
-        for event in pygame.event.get():
-            self.player.handle_event(event)
+    def handle_events(self):
+        for sprite in [e for e in self.registered_sprites if e.uses_events]:
+            for event in pygame.event.get():
+                sprite.handle_event(event)
 
-        self.player.move()
+    def update_sprites(self):
+        for sprite in self.registered_sprites:
+            sprite.update()
 
-    def update_monsters(self):
-        for monster in self.monsters:
-            monster.move()
-
-    def draw(self):
+    def draw_sprites(self):
         self.display.clear()
-
-        for monster in self.monsters:
-            monster.draw()
-
-        self.player.draw()
+        for sprite in self.registered_sprites:
+            sprite.draw()
 
 
 def run():

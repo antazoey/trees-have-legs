@@ -26,6 +26,7 @@ class BaseSprite(Sprite):
     height: int = DEFAULT_BLOCK_SIZE
     width: int = DEFAULT_BLOCK_SIZE
     speed: float = 0
+    uses_events: bool = False
 
     def __init__(self, display: "GameDisplay") -> None:
         super().__init__()
@@ -46,7 +47,24 @@ class BaseSprite(Sprite):
         Return a unique identifier for this sprite.
         """
 
+    @abstractmethod
+    def update(self):
+        """
+        Update properites on the sprite. This gets called after
+        event handling.
+        """
+
+    @abstractmethod
+    def handle_event(self, event):
+        """
+        Handle events from pygame.
+        """
+
     def draw(self):
+        """
+        This base method should be called in the subclass overriden method.
+        """
+
         _beacon[self.get_sprite_id()] = self.coordinates
 
     def clear_previous_spot(self):
