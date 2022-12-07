@@ -18,6 +18,7 @@ class Direction(Enum):
 class DrawInfo:
     image_id: str
     coordinates: Coordinates
+    orientation: Direction | None = None
 
 
 class GameAction(Enum):

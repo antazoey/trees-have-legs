@@ -3,7 +3,7 @@ from typing import Dict
 
 import pygame  # type: ignore
 
-from pharcobial._types import Color, Coordinates, DrawInfo
+from pharcobial._types import Color, Coordinates, Direction, DrawInfo
 from pharcobial.constants import BLOCK_SIZE, NAME
 
 from .base import BaseManager
@@ -15,7 +15,9 @@ class Images:
     @classmethod
     def load(cls, name: str):
         path = cls.BASE_PATH / f"{name}.png"
-        return pygame.image.load(str(path))
+        image = pygame.image.load(str(path))
+        image.convert_alpha()  # Allows transparency
+        return image
 
 
 class Display:
@@ -48,8 +50,14 @@ class Display:
         self.font = pygame.font.SysFont("comic-sans", font_size)
         pygame.display.set_caption(NAME)
 
-    def draw_image(self, image_id: str, coordinates: Coordinates):
+    def draw_image(
+        self, image_id: str, coordinates: Coordinates, orientation: Direction | None = None
+    ):
         image = Images.load(image_id)
+
+        if orientation == Direction.RIGHT:
+            image = pygame.transform.flip(image, True, False)
+
         self.screen.blit(image, coordinates)
         pygame.display.flip()
 
@@ -97,7 +105,9 @@ class DisplayManager(BaseManager):
         self.active = self.main
 
     def draw(self, draw_info: DrawInfo):
-        return self.active.draw_image(draw_info.image_id, draw_info.coordinates)
+        return self.active.draw_image(
+            draw_info.image_id, draw_info.coordinates, orientation=draw_info.orientation
+        )
 
 
 display_manager = DisplayManager()
