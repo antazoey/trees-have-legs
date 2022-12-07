@@ -64,13 +64,14 @@ class Display:
         self.screen.blit(image, coordinates)
         pygame.display.flip()
 
-    def get_image(self, image_id: str, orientation: Direction | None = None):
+    def get(self, image_id: str, orientation: Direction | None = None):
         if orientation == Direction.RIGHT:
+            # Handle the case where we need to flip the image vertically.
             image_cache_id = f"{image_id}-{Direction.RIGHT.value}"
             if image_cache_id in self.image_cache:
                 return self.image_cache[image_cache_id]
 
-            image = self.get_image(image_id)
+            image = self.get(image_id)
             image = pygame.transform.flip(image, True, False)
             self.image_cache[image_cache_id] = image
             return image
