@@ -48,6 +48,9 @@ class Display:
 
         self.screen = pygame.display.set_mode((width, height), modes)
         self.font = pygame.font.SysFont("comic-sans", font_size)
+
+        self.image_cache: Dict = {}
+
         pygame.display.set_caption(NAME)
 
     def draw_image(
@@ -60,6 +63,24 @@ class Display:
 
         self.screen.blit(image, coordinates)
         pygame.display.flip()
+
+    def get_image(self, image_id: str, orientation: Direction | None = None):
+        if orientation == Direction.RIGHT:
+            image_cache_id = f"{image_id}-{Direction.RIGHT.value}"
+            if image_cache_id in self.image_cache:
+                return self.image_cache[image_cache_id]
+
+            image = self.get_image(image_id)
+            image = pygame.transform.flip(image, True, False)
+            self.image_cache[image_cache_id] = image
+            return image
+
+        elif image_id in self.image_cache:
+            return self.image_cache[image_id]
+
+        image = Images.load(image_id)
+        self.image_cache[image_id] = image
+        return image
 
     def draw_text(self, msg: str, color: str, x: int, y: int):
         text = self.font.render(msg, True, self.RGB[color])
