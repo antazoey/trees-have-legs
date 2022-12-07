@@ -1,9 +1,9 @@
-import pygame
+import pygame  # type: ignore
 
 from pharcobial._types import Direction
 from pharcobial.basesprite import BaseSprite
+from pharcobial.collision import CollisionDetector
 from pharcobial.display import GameDisplay
-from pharcobial.motion import MotionGranter
 
 
 class Player(BaseSprite):
@@ -12,9 +12,9 @@ class Player(BaseSprite):
     """
 
     def __init__(
-        self, display: GameDisplay, motion_granter: MotionGranter, character: str = "pharma"
+        self, display: GameDisplay, collision_detector: CollisionDetector, character: str = "pharma"
     ):
-        super().__init__(display, motion_granter)
+        super().__init__(display, collision_detector)
         self.character = character
 
         # Put in middle of screen
@@ -27,7 +27,7 @@ class Player(BaseSprite):
         self.movement_x = 0
         self.movement_y = 0
 
-        self.keys_down= {
+        self.keys_down = {
             Direction.LEFT: False,
             Direction.RIGHT: False,
             Direction.UP: False,
@@ -35,7 +35,7 @@ class Player(BaseSprite):
         }
 
     def draw(self):
-        #self.clear_previous_spot()
+        # self.clear_previous_spot()
         image_id = self._get_image_id()
         self.display.draw_image(image_id, self.coordinates)
         self.display.beacon.player = self.coordinates
@@ -74,7 +74,7 @@ class Player(BaseSprite):
         if event.type == pygame.KEYDOWN and event.key in key_map:
             # Start moving
             self.facing = key_map[event.key]
-            
+
             self.keys_down[self.facing] = True
             self.moving = self.can_move
 
@@ -82,7 +82,7 @@ class Player(BaseSprite):
             if event.key in key_map:
                 self.keys_down[key_map[event.key]] = False
             # Stop moving
-            #self.moving = False
+            # self.moving = False
 
     def move(self):
         movement_length = self.display.block_size * self.speed
@@ -105,9 +105,9 @@ class Player(BaseSprite):
         if self.coordinates:
             self.previous_coordinates = self.coordinates
 
-        self.x += self.movement_x * movement_length
-        self.y += self.movement_y * movement_length
-        
+        self.x += round(self.movement_x * movement_length)
+        self.y += round(self.movement_y * movement_length)
+
         # Reset movement.
         self.movement_x = 0
         self.movement_y = 0

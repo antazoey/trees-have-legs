@@ -1,11 +1,11 @@
 import random
 from typing import TYPE_CHECKING
 
-from pygame.sprite import Sprite
+from pygame.sprite import Sprite  # type: ignore
 
 from pharcobial._types import Coordinates, Direction
+from pharcobial.collision import CollisionDetector, MotionRequest
 from pharcobial.constants import DEFAULT_BLOCK_SIZE
-from pharcobial.motion import MotionGranter, MotionRequest
 
 if TYPE_CHECKING:
     from pharcobial.display import GameDisplay
@@ -18,10 +18,10 @@ class BaseSprite(Sprite):
     width: int = DEFAULT_BLOCK_SIZE
     speed: float = 0
 
-    def __init__(self, display: "GameDisplay", motion_granter: MotionGranter) -> None:
+    def __init__(self, display: "GameDisplay", collision_detector: CollisionDetector) -> None:
         super().__init__()
         self.display = display
-        self.motion_granter = motion_granter
+        self.collision_detector = collision_detector
         self.previous_coordinates: Coordinates | None = None
         self.facing = Direction.LEFT
 
@@ -32,7 +32,7 @@ class BaseSprite(Sprite):
     @property
     def can_move(self) -> bool:
         request = MotionRequest(start_coordinates=self.coordinates, direction=self.facing)
-        return self.motion_granter.can_move(request)
+        return self.collision_detector.can_move(request)
 
     def clear_previous_spot(self):
         if self.previous_coordinates:
@@ -41,7 +41,7 @@ class BaseSprite(Sprite):
 
 
 class RandomlyAppearing(BaseSprite):
-    def __init__(self, display: "GameDisplay", motion_granter: MotionGranter):
-        super().__init__(display, motion_granter)
+    def __init__(self, display: "GameDisplay", collision_detector: CollisionDetector):
+        super().__init__(display, collision_detector)
         self.x = random.randrange(20, display.width - display.block_size - 10, 10)
         self.y = random.randrange(20, display.height - display.block_size - 10, 10)

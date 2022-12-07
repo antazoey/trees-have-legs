@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict
 
-import pygame
+import pygame  # type: ignore
 
 from pharcobial._types import Color, Coordinates
 from pharcobial.constants import DEFAULT_BLOCK_SIZE, NAME

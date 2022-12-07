@@ -68,7 +68,7 @@ class MotionRequest:
         return range(value - self.amount * multiplier, value + self.amount * multiplier)
 
 
-class MotionGranter:
+class CollisionDetector:
     def __init__(self, display: GameDisplay):
         self.display = display
 

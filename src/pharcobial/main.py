@@ -1,11 +1,11 @@
 from functools import cached_property
 from typing import List
 
-import pygame
+import pygame  # type: ignore
 
+from pharcobial.collision import CollisionDetector
 from pharcobial.display import GameDisplay
 from pharcobial.monster import Monster
-from pharcobial.motion import MotionGranter
 from pharcobial.player import Player
 
 
@@ -35,17 +35,18 @@ class Game:
 
     @cached_property
     def player(self) -> Player:
-        return Player(self.display, self.motion_granter)
+        return Player(self.display, self.collision_detector)
 
     @cached_property
     def monsters(self) -> List[Monster]:
         return [
-            Monster(self.display, self.motion_granter, index) for index in range(self.num_monsters)
+            Monster(self.display, self.collision_detector, index)
+            for index in range(self.num_monsters)
         ]
 
     @cached_property
-    def motion_granter(self) -> MotionGranter:
-        return MotionGranter(self.display)
+    def collision_detector(self) -> CollisionDetector:
+        return CollisionDetector(self.display)
 
     def main(self):
         self.display.clear()

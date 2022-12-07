@@ -4,24 +4,26 @@ from pharcobial._types import Coordinates
 from pharcobial.basesprite import RandomlyAppearing
 
 if TYPE_CHECKING:
+    from pharcobial.collision import CollisionDetector
     from pharcobial.display import GameDisplay
-    from pharcobial.motion import MotionGranter
 
 
 class Monster(RandomlyAppearing):
-    def __init__(self, display: "GameDisplay", motion_granter: "MotionGranter", monster_id: int):
-        super().__init__(display, motion_granter)
+    def __init__(
+        self, display: "GameDisplay", collision_detector: "CollisionDetector", monster_id: int
+    ):
+        super().__init__(display, collision_detector)
         self.monster_id = monster_id
         self.previous_coordinates: Coordinates | None = None
         self.speed = 0.2
 
     def draw(self):
-        #self.clear_previous_spot()
+        # self.clear_previous_spot()
         self.display.draw_image("bush-monster", self.coordinates)
         self.display.beacon.monsters[self.monster_id] = self.coordinates
 
     def move(self):
-        movement_length = self.display.block_size * self.speed
+        movement_length: int = round(self.display.block_size * self.speed)
 
         player = self.display.beacon.player
         if not player:
