@@ -37,10 +37,13 @@ class Player(BaseSprite):
     def moving(self) -> bool:
         return any(x for x in self.keys_down.values())
 
+    def get_sprite_id(self) -> str:
+        return "player"
+
     def draw(self):
         image_id = self._get_image_id()
         self.display.draw_image(image_id, self.coordinates)
-        self.display.beacon.player = self.coordinates
+        super().draw()
 
     def _get_image_id(self) -> str:
         suffix = (

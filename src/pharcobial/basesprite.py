@@ -1,4 +1,5 @@
 import random
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from pygame.sprite import Sprite  # type: ignore
@@ -9,6 +10,15 @@ from pharcobial.constants import DEFAULT_BLOCK_SIZE
 
 if TYPE_CHECKING:
     from pharcobial.display import GameDisplay
+
+
+class Beacon(dict):
+    """
+    A mappping of sprite IDs to coordinates.
+    """
+
+
+_beacon = Beacon(player=None)
 
 
 class BaseSprite(Sprite):
@@ -33,6 +43,19 @@ class BaseSprite(Sprite):
     def can_move(self) -> bool:
         request = MotionRequest(start_coordinates=self.coordinates, direction=self.facing)
         return self.collision_detector.can_move(request)
+
+    @property
+    def beacon_ref(self) -> Beacon:
+        return _beacon
+
+    @abstractmethod
+    def get_sprite_id(self) -> str:
+        """
+        Return a unique identifier for this sprite.
+        """
+
+    def draw(self):
+        _beacon[self.get_sprite_id()] = self.coordinates
 
     def clear_previous_spot(self):
         if self.previous_coordinates:

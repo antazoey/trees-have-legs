@@ -76,6 +76,3 @@ class CollisionDetector:
 
     def _is_in_bounds(self, request: MotionRequest) -> bool:
         return request.check_bounds(self.display.width, self.display.height)
-
-    def _is_clear_from_monsters(self, request: MotionRequest) -> bool:
-        return not any(request.check_proximity(m) for m in self.display.beacon.monsters.values())

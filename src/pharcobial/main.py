@@ -63,8 +63,10 @@ class Game:
 
     def draw(self):
         self.display.clear()
+
         for monster in self.monsters:
             monster.draw()
+
         self.player.draw()
 
 

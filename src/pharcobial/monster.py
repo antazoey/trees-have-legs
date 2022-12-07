@@ -17,10 +17,12 @@ class Monster(RandomlyAppearing):
         self.previous_coordinates: Coordinates | None = None
         self.speed = 0.2
 
+    def get_sprite_id(self) -> str:
+        return str(self.monster_id)
+
     def draw(self):
-        # self.clear_previous_spot()
         self.display.draw_image("bush-monster", self.coordinates)
-        self.display.beacon.monsters[self.monster_id] = self.coordinates
+        super().draw()
 
     def move(self):
         """
@@ -29,7 +31,7 @@ class Monster(RandomlyAppearing):
 
         movement_length: int = round(self.display.block_size * self.speed)
 
-        player = self.display.beacon.player
+        player = self.beacon_ref["player"]
         if not player:
             return
 
