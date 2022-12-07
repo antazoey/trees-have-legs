@@ -55,11 +55,19 @@ class Player(BaseSprite):
             assert match  # For mypy
             return match.groups()[0]
 
-        suffix = (
-            Direction.LEFT.value
-            if self.keys_down[Direction.LEFT] or self.keys_down[Direction.UP]
-            else Direction.RIGHT.value
-        )
+        # NOTE: Always handle LEFT / RIGHT before UP / DOWN
+        # to prevent walking backwards for combos like UP + RIGHT
+        if self.keys_down[Direction.LEFT]:
+            suffix = Direction.LEFT.value
+        elif self.keys_down[Direction.RIGHT]:
+            suffix = Direction.RIGHT.value
+        elif self.keys_down[Direction.UP]:
+            suffix = Direction.LEFT.value
+        elif self.keys_down[Direction.DOWN]:
+            suffix = Direction.RIGHT.value
+        else:
+            suffix = Direction.LEFT.value
+
         self.move_image_id += 1
         frame_rate = round(self.speed * self.display.block_size)
         if self.move_image_id in range(frame_rate):
