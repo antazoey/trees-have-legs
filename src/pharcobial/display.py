@@ -30,7 +30,7 @@ class GameDisplay:
         self.width = width
         self.height = height
         self.block_size = block_size
-        self.screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF)
+        self.screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.FULLSCREEN)
         self.font = pygame.font.SysFont("comic-sans", font_size)
         pygame.display.set_caption(NAME)
 

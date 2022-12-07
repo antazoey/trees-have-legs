@@ -37,6 +37,10 @@ class Game:
         self.running = True
         while self.running:
             self.handle_events()
+            if not self.running:
+                # Exit early if event triggered end-of-game
+                break
+
             self.update_sprites()
             self.draw_sprites()
             pygame.display.update()
