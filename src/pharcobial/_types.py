@@ -1,10 +1,10 @@
-from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum
 from typing import Tuple
 
+from pygame.rect import Rect  # type: ignore
+
 Color = Tuple[int, int, int]
-Coordinates = namedtuple("Coordinates", ("x", "y"))
 
 
 class Direction(Enum):
@@ -17,7 +17,7 @@ class Direction(Enum):
 @dataclass
 class DrawInfo:
     image_id: str
-    coordinates: Coordinates
+    rect: Rect
     orientation: Direction | None = None
 
 

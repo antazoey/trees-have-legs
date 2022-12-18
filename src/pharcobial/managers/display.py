@@ -2,9 +2,10 @@ from contextlib import contextmanager
 from typing import Dict
 
 import pygame  # type: ignore
+from pygame.rect import Rect  # type: ignore
 from pygame.surface import Surface  # type: ignore
 
-from pharcobial._types import Color, Coordinates, DrawInfo
+from pharcobial._types import Color, DrawInfo
 from pharcobial.constants import NAME
 
 from .base import BaseManager
@@ -52,9 +53,9 @@ class Display:
         self.window.blit(screen, (0, 0))
         pygame.display.update()
 
-    def draw_surface(self, surface: Surface, coordinates: Coordinates | None = None):
-        coordinates = coordinates or Coordinates(x=0, y=0)
-        self.screen.blit(surface, coordinates)
+    def draw_surface(self, surface: Surface, rect: Rect | None = None):
+        rect = rect or Rect(0, 0, self.width, self.height)
+        self.screen.blit(surface, rect)
         pygame.display.flip()
 
     def clear(self):
@@ -89,7 +90,7 @@ class DisplayManager(BaseManager):
 
     def draw_sprite(self, draw_info: DrawInfo):
         image = self.images.get(draw_info.image_id, orientation=draw_info.orientation)
-        return self.active.draw_surface(image, coordinates=draw_info.coordinates)
+        return self.active.draw_surface(image, rect=draw_info.rect)
 
 
 display_manager = DisplayManager()

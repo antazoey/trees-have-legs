@@ -3,7 +3,6 @@ from enum import Enum
 from pygame.surface import Surface  # type: ignore
 
 from pharcobial.constants import BLOCK_SIZE
-from pharcobial._types import Coordinates
 
 from .base import BaseManager
 
@@ -34,7 +33,7 @@ class Map:
                 row.append(key)
 
             rows.append(row)
-        
+
         self.rows = rows
 
 
@@ -53,12 +52,9 @@ class MapManager(BaseManager):
         half_map_y = self.display.height // BLOCK_SIZE // 2
         start_x = player.x - half_map_x
         end_x = player.x + half_map_x
-        start_y = player.y  - half_map_y
+        start_y = player.y - half_map_y
         end_y = player.y + half_map_y
-        return [
-            r[start_x:end_x]
-            for r in self.active_map.rows[start_y:end_y]
-        ]
+        return [r[start_x:end_x] for r in self.active_map.rows[start_y:end_y]]
 
     def update(self):
         pass

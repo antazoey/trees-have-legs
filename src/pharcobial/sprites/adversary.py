@@ -15,7 +15,7 @@ class Adversary(BaseSprite):
         """
 
     def get_draw_info(self) -> DrawInfo:
-        return DrawInfo(image_id=self.get_image_id(), coordinates=self.coordinates)
+        return DrawInfo(image_id=self.get_image_id(), rect=self.coordinates)
 
 
 class BushMonster(Adversary):

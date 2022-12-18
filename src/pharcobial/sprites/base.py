@@ -1,9 +1,10 @@
 from abc import abstractmethod
 from typing import Dict
 
+from pygame.rect import Rect  # type: ignore
 from pygame.sprite import Sprite  # type: ignore
 
-from pharcobial._types import Coordinates, DrawInfo
+from pharcobial._types import DrawInfo
 from pharcobial.constants import BLOCK_SIZE
 
 
@@ -16,8 +17,8 @@ class BaseSprite(Sprite):
     uses_events: bool = False
 
     @property
-    def coordinates(self) -> Coordinates:
-        return Coordinates(self.x, self.y)
+    def coordinates(self) -> Rect:
+        return Rect(self.x, self.y, 32, 32)
 
     @property
     def sprite_map(self) -> Dict:

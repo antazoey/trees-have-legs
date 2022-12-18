@@ -38,7 +38,7 @@ class Player(BaseSprite):
     def get_draw_info(self) -> DrawInfo:
         return DrawInfo(
             image_id=self._get_image_id(),
-            coordinates=self.coordinates,
+            rect=self.coordinates,
             orientation=self.orientation,
         )
 
