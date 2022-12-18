@@ -44,13 +44,13 @@ class BushMonster(Adversary):
         new_left = self.rect.left
         new_top = self.rect.top
 
-        # Handle x
+        # Handle left
         if player.rect.left > self.rect.left:
             new_left = self.rect.left + min(self.movement_length, player.rect.left - self.rect.left)
         elif player.rect.left < self.rect.left:
             new_left = self.rect.left - min(self.movement_length, self.rect.left - player.rect.left)
 
-        # Handle y
+        # Handle top
         if player.rect.top > self.rect.top:
             new_top = self.rect.top + min(self.movement_length, player.rect.top - self.rect.top)
         elif player.rect.top < self.rect.top:
