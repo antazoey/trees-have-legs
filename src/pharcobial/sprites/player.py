@@ -92,7 +92,7 @@ class Player(BaseSprite):
         elif self.keys_down[Direction.DOWN]:
             self.orientation = Direction.RIGHT
 
-    def update(self):
+    def update(self, *args, **kwargs):
         if not self.moving:
             return
 

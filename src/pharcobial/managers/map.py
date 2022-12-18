@@ -60,14 +60,14 @@ class MapManager(BaseManager):
         pass
 
     def draw(self):
-        map = Surface((self.display.width, self.display.height))
+        sprite_map = Surface((self.display.width, self.display.height))
         cells = self.get_visible_cells()
         for y_index, row in enumerate(cells):
             for x_index, tile in enumerate(row):
                 image = self.graphics[tile.value]
-                map.blit(image, (x_index * BLOCK_SIZE, y_index * BLOCK_SIZE))
+                sprite_map.blit(image, (x_index * BLOCK_SIZE, y_index * BLOCK_SIZE))
 
-        self.display.active.draw_surface(map)
+        self.display.active.draw_surface(sprite_map)
 
 
 map_manager = MapManager()

@@ -35,13 +35,6 @@ class BaseSprite(Sprite):
         Return a unique identifier for this sprite.
         """
 
-    @abstractmethod
-    def update(self):
-        """
-        Update properites on the sprite. This gets called after
-        event handling.
-        """
-
     def handle_event(self, event):
         """
         Handle events from pygame.

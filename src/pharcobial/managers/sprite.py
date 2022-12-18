@@ -2,12 +2,13 @@ import random
 from functools import cached_property
 from typing import List
 
+from pygame.sprite import Group  # type: ignore
+
 from pharcobial.constants import BLOCK_SIZE
+from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.adversary import Adversary, BushMonster
 from pharcobial.sprites.base import BaseSprite
 from pharcobial.sprites.player import Player
-
-from .base import BaseManager
 
 
 class SpriteManager(BaseManager):
@@ -24,6 +25,9 @@ class SpriteManager(BaseManager):
         ]
 
         self.sprite_map = {s.get_sprite_id(): s for s in sprites}
+        self.sprite_group = Group()
+        for sprite in sprites:
+            self.sprite_group.add(sprite)
 
     @cached_property
     def player(self) -> Player:
@@ -37,6 +41,9 @@ class SpriteManager(BaseManager):
 
     def __getitem__(self, key: str) -> BaseSprite:
         return self.sprite_map[key]
+    
+    def __iter__(self):
+        yield from self.sprite_group.sprites()
 
     def create_adversary(self, type_key: str, **kwargs) -> Adversary:
         if type_key == "bush-monster":
@@ -49,12 +56,11 @@ class SpriteManager(BaseManager):
             raise TypeError(f"Unsupported adversary type '{type_key}'.")
 
     def handle_event(self, event):
-        for sprite in [e for e in self.sprite_map.values() if e.uses_events]:
+        for sprite in [s for s in self if s.uses_events]:
             sprite.handle_event(event)
 
     def update(self):
-        for sprite in self.sprite_map.values():
-            sprite.update()
+        self.sprite_group.update()
 
     def draw(self):
         for sprite in self.sprite_map.values():

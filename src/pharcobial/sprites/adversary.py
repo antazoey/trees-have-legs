@@ -34,7 +34,7 @@ class BushMonster(Adversary):
     def get_sprite_id(self) -> str:
         return str(self.monster_id)
 
-    def update(self):
+    def update(self, *args, **kwargs):
         """
         The monster is always moving towards the player.
         """
