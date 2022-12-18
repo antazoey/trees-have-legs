@@ -90,7 +90,10 @@ class DisplayManager(BaseManager):
 
     def draw_sprite(self, draw_info: DrawInfo):
         image = self.graphics.get(draw_info.gfx_id, orientation=draw_info.orientation)
-        return self.active.draw_surface(image, rect=draw_info.rect)
+        if not image:
+            raise ValueError("Unable to draw image.")
+
+        self.active.draw_surface(image, rect=draw_info.rect)
 
 
 display_manager = DisplayManager()

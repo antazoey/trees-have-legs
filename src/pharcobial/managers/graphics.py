@@ -11,35 +11,46 @@ from .base import BaseManager
 
 class GraphicsManager(BaseManager):
     base_path = Path(__file__).parent.parent.parent.parent / "gfx"
-    image_cache: Dict = {}
+    gfx_cache: Dict = {}
 
-    def __getitem__(self, gfx_id: str):
-        return self.get(gfx_id)
+    def __getitem__(self, gfx_id: str) -> Surface:
+        gfx = self.get(gfx_id)
+        if not gfx:
+            raise IndexError(f"Graphics with ID '{gfx_id}' not found.")
 
-    def get(self, gfx_id: str, orientation: Direction | None = None) -> Surface:
+        return gfx
+
+    def get(self, gfx_id: str, orientation: Direction | None = None) -> Surface | None:
         if orientation == Direction.RIGHT:
             # Handle the case where we need to flip the image vertically.
-            image_cache_id = f"{gfx_id}-{Direction.RIGHT.value}"
-            if image_cache_id in self.image_cache:
-                return self.image_cache[image_cache_id]
+            gfx_cache_id = f"{gfx_id}-{Direction.RIGHT.value}"
+            if gfx_cache_id in self.gfx_cache:
+                return self.gfx_cache[gfx_cache_id]
 
-            image = self.get(gfx_id)
-            image = pygame.transform.flip(image, True, False)
-            self.image_cache[image_cache_id] = image
-            return image
+            gfx = self.get(gfx_id)
+            if not gfx:
+                return None
 
-        elif gfx_id in self.image_cache:
-            return self.image_cache[gfx_id]
+            gfx = pygame.transform.flip(gfx, True, False)
+            self.gfx_cache[gfx_cache_id] = gfx
+            return gfx
 
-        image = self.load(gfx_id)
-        self.image_cache[gfx_id] = image
-        return image
+        elif gfx_id in self.gfx_cache:
+            return self.gfx_cache[gfx_id]
 
-    def load(self, gfx_id: str):
+        try:
+            gfx = self.load(gfx_id)
+        except Exception:
+            return None
+
+        self.gfx_cache[gfx_id] = gfx
+        return gfx
+
+    def load(self, gfx_id: str) -> Surface:
         path = self.base_path / f"{gfx_id}.png"
-        image = pygame.image.load(str(path))
-        image.convert_alpha()  # Allows transparency
-        return image
+        gfx = pygame.image.load(str(path))
+        gfx.convert_alpha()  # Allows transparency
+        return gfx
 
 
 graphics_manager = GraphicsManager()
