@@ -7,14 +7,17 @@ from .base import BaseManager
 
 class EventManager(BaseManager):
     def process_next(self) -> GameAction:
-        for event in pygame.event.get():
+        """
+        Allow an event to affect how sprites update.
+        Event processing happens before sprites updating.
+        """
 
+        for event in pygame.event.get():
             # Handle exiting game
             escape_key_pressed = event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
             if event.type == pygame.QUIT or escape_key_pressed:
                 return GameAction.QUIT
 
-            # Allow sprites to update
             self.sprites.handle_event(event)
 
         return GameAction.CONTINUE

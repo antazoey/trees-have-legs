@@ -19,6 +19,7 @@ class Game(BaseManager):
                 self.running = False
                 break
 
+            # Update everything here.
             self.map.update()
             self.sprites.update()
 
