@@ -1,6 +1,6 @@
 import random
 from functools import cached_property
-from typing import List
+from typing import Dict, List
 
 from pygame.sprite import Group  # type: ignore
 
@@ -24,10 +24,12 @@ class SpriteManager(BaseManager):
             ],
         ]
 
-        self.sprite_map = {s.get_sprite_id(): s for s in sprites}
         self.sprite_group = Group()
         for sprite in sprites:
             self.sprite_group.add(sprite)
+
+        # To facilitate faster look-up
+        self._sprite_map: Dict[str, BaseSprite] = {}
 
     @cached_property
     def player(self) -> Player:
@@ -40,8 +42,21 @@ class SpriteManager(BaseManager):
         return character
 
     def __getitem__(self, key: str) -> BaseSprite:
-        return self.sprite_map[key]
-    
+        if key in self._sprite_map:
+            return self._sprite_map[key]
+
+        # Brute force find it and cache it
+        for sprite in self:
+            sprite_id = sprite.get_sprite_id()
+
+            if sprite_id == key:
+                # This sprite is likely request often.
+                # Cache for faster look-up next time.
+                self._sprite_map[sprite_id] = sprite
+                return sprite
+
+        raise IndexError(f"Sprite with ID '{key}' not found.")
+
     def __iter__(self):
         yield from self.sprite_group.sprites()
 
@@ -60,10 +75,10 @@ class SpriteManager(BaseManager):
             sprite.handle_event(event)
 
     def update(self):
-        self.sprite_group.update()
+        self.sprite_group.update(player=self.player)
 
     def draw(self):
-        for sprite in self.sprite_map.values():
+        for sprite in self:
             draw_info = sprite.get_draw_info()
             self.display.draw_sprite(draw_info)
 

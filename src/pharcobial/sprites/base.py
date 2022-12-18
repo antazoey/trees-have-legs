@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Dict
 
 from pygame.rect import Rect  # type: ignore
 from pygame.sprite import Sprite  # type: ignore
@@ -19,15 +18,6 @@ class BaseSprite(Sprite):
     @property
     def coordinates(self) -> Rect:
         return Rect(self.x, self.y, 32, 32)
-
-    @property
-    def sprite_map(self) -> Dict:
-        """
-        Hack to allow sprites to know about each other.
-        """
-        from pharcobial.managers.sprite import sprite_manager
-
-        return sprite_manager.sprite_map
 
     @abstractmethod
     def get_sprite_id(self) -> str:

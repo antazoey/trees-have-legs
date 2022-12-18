@@ -39,7 +39,7 @@ class BushMonster(Adversary):
         The monster is always moving towards the player.
         """
 
-        player = self.sprite_map["player"]
+        player = kwargs["player"]
 
         new_x = self.x
         new_y = self.y
