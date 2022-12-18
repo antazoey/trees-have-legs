@@ -1,5 +1,7 @@
 from enum import Enum
+from typing import Dict
 
+from pygame.sprite import Group  # type: ignore
 from pygame.surface import Surface  # type: ignore
 
 from pharcobial.constants import BLOCK_SIZE
@@ -12,8 +14,14 @@ class Key(Enum):
     ROAD = "road"
 
 
-class Map:
+class BaseMap:
+    def __init__(self, map_id: str) -> None:
+        self.map_id = map_id
+
+
+class Map(BaseMap):
     def __init__(self, width: int = 1000, height: int = 1000) -> None:
+        super().__init__("main")
         self.width = width  # Blocks
         self.height = height  # Blocks
         self.rows = []
@@ -36,6 +44,9 @@ class Map:
 
         self.rows = rows
 
+    def __iter__(self):
+        yield from self.rows
+
 
 class MapManager(BaseManager):
     active_map = Map()
@@ -45,6 +56,16 @@ class MapManager(BaseManager):
     The pointer to the top left corner of the section of the map
     that is visible.
     """
+
+    _group_cache: Dict[str, Group] = {}
+
+    @property
+    def group(self) -> Group:
+        if self.active_map.map_id in self._group_cache:
+            return self._group_cache[self.active_map.map_id]
+
+        # TODO
+        return Group()
 
     def get_visible_cells(self):
         player = self.sprites.player.coordinates
