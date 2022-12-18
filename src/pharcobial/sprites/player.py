@@ -28,7 +28,18 @@ class Player(BaseSprite):
 
     @property
     def moving(self) -> bool:
-        return any(x for x in self.keys_down.values())
+        for direction in [d for d, v in self.keys_down.items() if v]:
+            # Ensure opposite direction isn't canceling out.
+            if direction == Direction.LEFT:
+                return not self.keys_down[Direction.RIGHT]
+            elif direction == Direction.RIGHT:
+                return not self.keys_down[Direction.LEFT]
+            elif direction == Direction.UP:
+                return not self.keys_down[Direction.DOWN]
+            elif direction == Direction.DOWN:
+                return not self.keys_down[Direction.UP]
+
+        return False
 
     def get_sprite_id(self) -> str:
         return "player"
