@@ -16,7 +16,7 @@ class Direction(Enum):
 
 @dataclass
 class DrawInfo:
-    image_id: str
+    gfx_id: str
     rect: Rect
     orientation: Direction | None = None
 

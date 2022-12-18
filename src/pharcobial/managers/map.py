@@ -64,7 +64,7 @@ class MapManager(BaseManager):
         cells = self.get_visible_cells()
         for y_index, row in enumerate(cells):
             for x_index, tile in enumerate(row):
-                image = self.images[tile.value]
+                image = self.graphics[tile.value]
                 map.blit(image, (x_index * BLOCK_SIZE, y_index * BLOCK_SIZE))
 
         self.display.active.draw_surface(map)

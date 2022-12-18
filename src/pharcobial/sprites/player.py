@@ -13,11 +13,11 @@ class Player(BaseSprite):
     def __init__(self, character: str = "pharma"):
         super().__init__()
         self.character = character
-        self.move_image_id: int = -1
+        self.move_gfx_id: int = -1
         self.speed = 0.24
         self.movement_x = 0
         self.movement_y = 0
-        self.active_image_id: str | None = None
+        self.active_gfx_id: str | None = None
         self.uses_events: bool = True
         self.orientation: Direction = Direction.LEFT
 
@@ -37,28 +37,28 @@ class Player(BaseSprite):
 
     def get_draw_info(self) -> DrawInfo:
         return DrawInfo(
-            image_id=self._get_image_id(),
+            gfx_id=self._get_gfx_id(),
             rect=self.coordinates,
             orientation=self.orientation,
         )
 
-    def _get_image_id(self) -> str:
-        if not self.moving and self.active_image_id is not None:
+    def _get_gfx_id(self) -> str:
+        if not self.moving and self.active_gfx_id is not None:
             # Return a standing-still image of the last direction facing.
             return self.character
 
-        self.move_image_id += 1
+        self.move_gfx_id += 1
         frame_rate = round(self.speed * BLOCK_SIZE)
-        if self.move_image_id in range(frame_rate):
+        if self.move_gfx_id in range(frame_rate):
             suffix = "-walk-1"
-        elif self.move_image_id in range(frame_rate, frame_rate * 2 + 1):
+        elif self.move_gfx_id in range(frame_rate, frame_rate * 2 + 1):
             suffix = "-walk-2"
         else:
             suffix = ""
-            self.move_image_id = -1
+            self.move_gfx_id = -1
 
-        self.active_image_id = f"{self.character}{suffix}"
-        return self.active_image_id
+        self.active_gfx_id = f"{self.character}{suffix}"
+        return self.active_gfx_id
 
     def handle_event(self, event):
         """

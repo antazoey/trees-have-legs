@@ -13,7 +13,7 @@ from .base import BaseManager
 
 class Display:
     """
-    A class used for displaying text or images on the actual screen.
+    A class used for displaying text or graphics on the actual screen.
     """
 
     RGB: Dict[str, Color] = {
@@ -39,7 +39,7 @@ class Display:
         # besides self.screen.
         self.window = pygame.display.set_mode((width, height), modes)
 
-        # self.screen is scaled up to the window size to properly increase the size of all images.
+        # self.screen is scaled up to the window size to properly increase the size of all graphics.
         self.width = width // 2
         self.height = height // 2
         self.screen = pygame.Surface((self.width, self.height))
@@ -89,7 +89,7 @@ class DisplayManager(BaseManager):
         self.clock.tick()
 
     def draw_sprite(self, draw_info: DrawInfo):
-        image = self.images.get(draw_info.image_id, orientation=draw_info.orientation)
+        image = self.graphics.get(draw_info.gfx_id, orientation=draw_info.orientation)
         return self.active.draw_surface(image, rect=draw_info.rect)
 
 

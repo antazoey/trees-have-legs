@@ -9,13 +9,13 @@ from .base import BaseSprite
 
 class Adversary(BaseSprite):
     @abstractmethod
-    def get_image_id(self) -> str:
+    def get_gfx_id(self) -> str:
         """
         Determines the image used for the adversary.
         """
 
     def get_draw_info(self) -> DrawInfo:
-        return DrawInfo(image_id=self.get_image_id(), rect=self.coordinates)
+        return DrawInfo(gfx_id=self.get_gfx_id(), rect=self.coordinates)
 
 
 class BushMonster(Adversary):
@@ -28,7 +28,7 @@ class BushMonster(Adversary):
     def movement_length(self) -> int:
         return round(BLOCK_SIZE * self.speed)
 
-    def get_image_id(self) -> str:
+    def get_gfx_id(self) -> str:
         return "bush-monster"
 
     def get_sprite_id(self) -> str:
