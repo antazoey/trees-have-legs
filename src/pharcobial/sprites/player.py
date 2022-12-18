@@ -15,8 +15,6 @@ class Player(BaseSprite):
         self.character = character
         self.move_gfx_id: int = -1
         self.speed = 0.24
-        self.movement_left = 0
-        self.movement_top = 0
         self.active_gfx_id: str | None = None
         self.uses_events: bool = True
         self.orientation: Direction = Direction.LEFT
@@ -96,22 +94,20 @@ class Player(BaseSprite):
         if not self.moving:
             return
 
-        movement_length = BLOCK_SIZE * self.speed
+        length = BLOCK_SIZE * self.speed
+        left = 0
+        top = 0
 
         # Update potential movement
         if self.keys_down[Direction.LEFT]:
-            self.movement_left -= 1
+            left -= 1
         if self.keys_down[Direction.RIGHT]:
-            self.movement_left += 1
+            left += 1
         if self.keys_down[Direction.UP]:
-            self.movement_top -= 1
+            top -= 1
         if self.keys_down[Direction.DOWN]:
-            self.movement_top += 1
+            top += 1
 
-        new_left = round(self.rect.left + self.movement_left * movement_length)
-        new_top = round(self.rect.top + self.movement_top * movement_length)
+        new_left = round(self.rect.left + left * length)
+        new_top = round(self.rect.top + top * length)
         self.move(new_left, new_top)
-
-        # Reset movement.
-        self.movement_left = 0
-        self.movement_top = 0
