@@ -22,7 +22,7 @@ class GraphicsManager(BaseManager):
 
     def get(self, gfx_id: str, orientation: Direction | None = None) -> Surface | None:
         if orientation == Direction.RIGHT:
-            # Handle the case where we need to flip the image vertically.
+            # Handle the case where we need to flip the graphic vertically.
             gfx_cache_id = f"{gfx_id}-{Direction.RIGHT.value}"
             if gfx_cache_id in self.gfx_cache:
                 return self.gfx_cache[gfx_cache_id]

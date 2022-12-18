@@ -44,7 +44,7 @@ class Player(BaseSprite):
 
     def _get_gfx_id(self) -> str:
         if not self.moving and self.active_gfx_id is not None:
-            # Return a standing-still image of the last direction facing.
+            # Return a standing-still graphic of the last direction facing.
             return self.character
 
         self.move_gfx_id += 1

@@ -89,11 +89,11 @@ class DisplayManager(BaseManager):
         self.clock.tick()
 
     def draw_sprite(self, draw_info: DrawInfo):
-        image = self.graphics.get(draw_info.gfx_id, orientation=draw_info.orientation)
-        if not image:
-            raise ValueError("Unable to draw image.")
+        gfx = self.graphics.get(draw_info.gfx_id, orientation=draw_info.orientation)
+        if not gfx:
+            raise ValueError("Unable to draw graphic.")
 
-        self.active.draw_surface(image, rect=draw_info.rect)
+        self.active.draw_surface(gfx, rect=draw_info.rect)
 
 
 display_manager = DisplayManager()

@@ -11,7 +11,7 @@ class Adversary(BaseSprite):
     @abstractmethod
     def get_gfx_id(self) -> str:
         """
-        Determines the image used for the adversary.
+        Determines the graphic used for the adversary.
         """
 
     def get_draw_info(self) -> DrawInfo:
