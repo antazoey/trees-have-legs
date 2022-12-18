@@ -29,7 +29,6 @@ class Player(BaseSprite):
     @property
     def moving(self) -> bool:
         for direction in [d for d, v in self.keys_down.items() if v]:
-            # Ensure opposite direction isn't canceling out.
             if direction == Direction.LEFT:
                 return not self.keys_down[Direction.RIGHT]
             elif direction == Direction.RIGHT:
