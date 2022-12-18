@@ -3,21 +3,39 @@ from enum import Enum
 from pygame.surface import Surface  # type: ignore
 
 from pharcobial.constants import BLOCK_SIZE
+from pharcobial._types import Coordinates
 
 from .base import BaseManager
 
 
 class Key(Enum):
     GRASS = "grass"
+    ROAD = "road"
 
 
 class Map:
-    def __init__(self, width: int = 1_000, height: int = 1_000) -> None:
+    def __init__(self, width: int = 1000, height: int = 1000) -> None:
         self.width = width  # Blocks
         self.height = height  # Blocks
+        self.rows = []
 
-        # TODO: Add more tiles besides grass.
-        self.rows = [[Key.GRASS for _ in range(self.width)] for _ in range(self.height)]
+        # Create full map (not just what is displayed)
+        rows = []
+        for y in range(self.width):
+            row = []
+
+            for x in range(self.height):
+
+                if x == 300:
+                    key = Key.ROAD
+                else:
+                    key = Key.GRASS
+
+                row.append(key)
+
+            rows.append(row)
+        
+        self.rows = rows
 
 
 class MapManager(BaseManager):
@@ -30,13 +48,19 @@ class MapManager(BaseManager):
     """
 
     def get_visible_cells(self):
+        player = self.sprites.player.coordinates
+        half_map_x = self.display.width // BLOCK_SIZE // 2
+        half_map_y = self.display.height // BLOCK_SIZE // 2
+        start_x = player.x - half_map_x
+        end_x = player.x + half_map_x
+        start_y = player.y  - half_map_y
+        end_y = player.y + half_map_y
         return [
-            r[: self.display.width // BLOCK_SIZE]
-            for r in self.active_map.rows[: self.display.height // BLOCK_SIZE]
+            r[start_x:end_x]
+            for r in self.active_map.rows[start_y:end_y]
         ]
 
     def update(self):
-        # TODO
         pass
 
     def draw(self):
