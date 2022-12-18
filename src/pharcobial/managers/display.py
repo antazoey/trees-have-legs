@@ -57,10 +57,6 @@ class Display:
         self.screen.blit(surface, coordinates)
         pygame.display.flip()
 
-    def draw_text(self, msg: str, color: str, x: int, y: int):
-        text = self.font.render(msg, True, self.RGB[color])
-        self.screen.blit(text, [x, y])
-
     def clear(self):
         self.screen.fill(self.RGB["white"])
 
