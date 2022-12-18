@@ -15,7 +15,7 @@ class Adversary(BaseSprite):
         """
 
     def get_draw_info(self) -> DrawInfo:
-        return DrawInfo(gfx_id=self.get_gfx_id(), rect=self.coordinates)
+        return DrawInfo(gfx_id=self.get_gfx_id(), rect=self.rect)
 
 
 class BushMonster(Adversary):
@@ -41,20 +41,19 @@ class BushMonster(Adversary):
 
         player = kwargs["player"]
 
-        new_x = self.x
-        new_y = self.y
+        new_left = self.rect.left
+        new_top = self.rect.top
 
         # Handle x
-        if player.x > self.x:
-            new_x = self.x + min(self.movement_length, player.x - self.x)
-        elif player.x < self.x:
-            new_x = self.x - min(self.movement_length, self.x - player.x)
+        if player.rect.left > self.rect.left:
+            new_left = self.rect.left + min(self.movement_length, player.rect.left - self.rect.left)
+        elif player.rect.left < self.rect.left:
+            new_left = self.rect.left - min(self.movement_length, self.rect.left - player.rect.left)
 
         # Handle y
-        if player.y > self.y:
-            new_y = self.y + min(self.movement_length, player.y - self.y)
-        elif player.y < self.y:
-            new_y = self.y - min(self.movement_length, self.y - player.y)
+        if player.rect.top > self.rect.top:
+            new_top = self.rect.top + min(self.movement_length, player.rect.top - self.rect.top)
+        elif player.rect.top < self.rect.top:
+            new_top = self.rect.top - min(self.movement_length, self.rect.top - player.rect.top)
 
-        self.x = new_x
-        self.y = new_y
+        self.move(new_left, new_top)

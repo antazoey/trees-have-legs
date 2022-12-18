@@ -8,16 +8,9 @@ from pharcobial.constants import BLOCK_SIZE
 
 
 class BaseSprite(Sprite):
-    x: int = 0
-    y: int = 0
-    height: int = BLOCK_SIZE
-    width: int = BLOCK_SIZE
     speed: float = 0
     uses_events: bool = False
-
-    @property
-    def coordinates(self) -> Rect:
-        return Rect(self.x, self.y, 32, 32)
+    rect = Rect(0, 0, BLOCK_SIZE, BLOCK_SIZE)
 
     @abstractmethod
     def get_sprite_id(self) -> str:
@@ -37,3 +30,6 @@ class BaseSprite(Sprite):
         """
         This base method should be called in the subclass overriden method.
         """
+
+    def move(self, left: int, top: int):
+        self.rect = Rect(left, top, BLOCK_SIZE, BLOCK_SIZE)
