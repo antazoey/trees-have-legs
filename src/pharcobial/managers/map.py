@@ -51,12 +51,6 @@ class Map(BaseMap):
 class MapManager(BaseManager):
     active_map = Map()
 
-    pointer: int = 0
-    """
-    The pointer to the top left corner of the section of the map
-    that is visible.
-    """
-
     _group_cache: Dict[str, Group] = {}
 
     @property
@@ -69,13 +63,13 @@ class MapManager(BaseManager):
 
     def get_visible_cells(self):
         player = self.sprites.player.rect
-        half_map_left = self.display.width // BLOCK_SIZE // 2
-        half_map_top = self.display.height // BLOCK_SIZE // 2
-        start_left = player.left - half_map_left
-        end_left = player.left + half_map_left
-        start_top = player.top - half_map_top
-        end_top = player.top + half_map_top
-        return [r[start_left:end_left] for r in self.active_map.rows[start_top:end_top]]
+        half_map_x = self.display.width // BLOCK_SIZE // 2
+        half_map_y = self.display.height // BLOCK_SIZE // 2
+        start_x = player.x - half_map_x
+        end_x = player.x + half_map_x
+        start_y = player.y - half_map_y
+        end_y = player.y + half_map_y
+        return [r[start_x:end_x] for r in self.active_map.rows[start_y:end_y]]
 
     def update(self):
         pass
@@ -85,6 +79,7 @@ class MapManager(BaseManager):
         cells = self.get_visible_cells()
         for y_index, row in enumerate(cells):
             for x_index, tile in enumerate(row):
+
                 gfx = self.graphics[tile.value]
                 sprite_map.blit(gfx, (x_index * BLOCK_SIZE, y_index * BLOCK_SIZE))
 

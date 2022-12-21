@@ -5,7 +5,7 @@ import pygame  # type: ignore
 from pygame.rect import Rect  # type: ignore
 from pygame.surface import Surface  # type: ignore
 
-from pharcobial._types import Color, DrawInfo
+from pharcobial._types import Color
 from pharcobial.constants import NAME
 
 from .base import BaseManager
@@ -87,13 +87,6 @@ class DisplayManager(BaseManager):
         yield
         self.display.active.update()
         self.clock.tick()
-
-    def draw_sprite(self, draw_info: DrawInfo):
-        gfx = self.graphics.get(draw_info.gfx_id, orientation=draw_info.orientation)
-        if not gfx:
-            raise ValueError("Unable to draw graphic.")
-
-        self.active.draw_surface(gfx, rect=draw_info.rect)
 
 
 display_manager = DisplayManager()

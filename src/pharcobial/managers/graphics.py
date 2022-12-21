@@ -4,7 +4,7 @@ from typing import Dict
 import pygame  # type: ignore
 from pygame.surface import Surface  # type: ignore
 
-from pharcobial._types import Direction
+from pharcobial._types import Orientation
 
 from .base import BaseManager
 
@@ -20,10 +20,10 @@ class GraphicsManager(BaseManager):
 
         return gfx
 
-    def get(self, gfx_id: str, orientation: Direction | None = None) -> Surface | None:
-        if orientation == Direction.RIGHT:
+    def get(self, gfx_id: str, orientation: Orientation | None = None) -> Surface | None:
+        if orientation == Orientation.RIGHT:
             # Handle the case where we need to flip the graphic vertically.
-            gfx_cache_id = f"{gfx_id}-{Direction.RIGHT.value}"
+            gfx_cache_id = f"{gfx_id}-{Orientation.RIGHT.value}"
             if gfx_cache_id in self.gfx_cache:
                 return self.gfx_cache[gfx_cache_id]
 

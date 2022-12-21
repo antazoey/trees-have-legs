@@ -33,13 +33,9 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def player(self) -> Player:
-        character = Player()
-
-        # Put in middle of screen
-        character.rect.left = self.display.width // 2
-        character.rect.top = self.display.height // 2
-
-        return character
+        start_x = self.display.width // 2
+        start_y = self.display.height // 2
+        return Player(start_x, start_y)
 
     def __getitem__(self, key: str) -> BaseSprite:
         if key in self._sprite_map:
@@ -63,8 +59,8 @@ class SpriteManager(BaseManager):
     def create_adversary(self, type_key: str, **kwargs) -> Adversary:
         if type_key == "bush-monster":
             monster = BushMonster(**kwargs)
-            monster.rect.left = random.randrange(20, self.display.width - BLOCK_SIZE - 10, 10)
-            monster.rect.top = random.randrange(20, self.display.height - BLOCK_SIZE - 10, 10)
+            monster.rect.x = random.randrange(20, self.display.width - BLOCK_SIZE - 10, 10)
+            monster.rect.y = random.randrange(20, self.display.height - BLOCK_SIZE - 10, 10)
             return monster
 
         else:
@@ -78,9 +74,7 @@ class SpriteManager(BaseManager):
         self.sprite_group.update(player=self.player)
 
     def draw(self):
-        for sprite in self:
-            draw_info = sprite.get_draw_info()
-            self.display.draw_sprite(draw_info)
+        self.sprite_group.draw(self.display.active.screen)
 
 
 sprite_manager = SpriteManager()

@@ -1,7 +1,8 @@
 import pygame  # type: ignore
 
-from pharcobial._types import Direction, DrawInfo
+from pharcobial._types import Orientation
 from pharcobial.constants import BLOCK_SIZE
+from pharcobial.managers.graphics import graphics_manager
 from pharcobial.sprites.base import BaseSprite
 
 
@@ -10,48 +11,45 @@ class Player(BaseSprite):
     The main character.
     """
 
-    def __init__(self, character: str = "pharma"):
+    def __init__(self, init_x: int, init_y: int, character: str = "pharma"):
         super().__init__()
         self.character = character
         self.move_gfx_id: int = -1
         self.speed = 0.24
-        self.active_gfx_id: str | None = None
         self.uses_events: bool = True
-        self.orientation: Direction = Direction.LEFT
+        self.orientation: Orientation = Orientation.LEFT
 
         self.keys_down = {
-            Direction.LEFT: False,
-            Direction.RIGHT: False,
-            Direction.UP: False,
-            Direction.DOWN: False,
+            Orientation.LEFT: False,
+            Orientation.RIGHT: False,
+            Orientation.UP: False,
+            Orientation.DOWN: False,
         }
+
+        self.image = graphics_manager[self.character]
+        self.rect = self.image.get_rect()
+        self.rect.x = init_x
+        self.rect.y = init_y
 
     @property
     def moving(self) -> bool:
-        for direction in [d for d, v in self.keys_down.items() if v]:
-            if direction == Direction.LEFT:
-                return not self.keys_down[Direction.RIGHT]
-            elif direction == Direction.RIGHT:
-                return not self.keys_down[Direction.LEFT]
-            elif direction == Direction.UP:
-                return not self.keys_down[Direction.DOWN]
-            elif direction == Direction.DOWN:
-                return not self.keys_down[Direction.UP]
+        for orientation in [d for d, v in self.keys_down.items() if v]:
+            if orientation == Orientation.LEFT:
+                return not self.keys_down[Orientation.RIGHT]
+            elif orientation == Orientation.RIGHT:
+                return not self.keys_down[Orientation.LEFT]
+            elif orientation == Orientation.UP:
+                return not self.keys_down[Orientation.DOWN]
+            elif orientation == Orientation.DOWN:
+                return not self.keys_down[Orientation.UP]
 
         return False
 
     def get_sprite_id(self) -> str:
         return "player"
 
-    def get_draw_info(self) -> DrawInfo:
-        return DrawInfo(
-            gfx_id=self._get_gfx_id(),
-            rect=self.rect,
-            orientation=self.orientation,
-        )
-
-    def _get_gfx_id(self) -> str:
-        if not self.moving and self.active_gfx_id is not None:
+    def get_gfx_id(self) -> str:
+        if not self.moving:
             # Return a standing-still graphic of the last direction facing.
             return self.character
 
@@ -65,8 +63,7 @@ class Player(BaseSprite):
             suffix = ""
             self.move_gfx_id = -1
 
-        self.active_gfx_id = f"{self.character}{suffix}"
-        return self.active_gfx_id
+        return f"{self.character}{suffix}"
 
     def handle_event(self, event):
         """
@@ -76,10 +73,10 @@ class Player(BaseSprite):
         every game loop.
         """
         key_map = {
-            pygame.K_LEFT: Direction.LEFT,
-            pygame.K_RIGHT: Direction.RIGHT,
-            pygame.K_UP: Direction.UP,
-            pygame.K_DOWN: Direction.DOWN,
+            pygame.K_LEFT: Orientation.LEFT,
+            pygame.K_RIGHT: Orientation.RIGHT,
+            pygame.K_UP: Orientation.UP,
+            pygame.K_DOWN: Orientation.DOWN,
         }
         if event.type == pygame.KEYDOWN and event.key in key_map:
             # Start moving
@@ -91,33 +88,41 @@ class Player(BaseSprite):
 
         # NOTE: Always handle LEFT / RIGHT before UP / DOWN
         # to prevent walking backwards for combos like UP + RIGHT
-        if self.keys_down[Direction.LEFT]:
-            self.orientation = Direction.LEFT
-        elif self.keys_down[Direction.RIGHT]:
-            self.orientation = Direction.RIGHT
-        elif self.keys_down[Direction.UP]:
-            self.orientation = Direction.LEFT
-        elif self.keys_down[Direction.DOWN]:
-            self.orientation = Direction.RIGHT
+        if self.keys_down[Orientation.LEFT]:
+            self.orientation = Orientation.LEFT
+        elif self.keys_down[Orientation.RIGHT]:
+            self.orientation = Orientation.RIGHT
+        elif self.keys_down[Orientation.UP]:
+            self.orientation = Orientation.LEFT
+        elif self.keys_down[Orientation.DOWN]:
+            self.orientation = Orientation.RIGHT
 
     def update(self, *args, **kwargs):
+        # NOTE: Set image before exiting early when not moving
+        # to get the correct standing-still image.
+        gfx_id = self.get_gfx_id()
+        self.image = graphics_manager.get(gfx_id, orientation=self.orientation)
+
         if not self.moving:
             return
 
         length = BLOCK_SIZE * self.speed
-        left = 0
-        top = 0
+        x = 0
+        y = 0
 
         # Update potential movement
-        if self.keys_down[Direction.LEFT]:
-            left -= 1
-        if self.keys_down[Direction.RIGHT]:
-            left += 1
-        if self.keys_down[Direction.UP]:
-            top -= 1
-        if self.keys_down[Direction.DOWN]:
-            top += 1
+        if self.keys_down[Orientation.LEFT]:
+            x -= 1
+        if self.keys_down[Orientation.RIGHT]:
+            x += 1
+        if self.keys_down[Orientation.UP]:
+            y -= 1
+        if self.keys_down[Orientation.DOWN]:
+            y += 1
 
-        new_left = round(self.rect.left + left * length)
-        new_top = round(self.rect.top + top * length)
-        self.move(new_left, new_top)
+        # Set image
+        new_x = round(self.rect.x + x * length)
+        new_y = round(self.rect.y + y * length)
+
+        # Adjust coordinates. Note: must happen after setting image.
+        self.move(new_x, new_y)

@@ -26,6 +26,7 @@ class Game(BaseManager):
             with self.display.in_same_cycle():
                 self.map.draw()
                 self.sprites.draw()
+                pygame.display.flip()
 
         pygame.quit()
 

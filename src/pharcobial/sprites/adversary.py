@@ -1,21 +1,13 @@
-from abc import abstractmethod
 from functools import cached_property
 
-from pharcobial._types import DrawInfo
 from pharcobial.constants import BLOCK_SIZE
+from pharcobial.managers.graphics import graphics_manager
 
 from .base import BaseSprite
 
 
 class Adversary(BaseSprite):
-    @abstractmethod
-    def get_gfx_id(self) -> str:
-        """
-        Determines the graphic used for the adversary.
-        """
-
-    def get_draw_info(self) -> DrawInfo:
-        return DrawInfo(gfx_id=self.get_gfx_id(), rect=self.rect)
+    pass
 
 
 class BushMonster(Adversary):
@@ -23,13 +15,12 @@ class BushMonster(Adversary):
         super().__init__()
         self.monster_id = monster_id
         self.speed = 0.2
+        self.image = graphics_manager["bush-monster"]
+        self.rect = self.image.get_rect()
 
     @cached_property
     def movement_length(self) -> int:
         return round(BLOCK_SIZE * self.speed)
-
-    def get_gfx_id(self) -> str:
-        return "bush-monster"
 
     def get_sprite_id(self) -> str:
         return str(self.monster_id)
@@ -41,19 +32,19 @@ class BushMonster(Adversary):
 
         player = kwargs["player"]
 
-        new_left = self.rect.left
-        new_top = self.rect.top
+        new_x = self.rect.x
+        new_y = self.rect.y
 
-        # Handle left
-        if player.rect.left > self.rect.left:
-            new_left = self.rect.left + min(self.movement_length, player.rect.left - self.rect.left)
-        elif player.rect.left < self.rect.left:
-            new_left = self.rect.left - min(self.movement_length, self.rect.left - player.rect.left)
+        # Handle x
+        if player.rect.x > self.rect.x:
+            new_x = self.rect.x + min(self.movement_length, player.rect.x - self.rect.x)
+        elif player.rect.x < self.rect.x:
+            new_x = self.rect.x - min(self.movement_length, self.rect.x - player.rect.x)
 
-        # Handle top
-        if player.rect.top > self.rect.top:
-            new_top = self.rect.top + min(self.movement_length, player.rect.top - self.rect.top)
-        elif player.rect.top < self.rect.top:
-            new_top = self.rect.top - min(self.movement_length, self.rect.top - player.rect.top)
+        # Handle y
+        if player.rect.y > self.rect.y:
+            new_y = self.rect.y + min(self.movement_length, player.rect.y - self.rect.y)
+        elif player.rect.y < self.rect.y:
+            new_y = self.rect.y - min(self.movement_length, self.rect.y - player.rect.y)
 
-        self.move(new_left, new_top)
+        self.move(new_x, new_y)

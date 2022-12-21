@@ -3,14 +3,15 @@ from abc import abstractmethod
 from pygame.rect import Rect  # type: ignore
 from pygame.sprite import Sprite  # type: ignore
 
-from pharcobial._types import DrawInfo
+from pharcobial._types import Orientation
 from pharcobial.constants import BLOCK_SIZE
 
 
 class BaseSprite(Sprite):
     speed: float = 0
     uses_events: bool = False
-    rect = Rect(0, 0, BLOCK_SIZE, BLOCK_SIZE)
+    orientration: Orientation | None
+    rect: Rect = Rect(0, 0, BLOCK_SIZE, BLOCK_SIZE)
 
     @abstractmethod
     def get_sprite_id(self) -> str:
@@ -25,11 +26,6 @@ class BaseSprite(Sprite):
         """
         return
 
-    @abstractmethod
-    def get_draw_info(self) -> DrawInfo:
-        """
-        This base method should be called in the subclass overriden method.
-        """
-
-    def move(self, left: int, top: int):
-        self.rect = Rect(left, top, BLOCK_SIZE, BLOCK_SIZE)
+    def move(self, x: int, y: int):
+        self.rect.x = x
+        self.rect.y = y
