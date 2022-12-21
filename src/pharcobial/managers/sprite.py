@@ -46,7 +46,7 @@ class SpriteManager(BaseManager):
             sprite_id = sprite.get_sprite_id()
 
             if sprite_id == key:
-                # This sprite is likely request often.
+                # This sprite is likely requested often.
                 # Cache for faster look-up next time.
                 self._sprite_map[sprite_id] = sprite
                 return sprite
