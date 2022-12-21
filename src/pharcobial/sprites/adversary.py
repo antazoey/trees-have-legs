@@ -11,8 +11,8 @@ class Adversary(BaseSprite):
 
 
 class BushMonster(Adversary):
-    def __init__(self, monster_id: int):
-        super().__init__()
+    def __init__(self, x, y, monster_id: int):
+        super().__init__(x, y)
         self.monster_id = monster_id
         self.speed = 0.2
         self.image = graphics_manager["bush-monster"]

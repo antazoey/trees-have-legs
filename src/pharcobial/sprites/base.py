@@ -11,7 +11,10 @@ class BaseSprite(Sprite):
     speed: float = 0
     uses_events: bool = False
     orientration: Orientation | None
-    rect: Rect = Rect(0, 0, BLOCK_SIZE, BLOCK_SIZE)
+
+    def __init__(self, x: int, y: int) -> None:
+        super().__init__()
+        self.rect: Rect = Rect(x, y, BLOCK_SIZE, BLOCK_SIZE)
 
     @abstractmethod
     def get_sprite_id(self) -> str:

@@ -11,8 +11,8 @@ class Player(BaseSprite):
     The main character.
     """
 
-    def __init__(self, init_x: int, init_y: int, character: str = "pharma"):
-        super().__init__()
+    def __init__(self, x: int, y: int, character: str = "pharma"):
+        super().__init__(x, y)
         self.character = character
         self.move_gfx_id: int = -1
         self.speed = 0.24
@@ -27,9 +27,6 @@ class Player(BaseSprite):
         }
 
         self.image = graphics_manager[self.character]
-        self.rect = self.image.get_rect()
-        self.rect.x = init_x
-        self.rect.y = init_y
 
     @property
     def moving(self) -> bool:

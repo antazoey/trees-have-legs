@@ -33,9 +33,9 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def player(self) -> Player:
-        start_x = self.display.width // 2
-        start_y = self.display.height // 2
-        return Player(start_x, start_y)
+        x = self.display.width // 2
+        y = self.display.height // 2
+        return Player(x, y)
 
     def __getitem__(self, key: str) -> BaseSprite:
         if key in self._sprite_map:
@@ -58,10 +58,9 @@ class SpriteManager(BaseManager):
 
     def create_adversary(self, type_key: str, **kwargs) -> Adversary:
         if type_key == "bush-monster":
-            monster = BushMonster(**kwargs)
-            monster.rect.x = random.randrange(20, self.display.width - BLOCK_SIZE - 10, 10)
-            monster.rect.y = random.randrange(20, self.display.height - BLOCK_SIZE - 10, 10)
-            return monster
+            x = random.randrange(20, self.display.width - BLOCK_SIZE - 10, 10)
+            y = random.randrange(20, self.display.height - BLOCK_SIZE - 10, 10)
+            return BushMonster(x, y, **kwargs)
 
         else:
             raise TypeError(f"Unsupported adversary type '{type_key}'.")
