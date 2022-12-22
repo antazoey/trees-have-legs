@@ -1,5 +1,7 @@
 from functools import cached_property
-from typing import Tuple
+from typing import Iterable, Tuple
+
+from pygame.sprite import Group
 
 from pharcobial.constants import BLOCK_SIZE
 from pharcobial.sprites.base import MobileSprite
@@ -10,15 +12,11 @@ class Adversary(MobileSprite):
 
 
 class BushMonster(Adversary):
-    def __init__(self, position: Tuple[int, int], monster_id: int):
+    def __init__(self, position: Tuple[int, int], monster_id: int, groups: Iterable[Group]):
         self.character = "bush-monster"
-        super().__init__(position, self.character)
+        super().__init__(position, self.character, groups)
         self.monster_id = monster_id
-        self.speed = 0.2
-
-    @cached_property
-    def movement_length(self) -> int:
-        return round(BLOCK_SIZE * self.speed)
+        self.speed = 1
 
     def get_sprite_id(self) -> str:
         return f"adversary-{self.character}-{self.monster_id}"
@@ -35,14 +33,14 @@ class BushMonster(Adversary):
 
         # Handle x
         if player.rect.x > self.rect.x:
-            new_x = self.rect.x + min(self.movement_length, player.rect.x - self.rect.x)
+            new_x = self.rect.x + min(self.speed, player.rect.x - self.rect.x)
         elif player.rect.x < self.rect.x:
-            new_x = self.rect.x - min(self.movement_length, self.rect.x - player.rect.x)
+            new_x = self.rect.x - min(self.speed, self.rect.x - player.rect.x)
 
         # Handle y
         if player.rect.y > self.rect.y:
-            new_y = self.rect.y + min(self.movement_length, player.rect.y - self.rect.y)
+            new_y = self.rect.y + min(self.speed, player.rect.y - self.rect.y)
         elif player.rect.y < self.rect.y:
-            new_y = self.rect.y - min(self.movement_length, self.rect.y - player.rect.y)
+            new_y = self.rect.y - min(self.speed, self.rect.y - player.rect.y)
 
         self.move(new_x, new_y)

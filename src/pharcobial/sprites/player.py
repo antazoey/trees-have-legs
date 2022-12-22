@@ -1,7 +1,8 @@
-from typing import Tuple
+from typing import Iterable, Tuple
 
 import pygame
 from pygame.math import Vector2
+from pygame.sprite import Group
 from pygame.surface import Surface
 
 from pharcobial.constants import BLOCK_SIZE
@@ -14,10 +15,12 @@ class Player(MobileSprite):
     The main character.
     """
 
-    def __init__(self, position: Tuple[int, int], character: str = "pharma"):
-        super().__init__(position, character)
+    def __init__(
+        self, position: Tuple[int, int], groups: Iterable[Group], character: str = "pharma"
+    ):
+        super().__init__(position, character, groups)
         self.move_gfx_id: int = -1
-        self.speed = 0.1
+        self.speed = 2
         self.uses_events: bool = True
         self.direction = Vector2()
         self.character = character
@@ -66,9 +69,16 @@ class Player(MobileSprite):
         if not self.moving:
             return
 
-        length = BLOCK_SIZE * self.speed
-        new_x = round(self.rect.x + self.direction.x * length)
-        new_y = round(self.rect.y + self.direction.y * length)
+        new_x = round(self.rect.x + self.direction.x * self.speed)
+        new_y = round(self.rect.y + self.direction.y * self.speed)
+
+        # Check for collisions here.
+        if new_x < 0:
+            new_x = 0
+        elif new_x > self.display.width * 2:
+            new_x = self.display.width * 2
+        if new_y < 0:
+            new_y = 0
 
         # Adjust coordinates. Note: must happen after setting image.
         self.move(new_x, new_y)
@@ -80,10 +90,10 @@ class Player(MobileSprite):
             return image or self.image
 
         self.move_gfx_id += 1
-        frame_rate = round(self.speed * BLOCK_SIZE * 2)
-        if self.move_gfx_id in range(frame_rate):
+        rate = round(self.speed * 4)
+        if self.move_gfx_id in range(rate):
             suffix = "-walk-1"
-        elif self.move_gfx_id in range(frame_rate, frame_rate * 2 + 1):
+        elif self.move_gfx_id in range(rate, rate * 2 + 1):
             suffix = "-walk-2"
         else:
             suffix = ""

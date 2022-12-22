@@ -2,13 +2,10 @@ from contextlib import contextmanager
 from typing import Dict
 
 import pygame
-from pygame.rect import Rect
-from pygame.surface import Surface
 
 from pharcobial.constants import NAME
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.sprites.base import BaseSprite
 from pharcobial.types import Color
 
 
@@ -54,11 +51,6 @@ class Display:
         self.window.blit(screen, (0, 0))
         pygame.display.update()
 
-    def draw_surface(self, surface: Surface, rect: Rect | None = None):
-        rect = rect or getattr(surface, "rect", None) or surface.get_rect()
-        self.screen.blit(surface, rect)
-        pygame.display.flip()
-
     def clear(self):
         self.screen.fill(self.RGB["black"])
 
@@ -77,12 +69,9 @@ class DisplayManager(BaseManager):
         # Initialize in a cleared state.
         self.active.clear()
 
-    def draw(self, sprite: BaseSprite):
-        self.active.draw_surface(sprite.image, rect=sprite.rect)
-
     def validate(self):
         assert self.active.window
-        game_logger.info("Game mode set.")
+        game_logger.debug("Display ready.")
 
     @property
     def width(self) -> int:

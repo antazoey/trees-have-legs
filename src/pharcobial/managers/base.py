@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, cast
 if TYPE_CHECKING:
     from .camera import CameraManager
     from .clock import ClockManager
+    from .collision import CollisionManager
     from .display import DisplayManager
     from .event import EventManager
     from .graphics import GraphicsManager
@@ -21,10 +22,11 @@ class BaseManager:
     @cached_property
     def camera(self) -> "CameraManager":
         """
-        Responsible for the offset from the active display to the active map.
+        Responsible for the offset from the active display to the active map
+        and managing the camera sprite group.
         """
 
-        return cast("CameraManager", self.get_manager("camera"))
+        return cast("CameraManager", self._get_manager("camera"))
 
     @cached_property
     def clock(self) -> "ClockManager":
@@ -32,7 +34,16 @@ class BaseManager:
         Responsible for overall game framerate.
         """
 
-        return cast("ClockManager", self.get_manager("clock"))
+        return cast("ClockManager", self._get_manager("clock"))
+
+    @cached_property
+    def collision(self) -> "CollisionManager":
+        """
+        Responsible for detecting collision between sprites and managing the
+        collision-sprite group.
+        """
+
+        return cast("CollisionManager", self._get_manager("collision"))
 
     @cached_property
     def display(self) -> "DisplayManager":
@@ -40,7 +51,7 @@ class BaseManager:
         Responsible for showing things on the screen.
         """
 
-        return cast("DisplayManager", self.get_manager("display"))
+        return cast("DisplayManager", self._get_manager("display"))
 
     @cached_property
     def events(self) -> "EventManager":
@@ -48,7 +59,7 @@ class BaseManager:
         Responsible for handling events, such as key-down events.
         """
 
-        return cast("EventManager", self.get_manager("event"))
+        return cast("EventManager", self._get_manager("event"))
 
     @cached_property
     def graphics(self) -> "GraphicsManager":
@@ -56,21 +67,35 @@ class BaseManager:
         An easy way to access graphics.
         """
 
-        return cast("GraphicsManager", self.get_manager("graphics"))
+        return cast("GraphicsManager", self._get_manager("graphics"))
 
     @cached_property
     def map(self) -> "MapManager":
-        return cast("MapManager", self.get_manager("map"))
+        """
+        Responsible for loading .csv files and turning them into game maps.
+        """
+
+        return cast("MapManager", self._get_manager("map"))
 
     @cached_property
     def options(self) -> "OptionsManager":
-        return cast("OptionsManager", self.get_manager("options"))
+        """
+        Game options, as set from CLI or config.
+        """
+
+        return cast("OptionsManager", self._get_manager("options"))
 
     @cached_property
     def sprites(self) -> "SpriteManager":
-        return cast("SpriteManager", self.get_manager("sprite"))
+        """
+        Responsible for creating sprites and adding them to the proper
+        sprite groups, such as ``.camera`` or ``.collision``.
+        Holds references to all sprites in the game.
+        """
 
-    def get_manager(self, name: str) -> "BaseManager":
+        return cast("SpriteManager", self._get_manager("sprite"))
+
+    def _get_manager(self, name: str) -> "BaseManager":
         module = import_module(f"{ROOT_MODULE}.{name}")
         return getattr(module, f"{name}_manager")
 

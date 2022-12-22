@@ -11,9 +11,7 @@ class Game(BaseManager):
         self.running = False
 
     def run(self):
-        self.display.validate()
-        self.sprites.load()
-        self.camera.extend(self.sprites.environment_sprites)
+        self.setup()
         self.running = True
         while self.running:
             action = self.events.process_next()
@@ -21,14 +19,34 @@ class Game(BaseManager):
                 self.running = False
                 break
 
-            # Update everything here.
-            self.camera.update()
-
-            with self.display.in_same_cycle():
-                self.camera.draw()
-                pygame.display.flip()
+            self.update()
+            self.draw()
 
         pygame.quit()
+
+    def setup(self):
+        # Validate is used to ensure the creation of a dependency
+        # before other logic. This is to help the dependency injection
+        # have some ordering, as needed.
+        self.display.validate()
+        self.camera.validate()
+        self.collision.validate()
+
+        # Load all sprites in this level.
+        self.sprites.load()
+        self.sprites.validate()
+
+        # Set the camera to follow the player. This must happen after loading sprites.
+        self.camera.followee = self.sprites.player
+
+    def update(self):
+        # Update everything here.
+        self.camera.update()
+
+    def draw(self):
+        with self.display.in_same_cycle():
+            self.camera.draw()
+            pygame.display.flip()
 
 
 def main():

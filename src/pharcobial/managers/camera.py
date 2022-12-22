@@ -1,9 +1,8 @@
-from typing import Iterable
-
 from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
 
+from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import BaseSprite
 
@@ -37,22 +36,17 @@ class CameraManager(BaseManager):
         super().__init__()
         self.offset = Vector2()
         self.group = CameraGroup(self.display.active.screen)
-        self.followee = self.sprites.player
+        self.followee: BaseSprite | None = None
 
-    def extend(self, sprites: Iterable[BaseSprite]):
-        """
-        Add all the environment sprit
-        """
-
-        for sprite in sprites:
-            self.group.add(sprite)
-
-    def add(self, sprite: BaseSprite):
-        self.group.add(sprite)
+    def validate(self):
+        assert self.group is not None
+        game_logger.debug("Camera ready.")
 
     def update(self):
-        self.offset.x = self.followee.rect.centerx - self.display.width // 2
-        self.offset.y = self.followee.rect.centery - self.display.height // 2
+        if self.followee is not None:
+            self.offset.x = self.followee.rect.centerx - self.display.width // 2
+            self.offset.y = self.followee.rect.centery - self.display.height // 2
+
         self.group.update()
 
     def draw(self):

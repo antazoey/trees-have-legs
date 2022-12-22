@@ -1,18 +1,22 @@
 from abc import abstractmethod
+from typing import Iterable
 
 from pygame.math import Vector2
 from pygame.rect import Rect
-from pygame.sprite import Sprite
+from pygame.sprite import Group, Sprite
 from pygame.surface import Surface
 
 from pharcobial.managers.base import BaseManager
 
 
 class BaseSprite(Sprite, BaseManager):
-    def __init__(self, position: tuple[int, int], gfx_id: str) -> None:
+    def __init__(self, position: tuple[int, int], gfx_id: str, groups: Iterable[Group]) -> None:
         super().__init__()
         self.image: Surface = self.graphics[gfx_id]
         self.rect: Rect = self.image.get_rect(topleft=position)
+
+        for group in groups:
+            group.add(self)
 
     @abstractmethod
     def get_sprite_id(self) -> str:
