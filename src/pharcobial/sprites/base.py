@@ -41,12 +41,9 @@ class MobileSprite(BaseSprite):
     direction: Vector2
 
     def move(self, position: Position):
-        # self.hitbox.x = position.x
-        # self.hitbox.y = position.y
-        # self.rect.center = self.hitbox.center
-
         self.rect.x = position.x
         self.rect.y = position.y
+        self.hitbox.center = self.rect.center
 
 
 __all__ = ["BaseSprite"]

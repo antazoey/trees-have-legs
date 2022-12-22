@@ -28,10 +28,14 @@ class Game(BaseManager):
         # Validate is used to ensure the creation of a dependency
         # before other logic. This is to help the dependency injection
         # have some ordering, as needed.
-        self.display.validate()
-        self.camera.validate()
-        self.collision.validate()
-
+        for manager in (
+            self.options,
+            self.display,
+            self.map,
+            self.camera,
+            self.collision,
+        ):
+            manager.validate()
         # Load all sprites in this level.
         self.sprites.load()
         self.sprites.validate()

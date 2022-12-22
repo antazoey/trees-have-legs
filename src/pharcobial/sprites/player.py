@@ -10,6 +10,53 @@ from pharcobial.sprites.base import MobileSprite
 from pharcobial.types import Position
 
 
+class Controller:
+    """
+    Class wrapping the
+    """
+
+    def __init__(self) -> None:
+        self.direction = Vector2()
+        self.right_focused: bool = False
+
+    @property
+    def x(self):
+        return self.direction.x
+
+    @property
+    def y(self):
+        return self.direction.y
+
+    @property
+    def moving(self) -> bool:
+        return round(self.direction.magnitude()) != 0
+
+    def handle_key_down(self, event):
+        if event.key == pygame.K_LEFT:
+            self.direction.x -= 1
+            self.right_focused = False
+        elif event.key == pygame.K_RIGHT:
+            self.direction.x += 1
+            self.right_focused = True
+        elif event.key == pygame.K_UP:
+            self.direction.y -= 1
+
+            if self.direction.x <= 0:
+                self.right_focused = False
+
+        elif event.key == pygame.K_DOWN:
+            self.direction.y += 1
+
+            if self.direction.x >= 0:
+                self.right_focused = True
+
+    def handle_key_up(self, event):
+        if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
+            self.direction.x = 0
+        elif event.key in (pygame.K_UP, pygame.K_DOWN):
+            self.direction.y = 0
+
+
 class Player(MobileSprite):
     """
     The main character.
@@ -19,14 +66,12 @@ class Player(MobileSprite):
         super().__init__(position, character, groups, Position(0, -26))
         self.move_gfx_id: int = -1
         self.speed = 2
-        self.uses_events: bool = True
-        self.direction = Vector2()
         self.character = character
-        self.image_flipped = False
+        self.controller = Controller()
 
     @property
     def moving(self) -> bool:
-        return round(self.direction.magnitude()) != 0
+        return self.controller.moving
 
     def get_sprite_id(self) -> str:
         return "player"
@@ -41,25 +86,10 @@ class Player(MobileSprite):
 
         if event.type == pygame.KEYDOWN:
             game_logger.debug(f"{event.key} key pressed.")
-
-            if event.key == pygame.K_LEFT:
-                self.direction.x -= 1
-            elif event.key == pygame.K_RIGHT:
-                self.direction.x += 1
-            elif event.key == pygame.K_UP:
-                self.direction.y -= 1
-            elif event.key == pygame.K_DOWN:
-                self.direction.y += 1
-
-            self.image_flipped = self.direction.x > 0 or (
-                self.direction.y < 0 and self.direction.x >= 0
-            )
+            self.controller.handle_key_down(event)
 
         elif event.type == pygame.KEYUP:
-            if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
-                self.direction.x = 0
-            elif event.key in (pygame.K_UP, pygame.K_DOWN):
-                self.direction.y = 0
+            self.controller.handle_key_up(event)
 
     def update(self, *args, **kwargs):
         self.image = self._get_graphic() or self.image
@@ -68,8 +98,8 @@ class Player(MobileSprite):
             return
 
         new_position = Position(
-            round(self.rect.x + self.direction.x * self.speed),
-            round(self.rect.y + self.direction.y * self.speed),
+            round(self.rect.x + self.controller.x * self.speed),
+            round(self.rect.y + self.controller.y * self.speed),
         )
 
         # Check for collisions here.
@@ -86,7 +116,8 @@ class Player(MobileSprite):
     def _get_graphic(self) -> Surface | None:
         if not self.moving:
             # Return a standing-still graphic of the last direction facing.
-            image = self.graphics.get(self.character, flip_vertically=self.image_flipped)
+            flip = self.controller.right_focused
+            image = self.graphics.get(self.character, flip_vertically=flip)
             return image or self.image
 
         self.move_gfx_id += 1
@@ -100,5 +131,5 @@ class Player(MobileSprite):
             self.move_gfx_id = -1
 
         gfx_id = f"{self.character}{suffix}"
-        graphic = self.graphics.get(gfx_id, flip_vertically=self.image_flipped)
+        graphic = self.graphics.get(gfx_id, flip_vertically=self.controller.right_focused)
         return graphic or self.image

@@ -12,7 +12,6 @@ DEFAULT_HEIGHT = 800
 DEFAULT_FPS = 60
 DEFAULT_FONT_SIZE = 25
 DEFAULT_FULL_SCREEN = False
-DEFAULT_NUM_MONSTERS = 3
 
 
 @dataclass
@@ -23,9 +22,6 @@ class GameOptions:
     fps: int = DEFAULT_FPS
     font_size: int = DEFAULT_FONT_SIZE
     full_screen: bool = DEFAULT_FULL_SCREEN
-
-    # Game settings
-    num_monsters: int = DEFAULT_NUM_MONSTERS
 
     # Debug
     debug: bool = False
@@ -60,16 +56,6 @@ class OptionsManager(BaseManager):
         parser.add_argument(
             "--full-screen", action="store_true", default=DEFAULT_FULL_SCREEN, help="Full screen"
         )
-
-        # Add game settings
-        parser.add_argument(
-            "--num-monsters",
-            action="store",
-            default=3,
-            help="The number of monster chasing you.",
-            type=int,
-        )
-
         parser.add_argument("--debug", action="store_true", help="Set to enable DEBUG logging.")
 
         parsed_args = parser.parse_args()
@@ -84,7 +70,6 @@ class OptionsManager(BaseManager):
             fps=parsed_args.fps,
             font_size=parsed_args.font_size,
             full_screen=parsed_args.full_screen,
-            num_monsters=parsed_args.num_monsters,
             debug=parsed_args.debug,
         )
 
@@ -108,6 +93,10 @@ class OptionsManager(BaseManager):
                 raise main_err
 
             raise  # err_backup
+
+    def validate(self):
+        assert self.options is not None
+        game_logger.debug("Options ready.")
 
 
 options_manager = OptionsManager()

@@ -1,11 +1,17 @@
-from pharcobial.constants import MAPS_DIR
+from typing import List
+
+from pharcobial.constants import BLOCK_SIZE, MAPS_DIR
+from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import TileKey
+from pharcobial.types import Position, TileKey
 
 
 class MapManager(BaseManager):
     def __init__(self, map_id: str = "buffer_property") -> None:
         super().__init__()
+        self.player_start: Position | None = None
+        self.bushes_start: List[Position] = []
+        self.active: List[List[TileKey]] = []
         self.load(map_id)
 
     def __iter__(self):
@@ -16,7 +22,26 @@ class MapManager(BaseManager):
         with open(file_path, "r") as file:
             lines = file.readlines()
 
-        self.active = [[TileKey(int(x.strip())) for x in row.split(",")] for row in lines]
+        for y, row in enumerate(lines):
+            row_tiles: List[TileKey] = []
+            for x, tile in enumerate(row.split(",")):
+                key = TileKey(int(tile.strip()))
+                if key == TileKey.PLAYER:
+                    self.player_start = Position(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                    row_tiles.append(TileKey.GRASS)
+                elif key == TileKey.BUSH:
+                    self.bushes_start.append(Position(x * BLOCK_SIZE, y * BLOCK_SIZE))
+                    row_tiles.append(TileKey.GRASS)
+                else:
+                    # Normaly map tile (grass or road)
+                    row_tiles.append(key)
+
+            self.active.append(row_tiles)
+
+    def validate(self):
+        assert self.player_start
+        assert self.active
+        game_logger.debug("Map ready.")
 
 
 map_manager = MapManager()

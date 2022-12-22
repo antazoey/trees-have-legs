@@ -1,12 +1,11 @@
-import random
 from functools import cached_property
 from typing import Dict, Iterable, List
 
 from pharcobial.constants import BLOCK_SIZE
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.sprites.adversary import Adversary, BushMonster
 from pharcobial.sprites.base import BaseSprite
+from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
 from pharcobial.types import Position
@@ -23,7 +22,7 @@ class SpriteManager(BaseManager):
         """
 
         _ = self.player
-        _ = self.adversaries
+        _ = self.bushes
         _ = self.tiles
 
     def validate(self):
@@ -32,17 +31,10 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def player(self) -> Player:
-        position = Position(self.display.width // 2, self.display.height // 2)
-        player = Player(position, (self.camera.group, self.collision.group))
+        assert self.map.player_start
+        player = Player(self.map.player_start, (self.camera.group, self.collision.group))
         self._sprite_cache["player"] = player
         return player
-
-    @cached_property
-    def adversaries(self) -> List[Adversary]:
-        return [
-            self.create_adversary("bush-monster", monster_id=str(i))
-            for i in range(self.options.num_monsters)
-        ]
 
     @cached_property
     def tiles(self) -> List[Tile]:
@@ -52,12 +44,19 @@ class SpriteManager(BaseManager):
             for x, tile_key in enumerate(row)
         ]
 
+    @cached_property
+    def bushes(self) -> List[Bush]:
+        return [
+            Bush(p, str(i), (self.camera.group, self.collision.group))
+            for i, p in enumerate(self.map.bushes_start)
+        ]
+
     @property
     def all_sprites(self) -> Iterable[BaseSprite]:
         yield self.player
 
-        for adversary in self.adversaries:
-            yield adversary
+        for bush in self.bushes:
+            yield bush
 
         for tile in self.tiles:
             yield tile
@@ -80,20 +79,6 @@ class SpriteManager(BaseManager):
                 return sprite
 
         raise IndexError(f"Sprite with ID '{key}' not found.")
-
-    def create_adversary(self, type_key: str, **kwargs) -> Adversary:
-        if type_key == "bush-monster":
-            x = random.randrange(20, self.display.width - BLOCK_SIZE - 10, 10)
-            y = random.randrange(20, self.display.height - BLOCK_SIZE - 10, 10)
-            pos = Position(x, y)
-            return BushMonster(
-                pos,
-                kwargs["monster_id"],
-                (self.camera.group, self.collision.group),
-            )
-
-        else:
-            raise TypeError(f"Unsupported adversary type '{type_key}'.")
 
     def handle_event(self, event):
         self.player.handle_event(event)

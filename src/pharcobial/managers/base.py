@@ -95,6 +95,13 @@ class BaseManager:
 
         return cast("SpriteManager", self._get_manager("sprite"))
 
+    def validate(self):
+        """
+        Override to raise assertions if needed.
+        Used for ensuring managers are initialized in the proper order
+        in ``GameManager.validate()``.
+        """
+
     def _get_manager(self, name: str) -> "BaseManager":
         module = import_module(f"{ROOT_MODULE}.{name}")
         return getattr(module, f"{name}_manager")

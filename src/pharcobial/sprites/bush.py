@@ -6,27 +6,27 @@ from pharcobial.sprites.base import MobileSprite
 from pharcobial.types import Position
 
 
-class Adversary(MobileSprite):
-    pass
-
-
-class BushMonster(Adversary):
-    def __init__(self, position: Position, monster_id: int, groups: Iterable[Group]):
-        self.character = "bush-monster"
+class Bush(MobileSprite):
+    def __init__(self, position: Position, bush_id: str, groups: Iterable[Group]):
+        self.character = "bush"
         super().__init__(position, self.character, groups, Position(0, 26))
-        self.monster_id = monster_id
+        self.bush_id = bush_id
         self.speed = 1
 
     def get_sprite_id(self) -> str:
-        return f"adversary-{self.character}-{self.monster_id}"
+        return f"adversary-{self.character}-{self.bush_id}"
 
     def update(self, *args, **kwargs):
         """
-        The monster is always moving towards the player.
+        When in monster mode, the bush is always moving towards the player.
+        Else, it stands still.
         """
 
         player = self.sprites.player
         new_position = Position(self.rect.x, self.rect.y)
+
+        return new_position
+        # TODO - make conditionally follow and switch image
 
         # Handle x
         if player.rect.x > self.rect.x:
