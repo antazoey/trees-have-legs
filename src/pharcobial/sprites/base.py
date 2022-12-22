@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable, Tuple, cast
+from typing import Iterable
 
 from pygame.event import Event
 from pygame.math import Vector2
@@ -42,8 +42,12 @@ class MobileSprite(BaseSprite):
     direction: Vector2
 
     def move(self, position: Position):
-        self.hitbox.topleft = cast(Tuple[int, int], position)
-        # self.hitbox = self.collision.check(self.hitbox, self.direction)
+        # self.hitbox.topleft = cast(Tuple[int, int], position)
+
+        self.hitbox.x = position.x
+        self.collision.check_x(self)
+        self.hitbox.y = position.y
+        self.collision.check_y(self)
         self.rect.center = self.hitbox.center
 
 

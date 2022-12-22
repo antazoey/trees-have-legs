@@ -1,10 +1,10 @@
-from pygame.math import Vector2
-from pygame.rect import Rect
+from typing import Callable
+
 from pygame.sprite import Group
 
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.sprites.base import BaseSprite
+from pharcobial.sprites.base import BaseSprite, MobileSprite
 
 
 class CollisionManager(BaseManager):
@@ -16,28 +16,57 @@ class CollisionManager(BaseManager):
         assert self.group is not None
         game_logger.debug("Collision-detection ready.")
 
-    def check(self, hitbox: Rect, direction: Vector2) -> Rect:
+    def check_x(self, target: MobileSprite):
+        def fn(sprite: BaseSprite):
+            if self.collides(target, sprite):
+                game_logger.debug(f"Collision with '{sprite.get_sprite_id()}'.")
+                if target.direction.x < 0:
+                    target.hitbox.right = sprite.hitbox.left
+                    return False
+
+                elif target.direction.x > 0:
+                    target.hitbox.left = sprite.hitbox.right
+                    return False
+
+                return True
+
+        self.for_each(fn)
+
+    def check_y(self, target: MobileSprite):
+        def fn(sprite):
+            if self.collides(target, sprite):
+                if target.direction.y < 0:
+                    target.hitbox.bottom = sprite.hitbox.top
+                    return False
+
+                elif target.direction.y > 0:
+                    target.hitbox.top = sprite.hitbox.bottom
+                    return False
+
+                return True
+
+        self.for_each(fn)
+
+    def collides(self, sprite_0: BaseSprite, sprite_1: BaseSprite) -> bool:
+        if sprite_0 == sprite_1:
+            # Ignore when sprites are the same
+            return False
+
+        if sprite_0.hitbox.colliderect(sprite_1.hitbox):
+            game_logger.debug(
+                f"Collision between '{sprite_0.get_sprite_id()}' "
+                f"and '{sprite_1.get_sprite_id()}' detected."
+            )
+            return True
+
+        return False
+
+    def for_each(self, fn: Callable):
         for sprite in self.group.sprites():
             assert isinstance(sprite, BaseSprite)
-            if sprite.hitbox.colliderect(hitbox):
-                if direction.x > 0:
-                    hitbox.right = sprite.hitbox.left
-                    break
-
-                elif direction.x < 0:
-                    hitbox.left = sprite.hitbox.right
-                    break
-
-            elif sprite.hitbox.colliderect(hitbox):
-                if direction.y > 0:
-                    hitbox.bottom = sprite.hitbox.top
-                    break
-
-                elif direction.y < 0:
-                    hitbox.top = sprite.hitbox.bottom
-                    break
-
-        return hitbox
+            keep_going = fn(sprite)
+            if not keep_going:
+                break
 
 
 collision_manager = CollisionManager()
