@@ -9,6 +9,7 @@ from pharcobial.sprites.adversary import Adversary, BushMonster
 from pharcobial.sprites.base import BaseSprite
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
+from pharcobial.types import Position
 
 
 class SpriteManager(BaseManager):
@@ -31,7 +32,7 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def player(self) -> Player:
-        position = (self.display.width // 2, self.display.height // 2)
+        position = Position(self.display.width // 2, self.display.height // 2)
         player = Player(position, (self.camera.group, self.collision.group))
         self._sprite_cache["player"] = player
         return player
@@ -46,7 +47,7 @@ class SpriteManager(BaseManager):
     @cached_property
     def tiles(self) -> List[Tile]:
         return [
-            Tile((x * BLOCK_SIZE, y * BLOCK_SIZE), tile_key, (self.camera.group,))
+            Tile(Position(x * BLOCK_SIZE, y * BLOCK_SIZE), tile_key, (self.camera.group,))
             for y, row in enumerate(self.map)
             for x, tile_key in enumerate(row)
         ]
@@ -84,8 +85,9 @@ class SpriteManager(BaseManager):
         if type_key == "bush-monster":
             x = random.randrange(20, self.display.width - BLOCK_SIZE - 10, 10)
             y = random.randrange(20, self.display.height - BLOCK_SIZE - 10, 10)
+            pos = Position(x, y)
             return BushMonster(
-                (x, y),
+                pos,
                 kwargs["monster_id"],
                 (self.camera.group, self.collision.group),
             )

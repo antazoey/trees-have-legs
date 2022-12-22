@@ -1,13 +1,13 @@
-from typing import Iterable, Tuple
+from typing import Iterable
 
 import pygame
 from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
 
-from pharcobial.constants import BLOCK_SIZE
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import MobileSprite
+from pharcobial.types import Position
 
 
 class Player(MobileSprite):
@@ -15,10 +15,8 @@ class Player(MobileSprite):
     The main character.
     """
 
-    def __init__(
-        self, position: Tuple[int, int], groups: Iterable[Group], character: str = "pharma"
-    ):
-        super().__init__(position, character, groups)
+    def __init__(self, position: Position, groups: Iterable[Group], character: str = "pharma"):
+        super().__init__(position, character, groups, Position(0, -26))
         self.move_gfx_id: int = -1
         self.speed = 2
         self.uses_events: bool = True
@@ -69,19 +67,21 @@ class Player(MobileSprite):
         if not self.moving:
             return
 
-        new_x = round(self.rect.x + self.direction.x * self.speed)
-        new_y = round(self.rect.y + self.direction.y * self.speed)
+        new_position = Position(
+            round(self.rect.x + self.direction.x * self.speed),
+            round(self.rect.y + self.direction.y * self.speed),
+        )
 
         # Check for collisions here.
-        if new_x < 0:
-            new_x = 0
-        elif new_x > self.display.width * 2:
-            new_x = self.display.width * 2
-        if new_y < 0:
-            new_y = 0
+        if new_position.x < 0:
+            new_position.x = 0
+        elif new_position.x > self.display.width * 2:
+            new_position.x = self.display.width * 2
+        if new_position.y < 0:
+            new_position.y = 0
 
         # Adjust coordinates. Note: must happen after setting image.
-        self.move(new_x, new_y)
+        self.move(new_position)
 
     def _get_graphic(self) -> Surface | None:
         if not self.moving:

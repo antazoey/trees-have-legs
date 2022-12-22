@@ -7,13 +7,17 @@ from pygame.sprite import Group, Sprite
 from pygame.surface import Surface
 
 from pharcobial.managers.base import BaseManager
+from pharcobial.types import Position
 
 
 class BaseSprite(Sprite, BaseManager):
-    def __init__(self, position: tuple[int, int], gfx_id: str, groups: Iterable[Group]) -> None:
+    def __init__(
+        self, position: Position, gfx_id: str, groups: Iterable[Group], hitbox_inflation: Position
+    ) -> None:
         super().__init__()
         self.image: Surface = self.graphics[gfx_id]
         self.rect: Rect = self.image.get_rect(topleft=position)
+        self.hitbox = self.rect.inflate(hitbox_inflation)
 
         for group in groups:
             group.add(self)
@@ -36,9 +40,13 @@ class MobileSprite(BaseSprite):
     speed: float = 0
     direction: Vector2
 
-    def move(self, x: int, y: int):
-        self.rect.x = x
-        self.rect.y = y
+    def move(self, position: Position):
+        # self.hitbox.x = position.x
+        # self.hitbox.y = position.y
+        # self.rect.center = self.hitbox.center
+
+        self.rect.x = position.x
+        self.rect.y = position.y
 
 
 __all__ = ["BaseSprite"]

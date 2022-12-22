@@ -1,22 +1,21 @@
-from typing import Iterable, Tuple
+from typing import Iterable
 
 from pygame.sprite import Group
 
 from pharcobial.sprites.base import BaseSprite
-from pharcobial.types import TileKey
+from pharcobial.types import Position, TileKey
 
 
 class Tile(BaseSprite):
-    def __init__(
-        self, position: Tuple[int, int], tile_key: TileKey, groups: Iterable[Group]
-    ) -> None:
+    def __init__(self, position: Position, tile_key: TileKey, groups: Iterable[Group]) -> None:
         self.tile_key = tile_key
         gfx_id = "grass"
         match tile_key:
             case TileKey.ROAD:
                 gfx_id = "road"
 
-        super().__init__(position, gfx_id, groups)
+        hitbox = Position(0, -10)
+        super().__init__(position, gfx_id, groups, hitbox)
 
     def __repr__(self) -> str:
         return f"<Tile ({self.rect.x}, {self.rect.y}) {self.tile_key.name}>"
