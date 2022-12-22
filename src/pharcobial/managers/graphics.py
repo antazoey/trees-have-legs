@@ -3,12 +3,11 @@ from typing import Dict
 import pygame
 from pygame.surface import Surface
 
-from pharcobial.constants import SOURCE_DIR
+from pharcobial.constants import GFX_DIR
 from pharcobial.managers.base import BaseManager
 
 
 class GraphicsManager(BaseManager):
-    base_path = SOURCE_DIR / "gfx"
     gfx_cache: Dict[str, Surface] = {}
 
     def __getitem__(self, gfx_id: str) -> Surface:
@@ -41,7 +40,7 @@ class GraphicsManager(BaseManager):
         return gfx
 
     def load(self, gfx_id: str) -> Surface:
-        path = self.base_path / f"{gfx_id}.png"
+        path = GFX_DIR / f"{gfx_id}.png"
         gfx = pygame.image.load(str(path))
         gfx.convert_alpha()  # Allows transparency
         return gfx
