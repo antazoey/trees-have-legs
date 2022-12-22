@@ -11,7 +11,8 @@ class Adversary(MobileSprite):
 
 class BushMonster(Adversary):
     def __init__(self, position: Tuple[int, int], monster_id: int):
-        super().__init__(position, "bush-monster")
+        self.character = "bush-monster"
+        super().__init__(position, self.character)
         self.monster_id = monster_id
         self.speed = 0.2
 
@@ -20,7 +21,7 @@ class BushMonster(Adversary):
         return round(BLOCK_SIZE * self.speed)
 
     def get_sprite_id(self) -> str:
-        return str(self.monster_id)
+        return f"adversary-{self.character}-{self.monster_id}"
 
     def update(self, *args, **kwargs):
         """

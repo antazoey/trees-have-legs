@@ -22,7 +22,8 @@ class CameraGroup(Group):
             offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
 
             # Draw player last
-            if sprite.get_sprite_id() == "player":
+            sprite_id = sprite.get_sprite_id()
+            if sprite_id == "player" or "adversary-" in sprite_id:
                 pending.append((sprite.image, offset_pos))
             else:
                 self.surface.blit(sprite.image, offset_pos)
