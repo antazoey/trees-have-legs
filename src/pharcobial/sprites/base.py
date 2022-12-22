@@ -48,5 +48,9 @@ class MobileSprite(BaseSprite):
         self.collision.check_y(self)
         self.rect.center = self.hitbox.center
 
+    @property
+    def moving(self) -> bool:
+        return round(self.direction.magnitude()) != 0
+
 
 __all__ = ["BaseSprite"]

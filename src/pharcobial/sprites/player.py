@@ -30,10 +30,6 @@ class Controller:
     def y(self):
         return self.direction.y
 
-    @property
-    def moving(self) -> bool:
-        return round(self.direction.magnitude()) != 0
-
     def handle_key_down(self, event: Event) -> Vector2:
         if event.key not in self.keys_held:
             self.keys_held.append(event.key)
@@ -96,10 +92,6 @@ class Player(MobileSprite):
         self.character = character
         self.controller = Controller()
         self.direction = self.controller.direction
-
-    @property
-    def moving(self) -> bool:
-        return self.controller.moving
 
     def get_sprite_id(self) -> str:
         return "player"
