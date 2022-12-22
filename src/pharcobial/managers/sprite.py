@@ -1,6 +1,8 @@
 from functools import cached_property
 from typing import Dict, Iterable, List
 
+from pygame.event import Event
+
 from pharcobial.constants import BLOCK_SIZE
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
@@ -80,7 +82,7 @@ class SpriteManager(BaseManager):
 
         raise IndexError(f"Sprite with ID '{key}' not found.")
 
-    def handle_event(self, event):
+    def handle_event(self, event: Event):
         self.player.handle_event(event)
 
 

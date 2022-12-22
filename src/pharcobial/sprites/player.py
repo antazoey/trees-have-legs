@@ -1,6 +1,7 @@
 from typing import Iterable
 
 import pygame
+from pygame.event import Event
 from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
@@ -32,7 +33,7 @@ class Controller:
     def moving(self) -> bool:
         return round(self.direction.magnitude()) != 0
 
-    def handle_key_down(self, event):
+    def handle_key_down(self, event: Event):
         if event.key == pygame.K_LEFT:
             self.direction.x -= 1
             self.right_focused = False
@@ -51,7 +52,7 @@ class Controller:
             if self.direction.x >= 0:
                 self.right_focused = True
 
-    def handle_key_up(self, event):
+    def handle_key_up(self, event: Event):
         if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
             self.direction.x = 0
         elif event.key in (pygame.K_UP, pygame.K_DOWN):
@@ -77,7 +78,7 @@ class Player(MobileSprite):
     def get_sprite_id(self) -> str:
         return "player"
 
-    def handle_event(self, event):
+    def handle_event(self, event: Event):
         """
         Handle when a user presses a key. If the user holds a key,
         the character continuously moves that direction. This method

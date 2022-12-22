@@ -1,6 +1,7 @@
 from abc import abstractmethod
-from typing import Iterable
+from typing import Iterable, Tuple, cast
 
+from pygame.event import Event
 from pygame.math import Vector2
 from pygame.rect import Rect
 from pygame.sprite import Group, Sprite
@@ -28,7 +29,7 @@ class BaseSprite(Sprite, BaseManager):
         Return a unique identifier for this sprite.
         """
 
-    def handle_event(self, event):
+    def handle_event(self, event: Event):
         """
         Handle events from pygame.
         Method not required for inactive sprites.
@@ -41,7 +42,7 @@ class MobileSprite(BaseSprite):
     direction: Vector2
 
     def move(self, position: Position):
-        self.hitbox.topleft = position
+        self.hitbox.topleft = cast(Tuple[int, int], position)
         self.rect.center = self.hitbox.center
 
 
