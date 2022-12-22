@@ -98,9 +98,8 @@ class Player(MobileSprite):
         if not self.moving:
             return
 
-        position = Position(self.rect.x, self.rect.y)
-        new_x = round(self.rect.x + self.controller.x * self.speed)
-        new_y = round(self.rect.y + self.controller.y * self.speed)
+        new_x = round(self.hitbox.x + self.controller.x * self.speed)
+        new_y = round(self.hitbox.y + self.controller.y * self.speed)
         position = Position(new_x, new_y)
         self.move(position)
 
