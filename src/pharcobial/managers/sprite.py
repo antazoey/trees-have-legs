@@ -8,7 +8,6 @@ from pharcobial.sprites.adversary import Adversary, BushMonster
 from pharcobial.sprites.base import BaseSprite
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
-from pharcobial.types import TileKey
 
 
 class SpriteManager(BaseManager):
@@ -21,7 +20,6 @@ class SpriteManager(BaseManager):
         """
         To be called after all managers initialized.
         """
-        game_map = list(self.map)
         self.environment_sprites = [
             self.player,
             # Add monsters to camera-followed group
@@ -29,17 +27,12 @@ class SpriteManager(BaseManager):
                 self.create_adversary("bush-monster", monster_id=str(i))
                 for i in range(self.options.num_monsters)
             ],
-            Tile((5 * BLOCK_SIZE, 5 * BLOCK_SIZE), TileKey.ROAD)
-            # TODO: Figure out why gets slow when adding more road
-            # Add map to camera-followed group
-            # *[
-            #     Tile((x * BLOCK_SIZE, y * BLOCK_SIZE), tile_key)
-            #     for y, row in enumerate(self.map)
-            #     for x, tile_key in enumerate(row)
-            #     if tile_key != TileKey.GRASS
-            # ],
+            *[
+                Tile((x * BLOCK_SIZE, y * BLOCK_SIZE), tile_key)
+                for y, row in enumerate(self.map)
+                for x, tile_key in enumerate(row)
+            ],
         ]
-
 
     @cached_property
     def player(self) -> Player:

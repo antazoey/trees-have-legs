@@ -1,30 +1,36 @@
-from typing import Callable, Iterable
+from typing import Iterable
 
 from pygame.math import Vector2
 from pygame.sprite import Group
+from pygame.surface import Surface
 
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import BaseSprite
 
 
 class CameraGroup(Group):
-    def draw_in_view(self, offset: Vector2, draw_fn: Callable):
+    def __init__(self, surface: Surface) -> None:
+        super().__init__()
+        self.surface = surface
+
+    def draw_in_view(self, offset: Vector2):
         for sprite in sorted(self.sprites(), key=lambda s: s.rect is not None and s.rect.centery):
             rect = sprite.rect
-            if not rect:
+            image = sprite.image
+            if not rect or not image:
                 # Should not happen, but for type-safety.
                 continue
 
-            # TODO: Figure out typing issue here.
-            offset_pos = rect.topleft - offset  # type: ignore
-            draw_fn(sprite.image, offset_pos)
+            # Mypy doesn't realize this is valid.
+            offset_pos: Vector2 = rect.topleft - offset  # type: ignore[operator]
+            self.surface.blit(image, offset_pos)
 
 
 class CameraManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         self.offset = Vector2()
-        self.group = CameraGroup()
+        self.group = CameraGroup(self.display.active.screen)
         self.followee = self.sprites.player
 
     def extend(self, sprites: Iterable[BaseSprite]):
@@ -44,7 +50,7 @@ class CameraManager(BaseManager):
         self.group.update()
 
     def draw(self):
-        self.group.draw_in_view(self.offset, self.display.active.draw_surface)
+        self.group.draw_in_view(self.offset)
 
 
 camera_manager = CameraManager()
