@@ -98,21 +98,12 @@ class Player(MobileSprite):
         if not self.moving:
             return
 
-        new_position = Position(
-            round(self.rect.x + self.controller.x * self.speed),
-            round(self.rect.y + self.controller.y * self.speed),
-        )
+        position = Position(self.rect.x, self.rect.y)
+        new_x = round(self.rect.x + self.controller.x * self.speed)
+        new_y = round(self.rect.y + self.controller.y * self.speed)
+        position = self.collision.check(Position(new_x, new_y))
 
-        # Check for collisions here.
-        if new_position.x < 0:
-            new_position.x = 0
-        elif new_position.x > self.display.width * 2:
-            new_position.x = self.display.width * 2
-        if new_position.y < 0:
-            new_position.y = 0
-
-        # Adjust coordinates. Note: must happen after setting image.
-        self.move(new_position)
+        self.move(position)
 
     def _get_graphic(self) -> Surface | None:
         if not self.moving:
