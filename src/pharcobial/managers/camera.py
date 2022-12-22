@@ -14,16 +14,21 @@ class CameraGroup(Group):
         self.surface = surface
 
     def draw_in_view(self, offset: Vector2):
+        pending = []
         for sprite in sorted(self.sprites(), key=lambda s: s.rect is not None and s.rect.centery):
-            rect = sprite.rect
-            image = sprite.image
-            if not rect or not image:
-                # Should not happen, but for type-safety.
-                continue
+            assert isinstance(sprite, BaseSprite)  # for Mypy
 
             # Mypy doesn't realize this is valid.
-            offset_pos: Vector2 = rect.topleft - offset  # type: ignore[operator]
-            self.surface.blit(image, offset_pos)
+            offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
+
+            # Draw player last
+            if sprite.get_sprite_id() == "player":
+                pending.append((sprite.image, offset_pos))
+            else:
+                self.surface.blit(sprite.image, offset_pos)
+
+        for img, offset in pending:
+            self.surface.blit(img, offset)
 
 
 class CameraManager(BaseManager):
