@@ -12,7 +12,8 @@ from pharcobial.types import Position
 
 class Controller:
     """
-    Class wrapping the
+    Class wrapping the controller keys around and handling the
+    direction and focus of the controller.
     """
 
     def __init__(self) -> None:
