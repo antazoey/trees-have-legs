@@ -43,6 +43,7 @@ class MobileSprite(BaseSprite):
 
     def move(self, position: Position):
         self.hitbox.topleft = cast(Tuple[int, int], position)
+        # self.hitbox = self.collision.check(self.hitbox, self.direction)
         self.rect.center = self.hitbox.center
 
 

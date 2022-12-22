@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, List
 
 import pygame
 from pygame.event import Event
@@ -20,6 +20,7 @@ class Controller:
     def __init__(self) -> None:
         self.direction = Vector2()
         self.right_focused: bool = False
+        self.keys_held: List[int] = []
 
     @property
     def x(self):
@@ -33,30 +34,54 @@ class Controller:
     def moving(self) -> bool:
         return round(self.direction.magnitude()) != 0
 
-    def handle_key_down(self, event: Event):
+    def handle_key_down(self, event: Event) -> Vector2:
+        if event.key not in self.keys_held:
+            self.keys_held.append(event.key)
+
         if event.key == pygame.K_LEFT:
             self.direction.x -= 1
             self.right_focused = False
+
         elif event.key == pygame.K_RIGHT:
             self.direction.x += 1
             self.right_focused = True
+
         elif event.key == pygame.K_UP:
             self.direction.y -= 1
-
-            if self.direction.x <= 0:
+            if pygame.K_RIGHT not in self.keys_held:
                 self.right_focused = False
 
         elif event.key == pygame.K_DOWN:
             self.direction.y += 1
-
-            if self.direction.x >= 0:
+            if pygame.K_LEFT not in self.keys_held:
                 self.right_focused = True
 
-    def handle_key_up(self, event: Event):
-        if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
-            self.direction.x = 0
-        elif event.key in (pygame.K_UP, pygame.K_DOWN):
-            self.direction.y = 0
+        return self.direction
+
+    def handle_key_up(self, event: Event) -> Vector2:
+        self.keys_held = [k for k in self.keys_held if k != event.key]
+
+        if event.key == pygame.K_LEFT:
+            self.direction.x += 1
+            if self.direction.x > 0:
+                self.right_focused = True
+
+        elif event.key == pygame.K_RIGHT:
+            self.direction.x -= 1
+            if self.direction.x < 0:
+                self.right_focused = False
+
+        elif event.key == pygame.K_DOWN:
+            self.direction.y -= 1
+            if self.direction.y < 0:
+                self.right_focused = False
+
+        elif event.key == pygame.K_UP:
+            self.direction.y += 1
+            if self.direction.y > 0:
+                self.right_focused = True
+
+        return self.direction
 
 
 class Player(MobileSprite):
@@ -70,6 +95,7 @@ class Player(MobileSprite):
         self.speed = 2
         self.character = character
         self.controller = Controller()
+        self.direction = self.controller.direction
 
     @property
     def moving(self) -> bool:
@@ -88,10 +114,10 @@ class Player(MobileSprite):
 
         if event.type == pygame.KEYDOWN:
             game_logger.debug(f"{event.key} key pressed.")
-            self.controller.handle_key_down(event)
+            self.direction = self.controller.handle_key_down(event)
 
         elif event.type == pygame.KEYUP:
-            self.controller.handle_key_up(event)
+            self.direction = self.controller.handle_key_up(event)
 
     def update(self, *args, **kwargs):
         self.image = self._get_graphic() or self.image
