@@ -17,7 +17,7 @@ class Player(MobileSprite):
     def __init__(self, position: Tuple[int, int], character: str = "pharma"):
         super().__init__(position, character)
         self.move_gfx_id: int = -1
-        self.speed = 0.24
+        self.speed = 0.1
         self.uses_events: bool = True
         self.direction = Vector2()
         self.character = character
@@ -80,7 +80,7 @@ class Player(MobileSprite):
             return image or self.image
 
         self.move_gfx_id += 1
-        frame_rate = round(self.speed * BLOCK_SIZE)
+        frame_rate = round(self.speed * BLOCK_SIZE * 2)
         if self.move_gfx_id in range(frame_rate):
             suffix = "-walk-1"
         elif self.move_gfx_id in range(frame_rate, frame_rate * 2 + 1):
