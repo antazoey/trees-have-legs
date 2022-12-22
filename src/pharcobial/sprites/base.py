@@ -42,8 +42,6 @@ class MobileSprite(BaseSprite):
     direction: Vector2
 
     def move(self, position: Position):
-        # self.hitbox.topleft = cast(Tuple[int, int], position)
-
         self.hitbox.x = position.x
         self.collision.check_x(self)
         self.hitbox.y = position.y

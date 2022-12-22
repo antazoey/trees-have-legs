@@ -18,32 +18,35 @@ class CollisionManager(BaseManager):
 
     def check_x(self, target: MobileSprite):
         def fn(sprite: BaseSprite):
-            if self.collides(target, sprite):
-                game_logger.debug(f"Collision with '{sprite.get_sprite_id()}'.")
-                if target.direction.x < 0:
-                    target.hitbox.right = sprite.hitbox.left
-                    return False
-
-                elif target.direction.x > 0:
-                    target.hitbox.left = sprite.hitbox.right
-                    return False
-
+            if not self.collides(target, sprite):
                 return True
+
+            if target.direction.x < 0:
+                target.hitbox.right = sprite.hitbox.left
+                return False
+
+            elif target.direction.x > 0:
+                target.hitbox.left = sprite.hitbox.right
+                return False
+
+            return True
 
         self.for_each(fn)
 
     def check_y(self, target: MobileSprite):
         def fn(sprite):
-            if self.collides(target, sprite):
-                if target.direction.y < 0:
-                    target.hitbox.bottom = sprite.hitbox.top
-                    return False
-
-                elif target.direction.y > 0:
-                    target.hitbox.top = sprite.hitbox.bottom
-                    return False
-
+            if not self.collides(target, sprite):
                 return True
+
+            if target.direction.y < 0:
+                target.hitbox.bottom = sprite.hitbox.top
+                return False
+
+            elif target.direction.y > 0:
+                target.hitbox.top = sprite.hitbox.bottom
+                return False
+
+            return True
 
         self.for_each(fn)
 
