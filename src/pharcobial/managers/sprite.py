@@ -66,8 +66,7 @@ class SpriteManager(BaseManager):
             raise TypeError(f"Unsupported adversary type '{type_key}'.")
 
     def handle_event(self, event):
-        for sprite in [s for s in self if s.uses_events]:
-            sprite.handle_event(event)
+        self.player.handle_event(event)
 
     def update(self):
         self.sprite_group.update(player=self.player)

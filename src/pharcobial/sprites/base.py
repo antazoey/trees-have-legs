@@ -1,16 +1,15 @@
 from abc import abstractmethod
 
+from pygame.math import Vector2  # type: ignore
 from pygame.rect import Rect  # type: ignore
 from pygame.sprite import Sprite  # type: ignore
 
-from pharcobial._types import Orientation
 from pharcobial.constants import BLOCK_SIZE
 
 
 class BaseSprite(Sprite):
     speed: float = 0
-    uses_events: bool = False
-    orientration: Orientation | None
+    direction: Vector2
 
     def __init__(self, x: int, y: int) -> None:
         super().__init__()
