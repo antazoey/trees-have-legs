@@ -18,9 +18,6 @@ class BaseManager:
     A way to do dependency injection between all the managers.
     """
 
-    def __init__(self) -> None:
-        self.root_module = ".".join(BaseManager.__module__.split(".")[:-1])
-
     @cached_property
     def camera(self) -> "CameraManager":
         """
@@ -74,5 +71,11 @@ class BaseManager:
         return cast("SpriteManager", self.get_manager("sprite"))
 
     def get_manager(self, name: str) -> "BaseManager":
-        module = import_module(f"{self.root_module}.{name}")
+        module = import_module(f"{ROOT_MODULE}.{name}")
         return getattr(module, f"{name}_manager")
+
+
+ROOT_MODULE = ".".join(BaseManager.__module__.split(".")[:-1])
+
+
+__all__ = ["BaseManager"]

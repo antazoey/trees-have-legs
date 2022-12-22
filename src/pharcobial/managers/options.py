@@ -1,9 +1,11 @@
 import argparse
 from dataclasses import dataclass
 from functools import cached_property
+from logging import DEBUG
 from typing import Any
 
-from .base import BaseManager
+from pharcobial.logging import game_logger
+from pharcobial.managers.base import BaseManager
 
 DEFAULT_WIDTH = 1200
 DEFAULT_HEIGHT = 800
@@ -24,6 +26,9 @@ class GameOptions:
 
     # Game settings
     num_monsters: int = DEFAULT_NUM_MONSTERS
+
+    # Debug
+    debug: bool = False
 
 
 class OptionsManager(BaseManager):
@@ -65,7 +70,13 @@ class OptionsManager(BaseManager):
             type=int,
         )
 
+        parser.add_argument("--debug", action="store_true", help="Set to enable DEBUG logging.")
+
         parsed_args = parser.parse_args()
+
+        # Set DEBUG logger ASAP in arg parsing process to ensure capturing logs.
+        if parsed_args.debug:
+            game_logger.setLevel(DEBUG)
 
         return GameOptions(
             window_width=parsed_args.window_width,
@@ -74,6 +85,7 @@ class OptionsManager(BaseManager):
             font_size=parsed_args.font_size,
             full_screen=parsed_args.full_screen,
             num_monsters=parsed_args.num_monsters,
+            debug=parsed_args.debug,
         )
 
     def __getattr__(self, key: str) -> Any:

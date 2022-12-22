@@ -1,7 +1,7 @@
-import pygame  # type: ignore
+import pygame
 
-from pharcobial._types import GameAction
 from pharcobial.managers.base import BaseManager
+from pharcobial.types import GameAction
 
 
 class Game(BaseManager):
@@ -11,7 +11,9 @@ class Game(BaseManager):
         self.running = False
 
     def run(self):
-        self.display.active.clear()
+        self.display.validate()
+        self.sprites.load()
+        self.camera.extend(self.sprites.environment_sprites)
         self.running = True
         while self.running:
             action = self.events.process_next()
@@ -20,12 +22,10 @@ class Game(BaseManager):
                 break
 
             # Update everything here.
-            self.map.update()
-            self.sprites.update()
+            self.camera.update()
 
             with self.display.in_same_cycle():
-                self.map.draw()
-                self.sprites.draw()
+                self.camera.draw()
                 pygame.display.flip()
 
         pygame.quit()

@@ -1,6 +1,6 @@
-import pygame  # type: ignore
+import pygame
 
-from .base import BaseManager
+from pharcobial.managers.base import BaseManager
 
 
 class ClockManager(BaseManager):

@@ -1,24 +1,26 @@
-import pygame  # type: ignore
-from pygame.math import Vector2  # type: ignore
+from typing import Tuple
+
+import pygame
+from pygame.math import Vector2
+from pygame.surface import Surface
 
 from pharcobial.constants import BLOCK_SIZE
-from pharcobial.managers.graphics import graphics_manager
-from pharcobial.sprites.base import BaseSprite
+from pharcobial.logging import game_logger
+from pharcobial.sprites.base import MobileSprite
 
 
-class Player(BaseSprite):
+class Player(MobileSprite):
     """
     The main character.
     """
 
-    def __init__(self, x: int, y: int, character: str = "pharma"):
-        super().__init__(x, y)
-        self.character = character
+    def __init__(self, position: Tuple[int, int], character: str = "pharma"):
+        super().__init__(position, character)
         self.move_gfx_id: int = -1
         self.speed = 0.24
         self.uses_events: bool = True
         self.direction = Vector2()
-        self.image = graphics_manager[self.character]
+        self.character = character
         self.image_flipped = False
 
     @property
@@ -27,23 +29,6 @@ class Player(BaseSprite):
 
     def get_sprite_id(self) -> str:
         return "player"
-
-    def get_gfx_id(self) -> str:
-        if not self.moving:
-            # Return a standing-still graphic of the last direction facing.
-            return self.character
-
-        self.move_gfx_id += 1
-        frame_rate = round(self.speed * BLOCK_SIZE)
-        if self.move_gfx_id in range(frame_rate):
-            suffix = "-walk-1"
-        elif self.move_gfx_id in range(frame_rate, frame_rate * 2 + 1):
-            suffix = "-walk-2"
-        else:
-            suffix = ""
-            self.move_gfx_id = -1
-
-        return f"{self.character}{suffix}"
 
     def handle_event(self, event):
         """
@@ -54,6 +39,8 @@ class Player(BaseSprite):
         """
 
         if event.type == pygame.KEYDOWN:
+            game_logger.debug(f"{event.key} key pressed.")
+
             if event.key == pygame.K_LEFT:
                 self.direction.x -= 1
             elif event.key == pygame.K_RIGHT:
@@ -74,8 +61,7 @@ class Player(BaseSprite):
                 self.direction.y = 0
 
     def update(self, *args, **kwargs):
-        gfx_id = self.get_gfx_id()
-        self.image = graphics_manager.get(gfx_id, flip_vertically=self.image_flipped)
+        self.image = self._get_graphic() or self.image
 
         if not self.moving:
             return
@@ -86,3 +72,23 @@ class Player(BaseSprite):
 
         # Adjust coordinates. Note: must happen after setting image.
         self.move(new_x, new_y)
+
+    def _get_graphic(self) -> Surface | None:
+        if not self.moving:
+            # Return a standing-still graphic of the last direction facing.
+            image = self.graphics.get(self.character, flip_vertically=self.image_flipped)
+            return image or self.image
+
+        self.move_gfx_id += 1
+        frame_rate = round(self.speed * BLOCK_SIZE)
+        if self.move_gfx_id in range(frame_rate):
+            suffix = "-walk-1"
+        elif self.move_gfx_id in range(frame_rate, frame_rate * 2 + 1):
+            suffix = "-walk-2"
+        else:
+            suffix = ""
+            self.move_gfx_id = -1
+
+        gfx_id = f"{self.character}{suffix}"
+        graphic = self.graphics.get(gfx_id, flip_vertically=self.image_flipped)
+        return graphic or self.image

@@ -1,8 +1,7 @@
-import pygame  # type: ignore
+import pygame
 
-from pharcobial._types import GameAction
-
-from .base import BaseManager
+from pharcobial.managers.base import BaseManager
+from pharcobial.types import GameAction
 
 
 class EventManager(BaseManager):

@@ -1,15 +1,15 @@
-from pathlib import Path
 from typing import Dict
 
-import pygame  # type: ignore
-from pygame.surface import Surface  # type: ignore
+import pygame
+from pygame.surface import Surface
 
-from .base import BaseManager
+from pharcobial.constants import SOURCE_DIR
+from pharcobial.managers.base import BaseManager
 
 
 class GraphicsManager(BaseManager):
-    base_path = Path(__file__).parent.parent.parent.parent / "gfx"
-    gfx_cache: Dict = {}
+    base_path = SOURCE_DIR / "gfx"
+    gfx_cache: Dict[str, Surface] = {}
 
     def __getitem__(self, gfx_id: str) -> Surface:
         gfx = self.get(gfx_id)
@@ -36,11 +36,7 @@ class GraphicsManager(BaseManager):
         elif gfx_id in self.gfx_cache:
             return self.gfx_cache[gfx_id]
 
-        try:
-            gfx = self.load(gfx_id)
-        except Exception:
-            return None
-
+        gfx = self.load(gfx_id)
         self.gfx_cache[gfx_id] = gfx
         return gfx
 

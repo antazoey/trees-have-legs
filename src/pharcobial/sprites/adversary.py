@@ -1,22 +1,19 @@
 from functools import cached_property
+from typing import Tuple
 
 from pharcobial.constants import BLOCK_SIZE
-from pharcobial.managers.graphics import graphics_manager
-
-from .base import BaseSprite
+from pharcobial.sprites.base import MobileSprite
 
 
-class Adversary(BaseSprite):
+class Adversary(MobileSprite):
     pass
 
 
 class BushMonster(Adversary):
-    def __init__(self, x, y, monster_id: int):
-        super().__init__(x, y)
+    def __init__(self, position: Tuple[int, int], monster_id: int):
+        super().__init__(position, "bush-monster")
         self.monster_id = monster_id
         self.speed = 0.2
-        self.image = graphics_manager["bush-monster"]
-        self.rect = self.image.get_rect()
 
     @cached_property
     def movement_length(self) -> int:
@@ -30,7 +27,7 @@ class BushMonster(Adversary):
         The monster is always moving towards the player.
         """
 
-        player = kwargs["player"]
+        player = self.sprites.player
 
         new_x = self.rect.x
         new_y = self.rect.y
