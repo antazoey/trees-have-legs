@@ -101,8 +101,7 @@ class Player(MobileSprite):
         position = Position(self.rect.x, self.rect.y)
         new_x = round(self.rect.x + self.controller.x * self.speed)
         new_y = round(self.rect.y + self.controller.y * self.speed)
-        position = self.collision.check(Position(new_x, new_y))
-
+        position = Position(new_x, new_y)
         self.move(position)
 
     def _get_graphic(self) -> Surface | None:
