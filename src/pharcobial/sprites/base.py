@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable
+from typing import Iterable, Tuple
 
 from pygame.event import Event
 from pygame.math import Vector2
@@ -17,7 +17,7 @@ class BaseSprite(Sprite, BaseManager):
         position: Position,
         gfx_id: str | None,
         groups: Iterable[Group],
-        hitbox_inflation: Position,
+        hitbox_inflation: Position | Tuple[int, int],
     ) -> None:
         super().__init__()
         self.image: Surface = (

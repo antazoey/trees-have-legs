@@ -18,10 +18,14 @@ class Tile(BaseSprite):
         match tile_key:
             case TileKey.ROAD:
                 gfx_id = "road"
+                hitbox = (0, 0)
             case TileKey.GRASS:
                 gfx_id = "grass"
+                hitbox = (0, 0)
+            case TileKey.VOID:
+                gfx_id = None
+                hitbox = (-10, 0)
 
-        hitbox = Position(-10, 0)
         super().__init__(position, gfx_id, groups, hitbox)
 
     def __repr__(self) -> str:
