@@ -12,7 +12,7 @@ from pharcobial.utils import chance
 class Bush(MobileSprite):
     def __init__(self, position: Position, bush_id: str, groups: Iterable[Group]):
         self.character = "bush"
-        super().__init__(position, self.character, groups, Position(-10, -26))
+        super().__init__(position, self.character, groups, (-30, -26))
         self.bush_id = bush_id
         self.speed = 1
         self.vision = self.rect.inflate((2 * self.rect.height, 2 * self.rect.width))
