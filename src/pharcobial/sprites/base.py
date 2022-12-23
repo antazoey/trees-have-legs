@@ -27,6 +27,7 @@ class BaseSprite(Sprite, BaseManager):
         )
         self.rect: Rect = self.image.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(hitbox_inflation)
+        self.visible = True
 
         for group in groups:
             group.add(self)

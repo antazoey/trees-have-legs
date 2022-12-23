@@ -9,7 +9,7 @@ from pygame.surface import Surface
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import MobileSprite
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import Positional
+from pharcobial.types import KeyBinding, Positional
 
 
 class Controller:
@@ -18,10 +18,11 @@ class Controller:
     direction and focus of the controller.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, bindings: KeyBinding) -> None:
         self.direction = Vector2()
         self.right_focused: bool = False
         self.keys_held: List[int] = []
+        self.bindings = bindings
 
     @property
     def x(self):
@@ -35,22 +36,22 @@ class Controller:
         if event.key not in self.keys_held:
             self.keys_held.append(event.key)
 
-        if event.key == pygame.K_LEFT:
+        if event.key == self.bindings.left:
             self.direction.x -= 1
             self.right_focused = False
 
-        elif event.key == pygame.K_RIGHT:
+        elif event.key == self.bindings.right:
             self.direction.x += 1
             self.right_focused = True
 
-        elif event.key == pygame.K_UP:
+        elif event.key == self.bindings.up:
             self.direction.y -= 1
-            if pygame.K_RIGHT not in self.keys_held:
+            if self.bindings.right not in self.keys_held:
                 self.right_focused = False
 
-        elif event.key == pygame.K_DOWN:
+        elif event.key == self.bindings.down:
             self.direction.y += 1
-            if pygame.K_LEFT not in self.keys_held:
+            if self.bindings.left not in self.keys_held:
                 self.right_focused = True
 
         return self.direction
@@ -58,22 +59,22 @@ class Controller:
     def handle_key_up(self, event: Event) -> Vector2:
         self.keys_held = [k for k in self.keys_held if k != event.key]
 
-        if event.key == pygame.K_LEFT:
+        if event.key == self.bindings.left:
             self.direction.x += 1
             if self.direction.x > 0:
                 self.right_focused = True
 
-        elif event.key == pygame.K_RIGHT:
+        elif event.key == self.bindings.right:
             self.direction.x -= 1
             if self.direction.x < 0:
                 self.right_focused = False
 
-        elif event.key == pygame.K_DOWN:
+        elif event.key == self.bindings.down:
             self.direction.y -= 1
             if self.direction.y < 0:
                 self.right_focused = False
 
-        elif event.key == pygame.K_UP:
+        elif event.key == self.bindings.up:
             self.direction.y += 1
             if self.direction.y > 0:
                 self.right_focused = True
@@ -91,7 +92,7 @@ class Player(MobileSprite):
         self.move_gfx_id: int = -1
         self.speed = 2
         self.character = character
-        self.controller = Controller()
+        self.controller = Controller(self.options.key_bindings)
         self.direction = self.controller.direction
         self.chat_bubble = ChatBubble(self)
 
@@ -111,11 +112,16 @@ class Player(MobileSprite):
             self.direction = self.controller.handle_key_down(event)
 
             # Set chat-bubble if "activate" hit.
-            if event.key == pygame.K_SPACE:
+            if event.key == self.options.key_bindings.activate:
                 self.chat_bubble.visible = True
 
         elif event.type == pygame.KEYUP:
             self.direction = self.controller.handle_key_up(event)
+
+    def activate(self):
+        """
+        The user hitting the action key on something.
+        """
 
     def update(self, *args, **kwargs):
         self.image = self._get_graphic() or self.image
@@ -126,6 +132,8 @@ class Player(MobileSprite):
         new_x = round(self.hitbox.x + self.controller.x * self.speed)
         new_y = round(self.hitbox.y + self.controller.y * self.speed)
         self.move(new_x, new_y)
+        self.chat_bubble.rect.x = new_x
+        self.chat_bubble.rect.y = new_y
 
     def _get_graphic(self) -> Surface | None:
         if not self.moving:

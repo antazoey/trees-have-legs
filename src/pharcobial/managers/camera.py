@@ -16,13 +16,15 @@ class CameraGroup(Group):
         pending = []
         for sprite in sorted(self.sprites(), key=lambda s: s.rect is not None and s.rect.centery):
             assert isinstance(sprite, BaseSprite)  # for Mypy
+            if not sprite.visible:
+                continue
 
             # Mypy doesn't realize this is valid.
             offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
 
-            # Draw player last
+            # Draw bottom layer first
             sprite_id = sprite.get_sprite_id()
-            if sprite_id == "player" or "adversary-" in sprite_id:
+            if sprite_id == "player" or "adversary-" in sprite_id or "-bubble" in sprite_id:
                 pending.append((sprite.image, offset_pos))
             else:
                 self.surface.blit(sprite.image, offset_pos)

@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import List, Tuple, Union
 
+from pygame import K_DOWN, K_LEFT, K_RIGHT, K_SPACE, K_UP
+
 Color = Tuple[int, int, int]
 
 
@@ -41,3 +43,19 @@ class TileKey(Enum):
 
 
 Map = List[List[TileKey]]
+
+
+class KeyBinding:
+    def __init__(
+        self,
+        up: int = K_UP,
+        down: int = K_DOWN,
+        left: int = K_LEFT,
+        right: int = K_RIGHT,
+        activate: int = K_SPACE,
+    ) -> None:
+        self.up = up
+        self.down = down
+        self.left = left
+        self.right = right
+        self.activate = activate

@@ -6,6 +6,7 @@ from typing import Any
 
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
+from pharcobial.types import KeyBinding
 
 DEFAULT_WIDTH = 1200
 DEFAULT_HEIGHT = 800
@@ -28,6 +29,9 @@ class GameOptions:
 
 
 class OptionsManager(BaseManager):
+
+    key_bindings: KeyBinding = KeyBinding()
+
     @cached_property
     def options(self):
         """
