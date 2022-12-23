@@ -7,14 +7,23 @@ from pharcobial.types import Position, TileKey
 
 
 class Tile(BaseSprite):
-    def __init__(self, position: Position, tile_key: TileKey, groups: Iterable[Group]) -> None:
+    def __init__(
+        self,
+        position: Position,
+        tile_key: TileKey,
+        groups: Iterable[Group],
+        is_end_piece: bool = False,
+    ) -> None:
         self.tile_key = tile_key
-        gfx_id = "grass"
+        gfx_id = None
         match tile_key:
             case TileKey.ROAD:
                 gfx_id = "road"
+            case TileKey.GRASS:
+                gfx_id = "grass"
 
         hitbox = Position(0, -10)
+        self.is_end_piece = is_end_piece
         super().__init__(position, gfx_id, groups, hitbox)
 
     def __repr__(self) -> str:

@@ -29,10 +29,11 @@ class GameAction(Enum):
 
 
 class TileKey(Enum):
-    GRASS = 0
-    ROAD = 1
-    PLAYER = 2
-    BUSH = 3
+    GRASS = "0"
+    ROAD = "1"
+    PLAYER = "P"
+    BUSH = "B"
+    VOID = "X"
 
 
 Map = List[List[TileKey]]

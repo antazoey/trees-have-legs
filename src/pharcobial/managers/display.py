@@ -1,25 +1,16 @@
 from contextlib import contextmanager
-from typing import Dict
 
 import pygame
 
-from pharcobial.constants import NAME
+from pharcobial.constants import NAME, RGB
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import Color
 
 
 class Display:
     """
     A class used for displaying text or graphics on the actual screen.
     """
-
-    RGB: Dict[str, Color] = {
-        "white": (255, 255, 255),
-        "black": (0, 0, 0),
-        "red": (255, 0, 0),
-        "green": (0, 155, 0),
-    }
 
     def __init__(
         self,
@@ -52,7 +43,7 @@ class Display:
         pygame.display.update()
 
     def clear(self):
-        self.screen.fill(self.RGB["black"])
+        self.screen.fill(RGB["black"])
 
 
 class DisplayManager(BaseManager):

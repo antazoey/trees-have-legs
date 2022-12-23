@@ -13,10 +13,16 @@ from pharcobial.types import Position
 
 class BaseSprite(Sprite, BaseManager):
     def __init__(
-        self, position: Position, gfx_id: str, groups: Iterable[Group], hitbox_inflation: Position
+        self,
+        position: Position,
+        gfx_id: str | None,
+        groups: Iterable[Group],
+        hitbox_inflation: Position,
     ) -> None:
         super().__init__()
-        self.image: Surface = self.graphics[gfx_id]
+        self.image: Surface = (
+            self.graphics[gfx_id] if gfx_id else self.graphics.get_filled_surface("black")
+        )
         self.rect: Rect = self.image.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(hitbox_inflation)
 

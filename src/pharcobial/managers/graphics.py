@@ -3,7 +3,7 @@ from typing import Dict
 import pygame
 from pygame.surface import Surface
 
-from pharcobial.constants import GFX_DIR
+from pharcobial.constants import BLOCK_SIZE, GFX_DIR, RGB
 from pharcobial.managers.base import BaseManager
 
 
@@ -44,6 +44,11 @@ class GraphicsManager(BaseManager):
         gfx = pygame.image.load(str(path))
         gfx.convert_alpha()  # Allows transparency
         return gfx
+
+    def get_filled_surface(self, color: str) -> Surface:
+        surface = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
+        surface.fill(RGB[color])
+        return surface
 
 
 graphics_manager = GraphicsManager()

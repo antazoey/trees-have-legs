@@ -25,16 +25,18 @@ class MapManager(BaseManager):
         for y, row in enumerate(lines):
             row_tiles: List[TileKey] = []
             for x, tile in enumerate(row.split(",")):
-                key = TileKey(int(tile.strip()))
-                if key == TileKey.PLAYER:
-                    self.player_start = Position(x * BLOCK_SIZE, y * BLOCK_SIZE)
-                    row_tiles.append(TileKey.GRASS)
-                elif key == TileKey.BUSH:
-                    self.bushes_start.append(Position(x * BLOCK_SIZE, y * BLOCK_SIZE))
-                    row_tiles.append(TileKey.GRASS)
-                else:
-                    # Normaly map tile (grass or road)
-                    row_tiles.append(key)
+                key = TileKey(tile.strip())
+
+                match key:
+                    case TileKey.PLAYER:
+                        self.player_start = Position(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                        row_tiles.append(TileKey.GRASS)
+                    case TileKey.BUSH:
+                        self.bushes_start.append(Position(x * BLOCK_SIZE, y * BLOCK_SIZE))
+                        row_tiles.append(TileKey.GRASS)
+                    case _:
+                        # Normal map tile (grass or road)
+                        row_tiles.append(key)
 
             self.active.append(row_tiles)
 
