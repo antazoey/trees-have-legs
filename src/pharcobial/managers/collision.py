@@ -57,8 +57,7 @@ class CollisionManager(BaseManager):
 
         if sprite_0.hitbox.colliderect(sprite_1.hitbox):
             game_logger.debug(
-                f"Collision between '{sprite_0.get_sprite_id()}' "
-                f"and '{sprite_1.get_sprite_id()}' detected."
+                f"Collision between '{sprite_0.sprite_id}' " f"and '{sprite_1.sprite_id}' detected."
             )
             return True
 

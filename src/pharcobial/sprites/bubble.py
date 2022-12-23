@@ -8,9 +8,13 @@ class ChatBubble(MobileSprite):
 
     def __init__(self, parent: MobileSprite) -> None:
         super().__init__(
-            parent.rect.inflate((0, -5)).topleft, "chat-bubble", (parent.camera_group,), (0, 0)
+            "{self.parent_id}-bubble",
+            parent.rect.inflate((0, -5)).topleft,
+            "chat-bubble",
+            (parent.camera_group,),
+            (0, 0),
         )
-        self.parent_id = parent.get_sprite_id()
+        self.parent_id = parent.sprite_id
         self.visible = False
         self.timer: int | None = None
 
@@ -27,6 +31,3 @@ class ChatBubble(MobileSprite):
 
         elif self.visible and self.timer is not None:
             self.timer -= 1
-
-    def get_sprite_id(self) -> str:
-        return f"{self.parent_id}-bubble"

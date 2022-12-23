@@ -12,16 +12,19 @@ from pharcobial.utils import chance
 class Bush(MobileSprite):
     def __init__(self, position: Positional, bush_id: str, groups: Iterable[Group]):
         self.character = "bush"
-        super().__init__(position, self.character, groups, (-30, -26))
-        self.bush_id = bush_id
+        self.bush_id: str = bush_id
+        super().__init__(
+            f"adversary-{self.character}-{self.bush_id}",
+            position,
+            self.character,
+            groups,
+            (-30, -26),
+        )
         self.speed = 1
         self.vision = self.rect.inflate((2 * self.rect.height, 2 * self.rect.width))
         self.direction = Vector2()
         self.player_is_near: bool = False
         self.is_alive: bool = False
-
-    def get_sprite_id(self) -> str:
-        return f"adversary-{self.character}-{self.bush_id}"
 
     def update(self, *args, **kwargs):
         """

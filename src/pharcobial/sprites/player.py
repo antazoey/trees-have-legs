@@ -95,16 +95,13 @@ class Player(MobileSprite):
     """
 
     def __init__(self, position: Positional, groups: Iterable[Group], character: str = "pharma"):
-        super().__init__(position, character, groups, (0, -10))
+        super().__init__("player", position, character, groups, (0, -10))
         self.move_gfx_id: int = -1
         self.speed = 2
         self.character = character
         self.controller = Controller(self.options.key_bindings)
         self.direction = self.controller.direction
         self.chat_bubble = ChatBubble(self)
-
-    def get_sprite_id(self) -> str:
-        return "player"
 
     def handle_event(self, event: Event):
         """

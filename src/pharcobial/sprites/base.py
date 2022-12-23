@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from functools import cached_property
 from typing import Dict, Iterable
 
@@ -15,12 +14,14 @@ from pharcobial.types import Positional
 class BaseSprite(Sprite, BaseManager):
     def __init__(
         self,
+        sprite_id: str,
         position: Positional,
         gfx_id: str | None,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional,
     ) -> None:
         super().__init__()
+        self.sprite_id = sprite_id
         self.gfx_id = gfx_id
         self.image: Surface = (
             self.graphics[gfx_id] if gfx_id else self.graphics.get_filled_surface("black")
@@ -32,12 +33,6 @@ class BaseSprite(Sprite, BaseManager):
         for group in groups:
             group.add(self)
 
-    @abstractmethod
-    def get_sprite_id(self) -> str:
-        """
-        Return a unique identifier for this sprite.
-        """
-
     @cached_property
     def camera_group(self) -> AbstractGroup:
         return [x for x in self.groups() if "camera" in type(x).__name__.lower()][0]
@@ -47,7 +42,7 @@ class BaseSprite(Sprite, BaseManager):
         Get a stateful dictionary for reloading.
         """
         return {
-            "sprite_id": self.get_sprite_id(),
+            "sprite_id": self.sprite_id,
             "position": {"x": self.rect.x, "y": self.rect.y},
             "gfx_id": self.gfx_id,
         }

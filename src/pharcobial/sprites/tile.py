@@ -26,10 +26,7 @@ class Tile(BaseSprite):
                 gfx_id = None
                 hitbox = (-10, 0)
 
-        super().__init__(position, gfx_id, groups, hitbox)
+        super().__init__(f"tile_({position[0]}, {position[1]})", position, gfx_id, groups, hitbox)
 
     def __repr__(self) -> str:
         return f"<Tile ({self.rect.x}, {self.rect.y}) {self.tile_key.name}>"
-
-    def get_sprite_id(self) -> str:
-        return f"tile_({self.rect.x, self.rect.y})"

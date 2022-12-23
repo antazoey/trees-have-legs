@@ -90,12 +90,11 @@ class SpriteManager(BaseManager):
 
         # Brute force find it and cache it
         for sprite in self.all_sprites:
-            sprite_id = sprite.get_sprite_id()
 
-            if sprite_id == key:
+            if sprite.sprite_id == key:
                 # This sprite is likely requested often.
                 # Cache for faster look-up next time.
-                self._sprite_cache[sprite_id] = sprite
+                self._sprite_cache[sprite.sprite_id] = sprite
                 return sprite
 
         raise IndexError(f"Sprite with ID '{key}' not found.")

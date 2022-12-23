@@ -23,8 +23,11 @@ class CameraGroup(Group):
             offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
 
             # Draw bottom layer first
-            sprite_id = sprite.get_sprite_id()
-            if sprite_id == "player" or "adversary-" in sprite_id or "-bubble" in sprite_id:
+            if (
+                sprite.sprite_id == "player"
+                or "adversary-" in sprite.sprite_id
+                or "-bubble" in sprite.sprite_id
+            ):
                 pending.append((sprite.image, offset_pos))
             else:
                 self.surface.blit(sprite.image, offset_pos)
