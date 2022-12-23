@@ -23,6 +23,7 @@ class Controller:
         self.right_focused: bool = False
         self.keys_held: List[int] = []
         self.bindings = bindings
+        self.activate = False
 
     @property
     def x(self):
@@ -53,6 +54,9 @@ class Controller:
             self.direction.y += 1
             if self.bindings.left not in self.keys_held:
                 self.right_focused = True
+        
+        elif event.key == self.bindings.activate:
+            self.activate = True
 
         return self.direction
 
@@ -78,6 +82,9 @@ class Controller:
             self.direction.y += 1
             if self.direction.y > 0:
                 self.right_focused = True
+        
+        elif event.key == self.bindings.activate:
+            self.activate = False
 
         return self.direction
 
@@ -110,13 +117,11 @@ class Player(MobileSprite):
         if event.type == pygame.KEYDOWN:
             game_logger.debug(f"{event.key} key pressed.")
             self.direction = self.controller.handle_key_down(event)
-
-            # Set chat-bubble if "activate" hit.
-            if event.key == self.options.key_bindings.activate:
-                self.chat_bubble.visible = True
+            self.chat_bubble.visible = self.controller.activate
 
         elif event.type == pygame.KEYUP:
             self.direction = self.controller.handle_key_up(event)
+            self.chat_bubble.visible = self.controller.activate
 
     def activate(self):
         """
