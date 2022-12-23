@@ -2,7 +2,7 @@ from contextlib import contextmanager
 
 import pygame
 
-from pharcobial.constants import NAME, RGB
+from pharcobial.constants import GAME_NAME, RGB
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 
@@ -35,7 +35,7 @@ class Display:
 
         self.font = pygame.font.SysFont("comic-sans", font_size)
 
-        pygame.display.set_caption(NAME)
+        pygame.display.set_caption(GAME_NAME)
 
     def update(self):
         screen = pygame.transform.scale(self.screen, (self.width * 2, self.height * 2))

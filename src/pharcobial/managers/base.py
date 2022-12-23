@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .map import MapManager
     from .options import OptionsManager
     from .sprite import SpriteManager
+    from .state import StateManager
 
 
 class BaseManager:
@@ -94,6 +95,14 @@ class BaseManager:
         """
 
         return cast("SpriteManager", self._get_manager("sprite"))
+    
+    @cached_property
+    def state(self) -> "StateManager":
+        """
+        Responsible for saving and loading.
+        """
+
+        return cast("StateManager", self._get_manager("state"))
 
     def validate(self):
         """

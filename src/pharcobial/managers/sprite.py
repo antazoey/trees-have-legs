@@ -18,7 +18,7 @@ class SpriteManager(BaseManager):
         super().__init__()
         self._sprite_cache: Dict[str, BaseSprite] = {}
 
-    def load(self):
+    def init_sprites(self):
         """
         To be called after all managers initialized.
         """
@@ -26,6 +26,13 @@ class SpriteManager(BaseManager):
         _ = self.player
         _ = self.bushes
         _ = self.tiles
+    
+    def dict(self) -> Dict:
+        return {
+            "player": self.player.dict(),
+            "bushes": [x.dict() for x in self.bushes],
+            "tiles": [x.dict() for x in self.tiles]
+        }
 
     def validate(self):
         assert self.player

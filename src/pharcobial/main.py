@@ -37,7 +37,7 @@ class Game(BaseManager):
         ):
             manager.validate()
         # Load all sprites in this level.
-        self.sprites.load()
+        self.sprites.init_sprites()
         self.sprites.validate()
 
         # Set the camera to follow the player. This must happen after loading sprites.

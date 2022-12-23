@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Dict
 
 from pygame.event import Event
 from pygame.math import Vector2
@@ -34,6 +34,16 @@ class BaseSprite(Sprite, BaseManager):
         """
         Return a unique identifier for this sprite.
         """
+    
+    def dict(self) -> Dict:
+        """
+        Get a stateful dictionary for reloading.
+        """
+        return {
+            "sprite_id": self.get_sprite_id(),
+            "position": {"x": self.rect.x, "y": self.rect.y},
+            "gfx_id": self.image.gfx_id,
+        }
 
     def handle_event(self, event: Event):
         """
