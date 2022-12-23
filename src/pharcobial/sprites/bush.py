@@ -3,6 +3,7 @@ from typing import Iterable
 from pygame.math import Vector2
 from pygame.sprite import Group
 
+from pharcobial.logging import game_logger
 from pharcobial.sprites.base import BaseSprite, MobileSprite
 from pharcobial.types import Position
 from pharcobial.utils import chance
@@ -11,10 +12,10 @@ from pharcobial.utils import chance
 class Bush(MobileSprite):
     def __init__(self, position: Position, bush_id: str, groups: Iterable[Group]):
         self.character = "bush"
-        super().__init__(position, self.character, groups, Position(0, 26))
+        super().__init__(position, self.character, groups, Position(-10, -26))
         self.bush_id = bush_id
         self.speed = 1
-        self.vision = self.hitbox.inflate((self.hitbox.height, self.hitbox.width))
+        self.vision = self.rect.inflate((2 * self.rect.height, 2 * self.rect.width))
         self.direction = Vector2()
         self.player_is_near: bool = False
         self.is_alive: bool = False
@@ -35,18 +36,22 @@ class Bush(MobileSprite):
             self.player_is_near = self.vision.colliderect(self.sprites.player.rect)
             if self.player_is_near and self.is_alive:
                 self.move_towards(player)
-            else:
-                # Player has left tree
+
+            elif not self.player_is_near and self.is_alive:
+                # Player has escaped a tree that was chasing.
+                game_logger.debug(f"Tree {self.bush_id} going back to sleep.")
                 self.image = self.graphics["bush"]
 
         else:
             self.player_is_near = self.vision.colliderect(self.sprites.player.rect)
             if self.player_is_near:
                 # Player approaches a tree.
+                game_logger.debug(f"Player approaches bush {self.bush_id}.")
 
-                self.is_alive = chance((1, 3))  # 1/3 trees come alive?
+                self.is_alive = chance((1, 4))
                 if self.is_alive:
                     # Tree is now going to chase you for a bit.
+                    game_logger.debug(f"Bush {self.bush_id} has come to life!")
                     self.image = self.graphics["bush-monster"]
                     self.move_towards(player)
 

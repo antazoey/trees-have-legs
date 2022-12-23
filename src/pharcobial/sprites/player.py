@@ -86,7 +86,7 @@ class Player(MobileSprite):
     """
 
     def __init__(self, position: Position, groups: Iterable[Group], character: str = "pharma"):
-        super().__init__(position, character, groups, Position(0, -26))
+        super().__init__(position, character, groups, Position(0, -10))
         self.move_gfx_id: int = -1
         self.speed = 2
         self.character = character

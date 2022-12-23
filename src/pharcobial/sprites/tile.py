@@ -12,7 +12,6 @@ class Tile(BaseSprite):
         position: Position,
         tile_key: TileKey,
         groups: Iterable[Group],
-        is_end_piece: bool = False,  # First layer of X in the map
     ) -> None:
         self.tile_key = tile_key
         gfx_id = None
@@ -22,8 +21,7 @@ class Tile(BaseSprite):
             case TileKey.GRASS:
                 gfx_id = "grass"
 
-        hitbox = Position(0, -10)
-        self.is_end_piece = is_end_piece
+        hitbox = Position(-10, 0)
         super().__init__(position, gfx_id, groups, hitbox)
 
     def __repr__(self) -> str:

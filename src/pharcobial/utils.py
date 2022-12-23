@@ -16,4 +16,5 @@ def chance(odds: Tuple[int, int]) -> bool:
     must, total = odds
     must *= 100
     total *= 100
-    return random.randint(0, total) >= must
+    res = random.randint(0, total)
+    return res <= must
