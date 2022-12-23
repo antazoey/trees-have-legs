@@ -10,7 +10,7 @@ from pharcobial.sprites.base import BaseSprite
 from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
-from pharcobial.types import Position
+from pharcobial.types import Position, TileKey
 
 
 class SpriteManager(BaseManager):
@@ -40,6 +40,28 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def tiles(self) -> List[Tile]:
+        # Find all row boundary tiles.
+        # row_boundaries = {}
+        # column_boundaries = {}
+        # for y, row in enumerate(self.map):
+        #     # Find start of row.
+        #     for x, tile_key in enumerate(row):
+        #         if tile_key == TileKey.VOID:
+        #             continue
+
+        #         # Found first non-VOID; seek end and complete row.
+        #         for x2, tile_key in enumerate(row[x + 1:]):
+        #             if tile_key != TileKey.VOID:
+        #                 continue
+
+        #             # Found end of row.
+        #             start = min(x - 1, 0)
+        #             row_boundaries[y] = (start, x2)
+
+        #         if x not in column_boundaries:
+        #             # Is also first non-VOID found for the column.
+        #             for y2, row2 in self.map[y+1:]:
+
         return [
             Tile(Position(x * BLOCK_SIZE, y * BLOCK_SIZE), tile_key, (self.camera.group,))
             for y, row in enumerate(self.map)

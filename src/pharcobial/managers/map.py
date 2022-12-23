@@ -17,6 +17,9 @@ class MapManager(BaseManager):
     def __iter__(self):
         yield from self.active
 
+    def __getitem__(self, idx: int | slice):
+        return self.active[idx]
+
     def load(self, map_id: str):
         file_path = MAPS_DIR / f"{map_id}.csv"
         with open(file_path, "r") as file:

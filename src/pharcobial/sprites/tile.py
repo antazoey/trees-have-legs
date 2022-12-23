@@ -12,7 +12,7 @@ class Tile(BaseSprite):
         position: Position,
         tile_key: TileKey,
         groups: Iterable[Group],
-        is_end_piece: bool = False,
+        is_end_piece: bool = False,  # First layer of X in the map
     ) -> None:
         self.tile_key = tile_key
         gfx_id = None
