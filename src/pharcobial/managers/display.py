@@ -5,6 +5,7 @@ import pygame
 from pharcobial.constants import GAME_NAME, RGB
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
+from pharcobial.utils import game_paths
 
 
 class Display:
@@ -72,12 +73,32 @@ class DisplayManager(BaseManager):
     def height(self) -> int:
         return self.active.height
 
+    @property
+    def half_width(self) -> int:
+        return self.width // 2
+
+    @property
+    def half_height(self) -> int:
+        return self.height // 2
+
     @contextmanager
     def in_same_cycle(self):
         self.active.clear()
         yield
+        self.tick()
+
+    def tick(self):
         self.display.active.update()
+        pygame.display.flip()
         self.clock.tick()
+
+    def show_text(self, text: str, x: int, y: int, color: str):
+        font_file = game_paths.get_font("bold_game_font_7")
+        font = pygame.font.Font(str(font_file), 40)
+
+        font = pygame.font.SysFont("Verdana", 60)
+        surface = font.render(text, True, RGB["black"])
+        self.active.screen.blit(surface, (x, y))
 
 
 display_manager = DisplayManager()

@@ -49,8 +49,8 @@ class CameraManager(BaseManager):
 
     def update(self):
         if self.followee is not None:
-            self.offset.x = self.followee.rect.centerx - self.display.width // 2
-            self.offset.y = self.followee.rect.centery - self.display.height // 2
+            self.offset.x = self.followee.rect.centerx - self.display.half_width
+            self.offset.y = self.followee.rect.centery - self.display.half_height
 
         self.group.update()
 

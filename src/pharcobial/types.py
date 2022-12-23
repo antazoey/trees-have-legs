@@ -32,6 +32,7 @@ class GameAction(Enum):
 
     QUIT = "QUIT"
     CONTINUE = "CONTINUE"
+    MENU = "MENU"
 
 
 class TileKey(Enum):

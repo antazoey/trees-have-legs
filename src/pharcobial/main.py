@@ -1,3 +1,5 @@
+import sys
+
 import pygame
 
 from pharcobial.managers.base import BaseManager
@@ -9,20 +11,33 @@ class Game(BaseManager):
         super().__init__()
         pygame.init()
         self.running = False
+        self.paused = False
 
     def run(self):
         self.setup()
         self.running = True
         while self.running:
+
             action = self.events.process_next()
-            if action == GameAction.QUIT:
-                self.running = False
-                break
 
-            self.update()
-            self.draw()
+            match action:
+                case GameAction.QUIT:
+                    self.running = False
+                    pygame.quit()
+                    sys.exit()
 
-        pygame.quit()
+                case GameAction.MENU:
+                    self.paused = not self.paused
+                    if self.paused:
+                        self.display.show_text(
+                            "Paused", self.display.half_width, self.display.half_height, "red"
+                        )
+                        self.display.tick()
+
+                case GameAction.CONTINUE:
+                    if not self.paused:
+                        self.update()
+                        self.draw()
 
     def setup(self):
         # Validate is used to ensure the creation of a dependency
@@ -50,7 +65,6 @@ class Game(BaseManager):
     def draw(self):
         with self.display.in_same_cycle():
             self.camera.draw()
-            pygame.display.flip()
 
 
 def main():

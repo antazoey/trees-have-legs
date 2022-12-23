@@ -3,7 +3,6 @@ from typing import Dict, Iterable, List
 
 from pygame.event import Event
 
-from pharcobial.constants import BLOCK_SIZE
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import BaseSprite
@@ -11,6 +10,7 @@ from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
 from pharcobial.types import Position, TileKey
+from pharcobial.utils import to_px
 
 
 class SpriteManager(BaseManager):
@@ -51,7 +51,7 @@ class SpriteManager(BaseManager):
 
         return [
             Tile(
-                Position(x * BLOCK_SIZE, y * BLOCK_SIZE),
+                Position(to_px(x), to_px(y)),
                 tile_key,
                 (self.camera.group,)
                 if tile_key != TileKey.VOID

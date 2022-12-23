@@ -1,9 +1,9 @@
 from typing import List
 
-from pharcobial.constants import BLOCK_SIZE, MAPS_DIR
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.types import Positional, TileKey
+from pharcobial.utils import game_paths, to_px
 
 
 class MapManager(BaseManager):
@@ -21,7 +21,7 @@ class MapManager(BaseManager):
         return self.active[idx]
 
     def load(self, map_id: str):
-        file_path = MAPS_DIR / f"{map_id}.csv"
+        file_path = game_paths.get_map(map_id)
         with open(file_path, "r") as file:
             lines = file.readlines()
 
@@ -32,10 +32,10 @@ class MapManager(BaseManager):
 
                 match key:
                     case TileKey.PLAYER:
-                        self.player_start = (x * BLOCK_SIZE, y * BLOCK_SIZE)
+                        self.player_start = (to_px(x), to_px(y))
                         row_tiles.append(TileKey.GRASS)
                     case TileKey.BUSH:
-                        self.bushes_start.append((x * BLOCK_SIZE, y * BLOCK_SIZE))
+                        self.bushes_start.append((to_px(x), to_px(y)))
                         row_tiles.append(TileKey.GRASS)
                     case _:
                         # Normal map tile (grass or road)

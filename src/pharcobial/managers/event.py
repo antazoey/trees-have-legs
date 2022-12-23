@@ -14,7 +14,10 @@ class EventManager(BaseManager):
         for event in pygame.event.get():
             # Handle exiting game
             escape_key_pressed = event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
-            if event.type == pygame.QUIT or escape_key_pressed:
+            if escape_key_pressed:
+                return GameAction.MENU
+
+            elif event.type == pygame.QUIT:
                 return GameAction.QUIT
 
             self.sprites.handle_event(event)
