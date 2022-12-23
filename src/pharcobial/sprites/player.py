@@ -136,8 +136,6 @@ class Player(MobileSprite):
         new_x = round(self.hitbox.x + self.controller.x * self.speed)
         new_y = round(self.hitbox.y + self.controller.y * self.speed)
         self.move(new_x, new_y)
-        self.chat_bubble.rect.x = new_x
-        self.chat_bubble.rect.y = new_y
         self.chat_bubble.image = (
             self.graphics.get("chat-bubble", flip_vertically=self.controller.right_focused)
             or self.chat_bubble.image

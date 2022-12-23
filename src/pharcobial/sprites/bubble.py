@@ -7,16 +7,19 @@ class ChatBubble(MobileSprite):
     """
 
     def __init__(self, parent: MobileSprite) -> None:
-        super().__init__(parent.rect.topleft, "chat-bubble", (parent.camera_group,), (0, 0))
+        super().__init__(
+            parent.rect.inflate((0, -5)).topleft, "chat-bubble", (parent.camera_group,), (0, 0)
+        )
         self.parent_id = parent.get_sprite_id()
         self.visible = False
         self.timer: int | None = None
 
     def update(self, *args, **kwargs):
+        self.rect = self.sprites[self.parent_id].rect.inflate((0, -5))
         if self.visible and self.timer is None:
             # Chat bubble was activated. Set a timer to only show
             # for a brief moment.
-            self.timer = 25
+            self.timer = 25  # frames
 
         elif self.visible and self.timer == 0:
             self.visible = False
