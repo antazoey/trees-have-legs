@@ -48,7 +48,7 @@ class Bush(MobileSprite):
                 # Player approaches a tree.
                 game_logger.debug(f"Player approaches bush {self.bush_id}.")
 
-                self.is_alive = chance((1, 4))
+                self.is_alive = chance((1, 2))
                 if self.is_alive:
                     # Tree is now going to chase you for a bit.
                     game_logger.debug(f"Bush {self.bush_id} has come to life!")
@@ -56,23 +56,22 @@ class Bush(MobileSprite):
                     self.move_towards(player)
 
     def move_towards(self, sprite: BaseSprite):
-        new_position = Position(self.rect.topleft)
+        new_position = Position(self.hitbox.x, self.hitbox.y)
 
         # Handle x
-        if sprite.rect.x > self.rect.x:
-            new_position.x = round(self.rect.x + min(self.speed, sprite.rect.x - self.rect.x))
+        if sprite.hitbox.x > self.hitbox.x:
+            new_position.x = round(self.hitbox.x + min(self.speed, sprite.hitbox.x - self.hitbox.x))
             self.direction.x = 1
-        elif sprite.rect.x < self.rect.x:
-            new_position.y = round(self.rect.x - min(self.speed, self.rect.x - sprite.rect.x))
+        elif sprite.hitbox.x < self.hitbox.x:
+            new_position.x = round(self.hitbox.x - min(self.speed, self.hitbox.x - sprite.hitbox.x))
             self.direction.x = -1
 
         # Handle y
-        if sprite.rect.y > self.rect.y:
-            new_position.y = round(self.rect.y + min(self.speed, sprite.rect.y - self.rect.y))
+        if sprite.hitbox.y > self.hitbox.y:
+            new_position.y = round(self.hitbox.y + min(self.speed, sprite.hitbox.y - self.hitbox.y))
             self.direction.y = 1
-        elif sprite.rect[1] < self.rect.y:
-            new_position.y = round(self.rect.y - min(self.speed, self.rect.y - sprite.rect.y))
+        elif sprite.hitbox.y < self.hitbox.y:
+            new_position.y = round(self.hitbox.y - min(self.speed, self.hitbox.y - sprite.hitbox.y))
             self.direction.y = -1
 
-        self.rect.x = new_position.x
-        self.rect.y = new_position.y
+        self.move(new_position.x, new_position.y)

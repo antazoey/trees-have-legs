@@ -60,27 +60,29 @@ class BaseSprite(Sprite, BaseManager):
         return
 
     def set_image(self, gfx_id: str):
-        self.image = self.graphics[gfx_id]
-        self.gfx_id = gfx_id
+        if self.gfx_id != gfx_id:
+            self.image = self.graphics[gfx_id]
+            self.gfx_id = gfx_id
 
 
 class MobileSprite(BaseSprite):
     speed: float = 0
     direction: Vector2
 
-    def move(self, position: Positional | int, y: int | None):
-        if isinstance(position, int):
-            x = int(position)
-            y = y or x
-        else:
-            x = position[0]
-            y = position[1]
+    def move(self, x: int, y: int):
+        changed = False
+        if self.hitbox.x != x:
+            self.hitbox.x = x
+            self.collision.check_x(self)
+            changed = True
 
-        self.hitbox.x = x
-        self.collision.check_x(self)
-        self.hitbox.y = y
-        self.collision.check_y(self)
-        self.rect.center = self.hitbox.center
+        if self.hitbox.y != y:
+            self.hitbox.y = y
+            self.collision.check_y(self)
+            changed = True
+
+        if changed:
+            self.rect.center = self.hitbox.center
 
     @property
     def moving(self) -> bool:
