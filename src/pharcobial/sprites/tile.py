@@ -16,11 +16,8 @@ class Tile(BaseSprite):
         self.tile_key = tile_key
         gfx_id = None
         match tile_key:
-            case TileKey.ROAD:
-                gfx_id = "road"
-                hitbox = (0, 0)
-            case TileKey.GRASS:
-                gfx_id = "grass"
+            case TileKey.ROAD | TileKey.GRASS:
+                gfx_id = tile_key.name.lower()
                 hitbox = (0, 0)
             case TileKey.VOID:
                 gfx_id = None
