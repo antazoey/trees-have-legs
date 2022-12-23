@@ -52,7 +52,7 @@ class Bush(MobileSprite):
                 if self.is_alive:
                     # Tree is now going to chase you for a bit.
                     game_logger.debug(f"Bush {self.bush_id} has come to life!")
-                    self.image = self.graphics["bush-monster"]
+                    self.set_image("bush-monster")
                     self.move_towards(player)
 
     def move_towards(self, sprite: BaseSprite):

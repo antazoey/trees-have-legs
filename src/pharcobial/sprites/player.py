@@ -110,6 +110,10 @@ class Player(MobileSprite):
             game_logger.debug(f"{event.key} key pressed.")
             self.direction = self.controller.handle_key_down(event)
 
+            # Set chat-bubble if "activate" hit.
+            if event.key == pygame.K_SPACE:
+                self.chat_bubble.visible = True
+
         elif event.type == pygame.KEYUP:
             self.direction = self.controller.handle_key_up(event)
 
@@ -121,7 +125,7 @@ class Player(MobileSprite):
 
         new_x = round(self.hitbox.x + self.controller.x * self.speed)
         new_y = round(self.hitbox.y + self.controller.y * self.speed)
-        self.move((new_x, new_y))
+        self.move(new_x, new_y)
 
     def _get_graphic(self) -> Surface | None:
         if not self.moving:

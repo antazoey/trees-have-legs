@@ -67,10 +67,17 @@ class MobileSprite(BaseSprite):
     speed: float = 0
     direction: Vector2
 
-    def move(self, position: Positional):
-        self.hitbox.x = position[0]
+    def move(self, position: Positional | int, y: int | None):
+        if isinstance(position, int):
+            x = int(position)
+            y = y or x
+        else:
+            x = position[0]
+            y = position[1]
+
+        self.hitbox.x = x
         self.collision.check_x(self)
-        self.hitbox.y = position[1]
+        self.hitbox.y = y
         self.collision.check_y(self)
         self.rect.center = self.hitbox.center
 
