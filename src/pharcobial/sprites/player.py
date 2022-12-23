@@ -54,7 +54,7 @@ class Controller:
             self.direction.y += 1
             if self.bindings.left not in self.keys_held:
                 self.right_focused = True
-        
+
         elif event.key == self.bindings.activate:
             self.activate = True
 
@@ -82,7 +82,7 @@ class Controller:
             self.direction.y += 1
             if self.direction.y > 0:
                 self.right_focused = True
-        
+
         elif event.key == self.bindings.activate:
             self.activate = False
 
@@ -121,7 +121,6 @@ class Player(MobileSprite):
 
         elif event.type == pygame.KEYUP:
             self.direction = self.controller.handle_key_up(event)
-            self.chat_bubble.visible = self.controller.activate
 
     def activate(self):
         """
@@ -139,6 +138,10 @@ class Player(MobileSprite):
         self.move(new_x, new_y)
         self.chat_bubble.rect.x = new_x
         self.chat_bubble.rect.y = new_y
+        self.chat_bubble.image = (
+            self.graphics.get("chat-bubble", flip_vertically=self.controller.right_focused)
+            or self.chat_bubble.image
+        )
 
     def _get_graphic(self) -> Surface | None:
         if not self.moving:
