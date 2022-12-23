@@ -8,7 +8,8 @@ from pygame.surface import Surface
 
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import MobileSprite
-from pharcobial.types import Position
+from pharcobial.sprites.bubble import ChatBubble
+from pharcobial.types import Positional
 
 
 class Controller:
@@ -85,13 +86,14 @@ class Player(MobileSprite):
     The main character.
     """
 
-    def __init__(self, position: Position, groups: Iterable[Group], character: str = "pharma"):
-        super().__init__(position, character, groups, Position(0, -10))
+    def __init__(self, position: Positional, groups: Iterable[Group], character: str = "pharma"):
+        super().__init__(position, character, groups, (0, -10))
         self.move_gfx_id: int = -1
         self.speed = 2
         self.character = character
         self.controller = Controller()
         self.direction = self.controller.direction
+        self.chat_bubble = ChatBubble(self)
 
     def get_sprite_id(self) -> str:
         return "player"
@@ -119,8 +121,7 @@ class Player(MobileSprite):
 
         new_x = round(self.hitbox.x + self.controller.x * self.speed)
         new_y = round(self.hitbox.y + self.controller.y * self.speed)
-        position = Position(new_x, new_y)
-        self.move(position)
+        self.move((new_x, new_y))
 
     def _get_graphic(self) -> Surface | None:
         if not self.moving:

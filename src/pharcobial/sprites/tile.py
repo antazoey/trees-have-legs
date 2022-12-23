@@ -3,13 +3,13 @@ from typing import Iterable
 from pygame.sprite import Group
 
 from pharcobial.sprites.base import BaseSprite
-from pharcobial.types import Position, TileKey
+from pharcobial.types import Positional, TileKey
 
 
 class Tile(BaseSprite):
     def __init__(
         self,
-        position: Position,
+        position: Positional,
         tile_key: TileKey,
         groups: Iterable[Group],
     ) -> None:

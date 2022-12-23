@@ -3,14 +3,14 @@ from typing import List
 from pharcobial.constants import BLOCK_SIZE, MAPS_DIR
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import Position, TileKey
+from pharcobial.types import Positional, TileKey
 
 
 class MapManager(BaseManager):
     def __init__(self, map_id: str = "buffer_property") -> None:
         super().__init__()
-        self.player_start: Position | None = None
-        self.bushes_start: List[Position] = []
+        self.player_start: Positional | None = None
+        self.bushes_start: List[Positional] = []
         self.active: List[List[TileKey]] = []
         self.load(map_id)
 
@@ -32,10 +32,10 @@ class MapManager(BaseManager):
 
                 match key:
                     case TileKey.PLAYER:
-                        self.player_start = Position(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                        self.player_start = (x * BLOCK_SIZE, y * BLOCK_SIZE)
                         row_tiles.append(TileKey.GRASS)
                     case TileKey.BUSH:
-                        self.bushes_start.append(Position(x * BLOCK_SIZE, y * BLOCK_SIZE))
+                        self.bushes_start.append((x * BLOCK_SIZE, y * BLOCK_SIZE))
                         row_tiles.append(TileKey.GRASS)
                     case _:
                         # Normal map tile (grass or road)

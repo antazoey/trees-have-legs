@@ -1,25 +1,27 @@
 from abc import abstractmethod
-from typing import Iterable, Tuple, Dict
+from functools import cached_property
+from typing import Dict, Iterable
 
 from pygame.event import Event
 from pygame.math import Vector2
 from pygame.rect import Rect
-from pygame.sprite import Group, Sprite
+from pygame.sprite import AbstractGroup, Sprite
 from pygame.surface import Surface
 
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import Position
+from pharcobial.types import Positional
 
 
 class BaseSprite(Sprite, BaseManager):
     def __init__(
         self,
-        position: Position,
+        position: Positional,
         gfx_id: str | None,
-        groups: Iterable[Group],
-        hitbox_inflation: Position | Tuple[int, int],
+        groups: Iterable[AbstractGroup],
+        hitbox_inflation: Positional,
     ) -> None:
         super().__init__()
+        self.gfx_id = gfx_id
         self.image: Surface = (
             self.graphics[gfx_id] if gfx_id else self.graphics.get_filled_surface("black")
         )
@@ -34,7 +36,11 @@ class BaseSprite(Sprite, BaseManager):
         """
         Return a unique identifier for this sprite.
         """
-    
+
+    @cached_property
+    def camera_group(self) -> AbstractGroup:
+        return [x for x in self.groups() if "camera" in type(x).__name__.lower()][0]
+
     def dict(self) -> Dict:
         """
         Get a stateful dictionary for reloading.
@@ -42,7 +48,7 @@ class BaseSprite(Sprite, BaseManager):
         return {
             "sprite_id": self.get_sprite_id(),
             "position": {"x": self.rect.x, "y": self.rect.y},
-            "gfx_id": self.image.gfx_id,
+            "gfx_id": self.gfx_id,
         }
 
     def handle_event(self, event: Event):
@@ -52,15 +58,19 @@ class BaseSprite(Sprite, BaseManager):
         """
         return
 
+    def set_image(self, gfx_id: str):
+        self.image = self.graphics[gfx_id]
+        self.gfx_id = gfx_id
+
 
 class MobileSprite(BaseSprite):
     speed: float = 0
     direction: Vector2
 
-    def move(self, position: Position):
-        self.hitbox.x = position.x
+    def move(self, position: Positional):
+        self.hitbox.x = position[0]
         self.collision.check_x(self)
-        self.hitbox.y = position.y
+        self.hitbox.y = position[1]
         self.collision.check_y(self)
         self.rect.center = self.hitbox.center
 

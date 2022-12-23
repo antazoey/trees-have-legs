@@ -26,12 +26,12 @@ class SpriteManager(BaseManager):
         _ = self.player
         _ = self.bushes
         _ = self.tiles
-    
+
     def dict(self) -> Dict:
         return {
             "player": self.player.dict(),
             "bushes": [x.dict() for x in self.bushes],
-            "tiles": [x.dict() for x in self.tiles]
+            "tiles": [x.dict() for x in self.tiles],
         }
 
     def validate(self):

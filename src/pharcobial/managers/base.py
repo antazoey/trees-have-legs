@@ -95,7 +95,7 @@ class BaseManager:
         """
 
         return cast("SpriteManager", self._get_manager("sprite"))
-    
+
     @cached_property
     def state(self) -> "StateManager":
         """
