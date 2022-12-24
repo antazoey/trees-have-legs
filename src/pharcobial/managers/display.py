@@ -92,12 +92,10 @@ class DisplayManager(BaseManager):
         pygame.display.flip()
         self.clock.tick()
 
-    def show_text(self, text: str, x: int, y: int, color: str):
+    def show_text(self, text: str, font_size: int, x: int, y: int, color: str):
         font_file = game_paths.get_font("bold_game_font_7")
-        font = pygame.font.Font(str(font_file), 40)
-
-        font = pygame.font.SysFont("Verdana", 60)
-        surface = font.render(text, True, RGB["black"])
+        font = pygame.font.Font(str(font_file), font_size)
+        surface = font.render(text, True, RGB[color])
         self.active.screen.blit(surface, (x, y))
 
 

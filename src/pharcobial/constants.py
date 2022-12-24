@@ -13,6 +13,6 @@ SAVES_DIRECTORY = DATA_DIRECTORY / "saves"
 RGB: Dict[str, Color] = {
     "white": (255, 255, 255),
     "black": (0, 0, 0),
-    "red": (255, 0, 0),
+    "red": (150, 0, 0),
     "green": (0, 155, 0),
 }

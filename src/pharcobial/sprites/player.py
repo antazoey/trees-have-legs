@@ -1,6 +1,5 @@
 from typing import Iterable, List
 
-import pygame
 from pygame.event import Event
 from pygame.math import Vector2
 from pygame.sprite import Group
@@ -9,7 +8,7 @@ from pygame.surface import Surface
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import MobileSprite
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import KeyBinding, Positional
+from pharcobial.types import InputEvent, KeyBinding, Positional
 
 
 class Controller:
@@ -111,12 +110,12 @@ class Player(MobileSprite):
         every game loop.
         """
 
-        if event.type == pygame.KEYDOWN:
+        if event.type == InputEvent.KEY_DOWN:
             game_logger.debug(f"{event.key} key pressed.")
             self.direction = self.controller.handle_key_down(event)
             self.chat_bubble.visible = self.controller.activate
 
-        elif event.type == pygame.KEYUP:
+        elif event.type == InputEvent.KEY_UP:
             self.direction = self.controller.handle_key_up(event)
 
     def activate(self):

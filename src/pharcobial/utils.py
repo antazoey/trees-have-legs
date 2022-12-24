@@ -1,7 +1,10 @@
 import random
+import sys
 import time
 from pathlib import Path
 from typing import Tuple
+
+import pygame
 
 from pharcobial.constants import BLOCK_SIZE, SOURCE_DIR
 
@@ -54,6 +57,11 @@ class GamePaths:
 
     def get_font(self, font_name: str) -> Path:
         return self.fonts / f"{font_name}.ttf"
+
+
+def quit():
+    pygame.quit()
+    sys.exit()
 
 
 game_paths = GamePaths(SOURCE_DIR)

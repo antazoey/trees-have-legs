@@ -1,9 +1,8 @@
-import sys
-
 import pygame
 
 from pharcobial.managers.base import BaseManager
 from pharcobial.types import GameAction
+from pharcobial.utils import quit
 
 
 class Game(BaseManager):
@@ -11,33 +10,38 @@ class Game(BaseManager):
         super().__init__()
         pygame.init()
         self.running = False
-        self.paused = False
 
     def run(self):
         self.setup()
         self.running = True
         while self.running:
+            self._run()
 
-            action = self.events.process_next()
+    def _run(self):
+        action = self.events.process()
 
-            match action:
-                case GameAction.QUIT:
-                    self.running = False
-                    pygame.quit()
-                    sys.exit()
+        match action:
+            case GameAction.QUIT:
+                self.running = False
+                quit()
 
-                case GameAction.MENU:
-                    self.paused = not self.paused
-                    if self.paused:
-                        self.display.show_text(
-                            "Paused", self.display.half_width, self.display.half_height, "red"
-                        )
-                        self.display.tick()
+            case GameAction.MENU:
+                self.clock.paused = not self.clock.paused
+                self.menu.visible = self.clock.paused
+                if self.menu.visible:
+                    with self.display.in_same_cycle():
+                        self.menu.draw()
 
-                case GameAction.CONTINUE:
-                    if not self.paused:
-                        self.update()
-                        self.draw()
+            case GameAction.CONTINUE:
+                manager: BaseManager
+                if self.clock.paused:
+                    manager = self.menu
+                else:
+                    manager = self.camera
+                    self.camera.update()
+
+                with self.display.in_same_cycle():
+                    manager.draw()
 
     def setup(self):
         # Validate is used to ensure the creation of a dependency
@@ -58,21 +62,13 @@ class Game(BaseManager):
         # Set the camera to follow the player. This must happen after loading sprites.
         self.camera.followee = self.sprites.player
 
-    def update(self):
-        # Update everything here.
-        self.camera.update()
-
-    def draw(self):
-        with self.display.in_same_cycle():
-            self.camera.draw()
-
 
 def main():
     try:
         game = Game()
         game.run()
     except KeyboardInterrupt:
-        pygame.quit()
+        quit()
 
 
 if __name__ == "__main__":

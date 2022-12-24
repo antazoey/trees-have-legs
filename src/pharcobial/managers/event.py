@@ -1,26 +1,31 @@
-import pygame
+from pygame import QUIT
+from pygame.event import get as get_events
 
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import GameAction
+from pharcobial.types import GameAction, InputEvent
 
 
 class EventManager(BaseManager):
-    def process_next(self) -> GameAction:
+    def process(self) -> GameAction:
         """
         Allow an event to affect how sprites update.
         Event processing happens before sprites updating.
         """
 
-        for event in pygame.event.get():
+        for event in get_events():
             # Handle exiting game
-            escape_key_pressed = event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            escape_key = self.options.key_bindings.escape
+            escape_key_pressed = event.type == InputEvent.KEY_DOWN and event.key == escape_key
             if escape_key_pressed:
                 return GameAction.MENU
 
-            elif event.type == pygame.QUIT:
+            elif event.type == QUIT:
                 return GameAction.QUIT
 
-            self.sprites.handle_event(event)
+            if self.clock.paused:
+                self.menu.handle_event(event)
+            else:
+                self.sprites.handle_event(event)
 
         return GameAction.CONTINUE
 

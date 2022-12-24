@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .event import EventManager
     from .graphics import GraphicsManager
     from .map import MapManager
+    from .menu import MenuManager
     from .options import OptionsManager
     from .sprite import SpriteManager
     from .state import StateManager
@@ -79,6 +80,14 @@ class BaseManager:
         return cast("MapManager", self._get_manager("map"))
 
     @cached_property
+    def menu(self) -> "MenuManager":
+        """
+        Responsible for the pause menu.
+        """
+
+        return cast("MenuManager", self._get_manager("menu"))
+
+    @cached_property
     def options(self) -> "OptionsManager":
         """
         Game options, as set from CLI or config.
@@ -114,6 +123,9 @@ class BaseManager:
     def _get_manager(self, name: str) -> "BaseManager":
         module = import_module(f"{ROOT_MODULE}.{name}")
         return getattr(module, f"{name}_manager")
+
+    def draw(self):
+        pass
 
 
 ROOT_MODULE = ".".join(BaseManager.__module__.split(".")[:-1])
