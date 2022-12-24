@@ -2,6 +2,7 @@ from functools import cached_property
 from importlib import import_module
 from typing import TYPE_CHECKING, cast
 
+from pygame.event import Event
 from pygame.sprite import AbstractGroup
 
 if TYPE_CHECKING:
@@ -141,6 +142,11 @@ class ViewController(BaseManager):
     def __init__(self, group: AbstractGroup | None = None) -> None:
         super().__init__()
         self.group = group
+
+    def handle_event(self, event: Event):
+        """
+        Handle events from the user or OS.
+        """
 
     def update(self, *args, **kwargs):
         """

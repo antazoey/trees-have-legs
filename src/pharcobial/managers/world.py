@@ -1,3 +1,4 @@
+from pygame.event import Event
 from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
@@ -58,6 +59,9 @@ class WorldManager(ViewController):
         assert self.group is not None
         assert self.camera is not None
         game_logger.debug("World ready.")
+
+    def handle_event(self, event: Event):
+        self.sprites.player.handle_event(event)
 
     def update(self):
         self.camera.update()

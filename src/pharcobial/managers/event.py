@@ -22,10 +22,7 @@ class EventManager(BaseManager):
             elif event.type == QUIT:
                 return GameAction.QUIT
 
-            if self.clock.paused:
-                self.menu.handle_event(event)
-            else:
-                self.sprites.handle_event(event)
+            self.views.active.handle_event(event)
 
         return GameAction.CONTINUE
 
