@@ -51,18 +51,17 @@ class Game(BaseManager):
             self._run()
 
     def _run(self):
-        action = self.events.process()
+        for action in self.events:
+            match action:
+                case GameAction.QUIT:
+                    self.running = False
+                    quit()
 
-        match action:
-            case GameAction.QUIT:
-                self.running = False
-                quit()
+                case GameAction.MENU:
+                    self.clock.paused = True
+                    self.menu.visible = True
+                    self.views.push(self.menu)
+                    self.views.active.run()
 
-            case GameAction.MENU:
-                self.clock.paused = True
-                self.menu.visible = True
-                self.views.push(self.menu)
-                self.views.active.run()
-
-            case GameAction.CONTINUE:
-                self.views.active.run()
+                case GameAction.CONTINUE:
+                    self.views.active.run()

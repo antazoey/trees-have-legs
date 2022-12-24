@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from pygame import QUIT
 from pygame.event import get as get_events
 
@@ -6,7 +8,7 @@ from pharcobial.types import GameAction, InputEvent
 
 
 class EventManager(BaseManager):
-    def process(self) -> GameAction:
+    def __iter__(self) -> Iterable[GameAction]:
         """
         Allow an event to affect how sprites update.
         Event processing happens before sprites updating.
@@ -17,14 +19,17 @@ class EventManager(BaseManager):
             escape_key = self.options.key_bindings.escape
             escape_key_pressed = event.type == InputEvent.KEY_DOWN and event.key == escape_key
             if escape_key_pressed:
-                return GameAction.MENU
+                yield GameAction.MENU
 
             elif event.type == QUIT:
-                return GameAction.QUIT
+                yield GameAction.QUIT
 
             self.views.active.handle_event(event)
+        
+            yield GameAction.CONTINUE
 
-        return GameAction.CONTINUE
+        else:
+            yield GameAction.CONTINUE
 
 
 event_manager = EventManager()
