@@ -12,29 +12,6 @@ class Game(BaseManager):
         self.running = False
         self.options.load(game_options)
 
-    def run(self):
-        self.setup()
-        self.running = True
-        while self.running:
-            self._run()
-
-    def _run(self):
-        action = self.events.process()
-
-        match action:
-            case GameAction.QUIT:
-                self.running = False
-                quit()
-
-            case GameAction.MENU:
-                self.clock.paused = True
-                self.menu.visible = True
-                self.views.push(self.menu)
-                self.views.active.run()
-
-            case GameAction.CONTINUE:
-                self.views.active.run()
-
     def setup(self):
         """
         All initial game setup happens here.
@@ -66,3 +43,26 @@ class Game(BaseManager):
 
         # Start off in normal, world mode.
         self.views.push(self.world)
+
+    def run(self):
+        self.setup()
+        self.running = True
+        while self.running:
+            self._run()
+
+    def _run(self):
+        action = self.events.process()
+
+        match action:
+            case GameAction.QUIT:
+                self.running = False
+                quit()
+
+            case GameAction.MENU:
+                self.clock.paused = True
+                self.menu.visible = True
+                self.views.push(self.menu)
+                self.views.active.run()
+
+            case GameAction.CONTINUE:
+                self.views.active.run()
