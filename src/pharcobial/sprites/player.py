@@ -8,7 +8,7 @@ from pygame.surface import Surface
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import MobileSprite
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import InputEvent, KeyBinding, Positional
+from pharcobial.types import KeyBinding, Positional, UserInput
 
 
 class Controller:
@@ -110,12 +110,12 @@ class Player(MobileSprite):
         every game loop.
         """
 
-        if event.type == InputEvent.KEY_DOWN:
+        if event.type == UserInput.KEY_DOWN:
             game_logger.debug(f"{event.key} key pressed.")
             self.direction = self.controller.handle_key_down(event)
             self.chat_bubble.visible = self.controller.activate
 
-        elif event.type == InputEvent.KEY_UP:
+        elif event.type == UserInput.KEY_UP:
             self.direction = self.controller.handle_key_up(event)
 
     def activate(self):

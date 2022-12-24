@@ -23,4 +23,4 @@ def cli(window_width, window_height, fps, font_size, full_screen, debug, map_id,
         save_id=save_id,
     )
     game = Game(options)
-    game.run()
+    game.start()

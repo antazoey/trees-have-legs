@@ -15,7 +15,7 @@ from pharcobial.constants import (
 Color = Tuple[int, int, int]
 
 
-class InputEvent:
+class UserInput:
     KEY_DOWN = KEYDOWN
     KEY_UP = KEYUP
 
@@ -39,7 +39,7 @@ class Position(tuple):
 Positional = Tuple[int, int] | Position
 
 
-class GameAction(Enum):
+class GameEvent(Enum):
     """
     An action the root Game should take, based on the event processor.
     """

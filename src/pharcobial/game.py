@@ -1,7 +1,7 @@
 import pygame
 
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import GameAction, GameOptions
+from pharcobial.types import GameEvent, GameOptions
 from pharcobial.utils import quit
 
 
@@ -44,24 +44,39 @@ class Game(BaseManager):
         # Start off in normal, world mode.
         self.views.push(self.world)
 
-    def run(self):
+    def start(self):
+        """
+        Start the game.
+        Does game setup and then runs the game
+        """
         self.setup()
+        self.run()
+        quit()
+
+    def run(self):
+        """
+        Runs the game. Controls the game loop.
+        """
         self.running = True
         while self.running:
-            self._run()
+            self.react()
 
-    def _run(self):
-        for action in self.events:
-            match action:
-                case GameAction.QUIT:
+    def react(self):
+        """
+        React to game events.
+        """
+
+        for event in self.events.queue:
+            match event:
+                case GameEvent.QUIT:
                     self.running = False
                     quit()
 
-                case GameAction.MENU:
+                case GameEvent.MENU:
                     self.clock.paused = True
                     self.menu.visible = True
                     self.views.push(self.menu)
                     self.views.active.run()
 
-                case GameAction.CONTINUE:
+                case GameEvent.CONTINUE:
                     self.views.active.run()

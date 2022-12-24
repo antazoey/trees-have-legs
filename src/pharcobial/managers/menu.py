@@ -3,7 +3,7 @@ from typing import Iterable
 from pygame.event import Event
 
 from pharcobial.managers.base import ViewController
-from pharcobial.types import InputEvent, MenuItem
+from pharcobial.types import MenuItem, UserInput
 from pharcobial.utils import quit
 
 
@@ -22,7 +22,7 @@ class MenuManager(ViewController):
             self.display.show_text(item.title, font_size, start_x, start_y + offset, "red")
 
     def handle_event(self, event: Event):
-        if event.type != InputEvent.KEY_DOWN:
+        if event.type != UserInput.KEY_DOWN:
             return
 
         if event.key == self.options.key_bindings.escape:
