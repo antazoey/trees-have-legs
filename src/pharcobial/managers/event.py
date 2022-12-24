@@ -26,9 +26,11 @@ class EventManager(BaseManager):
 
             self.views.active.handle_event(event)
         
+            # Continue before processing next event.
             yield GameAction.CONTINUE
 
         else:
+            # No events.
             yield GameAction.CONTINUE
 
 
