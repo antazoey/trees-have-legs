@@ -2,8 +2,9 @@ from functools import cached_property
 from importlib import import_module
 from typing import TYPE_CHECKING, cast
 
+from pygame.sprite import AbstractGroup
+
 if TYPE_CHECKING:
-    from .camera import CameraManager
     from .clock import ClockManager
     from .collision import CollisionManager
     from .display import DisplayManager
@@ -14,21 +15,14 @@ if TYPE_CHECKING:
     from .options import OptionsManager
     from .sprite import SpriteManager
     from .state import StateManager
+    from .view import ViewManager
+    from .world import WorldManager
 
 
-class BaseManager:
+class ManagerAccess:
     """
     A way to do dependency injection between all the managers.
     """
-
-    @cached_property
-    def camera(self) -> "CameraManager":
-        """
-        Responsible for the offset from the active display to the active map
-        and managing the camera sprite group.
-        """
-
-        return cast("CameraManager", self._get_manager("camera"))
 
     @cached_property
     def clock(self) -> "ClockManager":
@@ -113,6 +107,28 @@ class BaseManager:
 
         return cast("StateManager", self._get_manager("state"))
 
+    @cached_property
+    def views(self) -> "ViewManager":
+        """
+        The view stack for popping and pushing.
+        """
+
+        return cast("ViewManager", self._get_manager("view"))
+
+    @cached_property
+    def world(self) -> "WorldManager":
+        """
+        Responsible for the camera and sprite group for all in-world sprites.
+        """
+
+        return cast("WorldManager", self._get_manager("world"))
+
+    def _get_manager(self, name: str) -> "BaseManager":
+        module = import_module(f"{ROOT_MODULE}.{name}")
+        return getattr(module, f"{name}_manager")
+
+
+class BaseManager(ManagerAccess):
     def validate(self):
         """
         Override to raise assertions if needed.
@@ -120,12 +136,31 @@ class BaseManager:
         in ``GameManager.validate()``.
         """
 
-    def _get_manager(self, name: str) -> "BaseManager":
-        module = import_module(f"{ROOT_MODULE}.{name}")
-        return getattr(module, f"{name}_manager")
+
+class ViewController(BaseManager):
+    def __init__(self, group: AbstractGroup | None = None) -> None:
+        super().__init__()
+        self.group = group
+
+    def update(self, *args, **kwargs):
+        """
+        Update sprites in the sprite group.
+        """
+        if self.group:
+            self.group.update(*args, **kwargs)
 
     def draw(self):
-        pass
+        """
+        Draw sprites that are managed here.
+        For example, the menu manager draws menu items and the camera manager draws
+        the sprites in the camera sprite group.
+        """
+
+    def run(self):
+        """Run the view."""
+        self.update()
+        with self.display.in_same_cycle():
+            self.draw()
 
 
 ROOT_MODULE = ".".join(BaseManager.__module__.split(".")[:-1])

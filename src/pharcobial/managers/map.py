@@ -7,12 +7,11 @@ from pharcobial.utils import game_paths, to_px
 
 
 class MapManager(BaseManager):
-    def __init__(self, map_id: str = "buffer_property") -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.player_start: Positional | None = None
         self.bushes_start: List[Positional] = []
         self.active: List[List[TileKey]] = []
-        self.load(map_id)
 
     def __iter__(self):
         yield from self.active

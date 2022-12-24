@@ -3,6 +3,7 @@ from typing import Dict, Iterable, List
 
 from pygame.event import Event
 
+from pharcobial.constants import Maps
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import BaseSprite
@@ -18,11 +19,12 @@ class SpriteManager(BaseManager):
         super().__init__()
         self._sprite_cache: Dict[str, BaseSprite] = {}
 
-    def init_sprites(self):
+    def init_level(self, map_id: str):
         """
-        To be called after all managers initialized.
+        Create the sprites needed for the given map ID.
         """
 
+        assert map_id == Maps.BUFFER_PROPERTY  # Currently only one.
         _ = self.player
         _ = self.bushes
         _ = self.tiles
@@ -41,7 +43,7 @@ class SpriteManager(BaseManager):
     @cached_property
     def player(self) -> Player:
         assert self.map.player_start
-        player = Player(self.map.player_start, (self.camera.group, self.collision.group))
+        player = Player(self.map.player_start, (self.world.group, self.collision.group))
         self._sprite_cache["player"] = player
         return player
 
@@ -53,10 +55,10 @@ class SpriteManager(BaseManager):
             Tile(
                 Position(to_px(x), to_px(y)),
                 tile_key,
-                (self.camera.group,)
+                (self.world.group,)
                 if tile_key != TileKey.VOID
                 else (
-                    self.camera.group,
+                    self.world.group,
                     self.collision.group,
                 ),
             )
@@ -67,7 +69,7 @@ class SpriteManager(BaseManager):
     @cached_property
     def bushes(self) -> List[Bush]:
         return [
-            Bush(p, str(i), (self.camera.group, self.collision.group))
+            Bush(p, str(i), (self.world.group, self.collision.group))
             for i, p in enumerate(self.map.bushes_start)
         ]
 

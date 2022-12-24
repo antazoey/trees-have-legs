@@ -2,21 +2,17 @@ from typing import Iterable
 
 from pygame.event import Event
 
-from pharcobial.managers.base import BaseManager
+from pharcobial.managers.base import ViewController
 from pharcobial.types import InputEvent, MenuItem
 from pharcobial.utils import quit
 
 
-class MenuManager(BaseManager):
+class MenuManager(ViewController):
     OPTIONS = ("Continue", "Save", "Load", "Options", "Quit")
 
     selected: int = 0
-    visible: bool = False
 
     def draw(self):
-        if not self.visible:
-            return
-
         start_x = self.display.half_width // 2
         start_y = self.display.half_height // 2
 
@@ -41,7 +37,7 @@ class MenuManager(BaseManager):
         elif event.key == self.options.key_bindings.enter:
             match self.selected:
                 case 0:  # Continue
-                    self.visible = False
+                    self.views.pop()
                     self.clock.paused = False
 
                 case 1:  # Save

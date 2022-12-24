@@ -3,7 +3,7 @@ from pygame.sprite import Group
 from pygame.surface import Surface
 
 from pharcobial.logging import game_logger
-from pharcobial.managers.base import BaseManager
+from pharcobial.managers.base import BaseManager, ViewController
 from pharcobial.sprites.base import BaseSprite
 
 
@@ -36,26 +36,38 @@ class CameraGroup(Group):
             self.surface.blit(img, offset)
 
 
-class CameraManager(BaseManager):
+class Camera(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         self.offset = Vector2()
-        self.group = CameraGroup(self.display.active.screen)
         self.followee: BaseSprite | None = None
-
-    def validate(self):
-        assert self.group is not None
-        game_logger.debug("Camera ready.")
 
     def update(self):
         if self.followee is not None:
             self.offset.x = self.followee.rect.centerx - self.display.half_width
             self.offset.y = self.followee.rect.centery - self.display.half_height
 
+
+class WorldManager(ViewController):
+    def __init__(self) -> None:
+        super().__init__(CameraGroup(self.display.active.screen))
+        self.camera = Camera()
+        self.group: CameraGroup = self.group
+
+    def validate(self):
+        assert self.group is not None
+        assert self.camera is not None
+        game_logger.debug("World ready.")
+
+    def update(self):
+        self.camera.update()
         self.group.update()
 
     def draw(self):
-        self.group.draw_in_view(self.offset)
+        self.group.draw_in_view(self.camera.offset)
+
+    def follow(self, sprite: BaseSprite):
+        self.camera.followee = sprite
 
 
-camera_manager = CameraManager()
+world_manager = WorldManager()
