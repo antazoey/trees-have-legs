@@ -12,6 +12,15 @@ class Game(BaseManager):
         self.running = False
         self.options.load(game_options)
 
+    def start(self):
+        """
+        Start the game.
+        Does game setup and then runs the game
+        """
+        self.setup()
+        self.run()
+        quit()
+
     def setup(self):
         """
         All initial game setup happens here.
@@ -43,15 +52,6 @@ class Game(BaseManager):
 
         # Start off in normal, world mode.
         self.views.push(self.world)
-
-    def start(self):
-        """
-        Start the game.
-        Does game setup and then runs the game
-        """
-        self.setup()
-        self.run()
-        quit()
 
     def run(self):
         """
