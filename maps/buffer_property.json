@@ -1,0 +1,30 @@
+{
+    "map_id": "buffer_property",
+    "tile_set": {
+        "0": "grass",
+        "1": "road"
+    },
+    "player": {
+        "sprite_id": "player",
+        "location": {
+            "x": 10,
+            "y": 4
+        }
+    },
+    "npcs": [
+        {
+            "sprite_id": "bush-0",
+            "location": {
+                "x": 5,
+                "y": 2
+            }
+        },
+        {
+            "sprite_id": "bush-1",
+            "location": {
+                "x": 20,
+                "y": 22
+            }
+        }
+    ]
+}

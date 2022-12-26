@@ -1,47 +1,60 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator, List
+from typing import Dict, Iterator, List, Tuple
 
+from pharcobial.constants import MAP_VOID
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import MapID, Position, Positional, TileKey
-from pharcobial.utils import game_paths, safe_load_csv, to_px
+from pharcobial.types import GfxID, MapID, Position, Positional, SpriteID, TileKey
+from pharcobial.utils import game_paths, safe_load, safe_load_csv
+
+
+@dataclass
+class MapCharacterData:
+    sprite_id: SpriteID
+    location: Position
+
+    @classmethod
+    def parse_obj(cls, obj: Dict) -> "MapCharacterData":
+        location = Position.parse_coordinates(**obj["location"])
+        return cls(sprite_id=obj["sprite_id"], location=location)
+
+
+@dataclass
+class MapMetaData:
+    map_id: MapID
+    tile_set: Dict[TileKey, GfxID]
+    player: MapCharacterData
+    npcs: List[MapCharacterData]
+
+    @classmethod
+    def parse_file(cls, path: Path) -> "MapMetaData":
+        data = safe_load(path)
+        data["player"] = MapCharacterData.parse_obj(data["player"])
+        data["npcs"] = [MapCharacterData.parse_obj(npc) for npc in data.get("npcs", [])]
+        return cls(**data)
 
 
 @dataclass
 class Map:
     map_id: MapID
+    metadata: MapMetaData
     tiles: List[List[TileKey]]
-    player_start: Positional | None
-    npcs_start: List[Positional]
 
     @classmethod
     def parse_file(cls, path: Path) -> "Map":
+        metadata_file = path.parent / f"{path.stem}.json"
+        metadata = MapMetaData.parse_file(metadata_file)
         tiles_lists: List[List[TileKey]] = []
-        player_start = None
-        npcs_start: List[Positional] = []
 
-        for y, row in enumerate(safe_load_csv(path)):
+        for row in safe_load_csv(path):
             tiles: List[TileKey] = []
-            for x, tile in enumerate(row):
-                key = TileKey(tile)
-
-                match key:
-                    case TileKey.PLAYER:
-                        player_start = (to_px(x), to_px(y))
-                        tiles.append(TileKey.GRASS)
-                    case TileKey.BUSH:
-                        npcs_start.append((to_px(x), to_px(y)))
-                        tiles.append(TileKey.GRASS)
-                    case _:
-                        # Normal map tile (grass or road)
-                        tiles.append(key)
+            for tile in row:
+                tiles.append(tile)
 
             tiles_lists.append(tiles)
 
-        return cls(
-            map_id=path.stem, tiles=tiles_lists, player_start=player_start, npcs_start=npcs_start
-        )
+        return cls(map_id=path.stem, tiles=tiles_lists, metadata=metadata)
 
     def __iter__(self) -> Iterator[List[TileKey]]:
         yield from self.tiles
@@ -67,14 +80,15 @@ class MapManager(BaseManager):
         if not self.active:
             raise ValueError("No map loaded.")
 
-        return self.active.player_start or Position(x=0, y=0)
+        return self.active.metadata.player.location
 
     @property
-    def npcs_start(self) -> List[Positional]:
+    def npcs_start(self) -> Iterator[Tuple[SpriteID, Positional]]:
         if not self.active:
             raise ValueError("No map loaded.")
 
-        return self.active.npcs_start
+        for npc in self.active.metadata.npcs:
+            yield npc.sprite_id, npc.location
 
     def __iter__(self):
         yield from self.active or []
@@ -90,6 +104,14 @@ class MapManager(BaseManager):
         assert self.player_start
         assert self.active
         game_logger.debug("Map ready.")
+
+    def get_tile_info(self, tile_key: str) -> Tuple[GfxID | None, Positional]:
+        active = self.active
+        if tile_key == MAP_VOID or not active:
+            return None, (0, -10)
+
+        gfx_id = active.metadata.tile_set[tile_key]
+        return gfx_id, (0, 0)
 
 
 map_manager = MapManager()

@@ -3,14 +3,14 @@ from typing import Dict, Iterable, List
 
 from pygame.event import Event
 
-from pharcobial.constants import Maps
+from pharcobial.constants import MAP_VOID, Maps
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
-from pharcobial.types import MapID, Position, TileKey
+from pharcobial.types import MapID, Position
 from pharcobial.utils import to_px
 
 
@@ -55,7 +55,7 @@ class SpriteManager(BaseManager):
                 Position(to_px(x), to_px(y)),
                 tile_key,
                 (self.world.group,)
-                if tile_key != TileKey.VOID
+                if tile_key != MAP_VOID
                 else (
                     self.world.group,
                     self.collision.group,
@@ -67,10 +67,14 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def npcs(self) -> List[NPC]:
-        return [
-            Bush(p, str(i), (self.world.group, self.collision.group))
-            for i, p in enumerate(self.map.npcs_start)
-        ]
+        character_list: List[NPC] = []
+        for npc, pos in self.map.npcs_start:
+            if npc.startswith("bush-"):
+                index = npc.replace("bush-", "").strip()
+                bush = Bush(pos, index, (self.world.group, self.collision.group))
+                character_list.append(bush)
+
+        return character_list
 
     @property
     def all_sprites(self) -> Iterable[BaseSprite]:

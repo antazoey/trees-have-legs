@@ -5,6 +5,7 @@ from typing import List, Tuple, TypeAlias, Union
 from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP
 
 from pharcobial.constants import (
+    BLOCK_SIZE,
     DEFAULT_FONT_SIZE,
     DEFAULT_FPS,
     DEFAULT_HEIGHT,
@@ -19,6 +20,7 @@ GfxID: TypeAlias = str
 MapID: TypeAlias = str
 SaveID: TypeAlias = str
 FontName: TypeAlias = str
+TileKey: TypeAlias = str
 
 
 class UserInput:
@@ -27,8 +29,11 @@ class UserInput:
 
 
 class Position(tuple):
-    def __new__(cls, *args) -> "Position":
+    def __new__(cls, *args, **kwargs) -> "Position":
         x_and_y = tuple(args)
+        if not x_and_y:
+            x_and_y = tuple(kwargs.values())
+
         return super().__new__(cls, x_and_y)
 
     def __init__(self, x: Union[int, "Positional"], y: int | None = None) -> None:
@@ -40,6 +45,10 @@ class Position(tuple):
             self.y = x[1]
 
         super().__init__()
+
+    @classmethod
+    def parse_coordinates(cls, x: int, y: int) -> "Position":
+        return cls(x=x * BLOCK_SIZE, y=y * BLOCK_SIZE)
 
 
 Positional = Tuple[int, int] | Position
@@ -53,14 +62,6 @@ class GameEvent(Enum):
     QUIT = "QUIT"
     CONTINUE = "CONTINUE"
     MENU = "MENU"
-
-
-class TileKey(Enum):
-    GRASS = "0"
-    ROAD = "1"
-    PLAYER = "P"
-    BUSH = "B"
-    VOID = "X"
 
 
 Map = List[List[TileKey]]

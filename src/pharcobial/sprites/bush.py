@@ -14,7 +14,7 @@ class Bush(NPC):
         self.character = "bush"
         self.bush_id: str = bush_id
         super().__init__(
-            f"adversary-{self.character}-{self.bush_id}",
+            f"{self.character}-{self.bush_id}",
             position,
             self.character,
             groups,

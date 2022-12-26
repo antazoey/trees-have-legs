@@ -14,16 +14,8 @@ class Tile(BaseSprite):
         groups: Iterable[Group],
     ) -> None:
         self.tile_key = tile_key
-        gfx_id = None
-        match tile_key:
-            case TileKey.ROAD | TileKey.GRASS:
-                gfx_id = tile_key.name.lower()
-                hitbox = (0, 0)
-            case TileKey.VOID:
-                gfx_id = None
-                hitbox = (-10, 0)
-
+        gfx_id, hitbox = self.map.get_tile_info(tile_key)
         super().__init__(f"tile_({position[0]}, {position[1]})", position, gfx_id, groups, hitbox)
 
     def __repr__(self) -> str:
-        return f"<Tile ({self.rect.x}, {self.rect.y}) {self.tile_key.name}>"
+        return f"<Tile ({self.rect.x}, {self.rect.y}) {self.tile_key}>"
