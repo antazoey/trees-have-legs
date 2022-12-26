@@ -32,7 +32,7 @@ class SpriteManager(BaseManager):
     def dict(self) -> Dict:
         return {
             "player": self.player.dict(),
-            "bushes": [x.dict() for x in self.npcs],
+            "npcs": [x.dict() for x in self.npcs],
             "tiles": [x.dict() for x in self.tiles],
         }
 
