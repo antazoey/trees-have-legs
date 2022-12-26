@@ -10,7 +10,7 @@ from pharcobial.sprites.base import BaseSprite
 from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
-from pharcobial.types import Position, TileKey
+from pharcobial.types import MapID, Position, TileKey
 from pharcobial.utils import to_px
 
 
@@ -19,7 +19,7 @@ class SpriteManager(BaseManager):
         super().__init__()
         self._sprite_cache: Dict[str, BaseSprite] = {}
 
-    def init_level(self, map_id: str):
+    def init_level(self, map_id: MapID):
         """
         Create the sprites needed for the given map ID.
         """

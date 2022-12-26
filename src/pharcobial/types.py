@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Tuple, Union
+from typing import List, Tuple, TypeAlias, Union
 
 from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP
 
@@ -13,6 +13,12 @@ from pharcobial.constants import (
 )
 
 Color = Tuple[int, int, int]
+
+SpriteID: TypeAlias = str
+GfxID: TypeAlias = str
+MapID: TypeAlias = str
+SaveID: TypeAlias = str
+FontName: TypeAlias = str
 
 
 class UserInput:
@@ -96,10 +102,10 @@ class GameOptions:
     full_screen: bool = False
 
     # Game settings
-    map_id: str | None = None
+    map_id: MapID | None = None
     """Load a particular map from start."""
 
-    save_id: str | None = None  # Set when loading a saved game.
+    save_id: SaveID | None = None  # Set when loading a saved game.
     """Load a saved game. Mutually exclusive with ``map_id``."""
 
     # Debug

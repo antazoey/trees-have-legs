@@ -8,15 +8,15 @@ from pygame.sprite import AbstractGroup, Sprite
 from pygame.surface import Surface
 
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import Positional
+from pharcobial.types import GfxID, Positional, SpriteID
 
 
 class BaseSprite(Sprite, BaseManager):
     def __init__(
         self,
-        sprite_id: str,
+        sprite_id: SpriteID,
         position: Positional,
-        gfx_id: str | None,
+        gfx_id: GfxID | None,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional,
     ) -> None:
@@ -54,7 +54,7 @@ class BaseSprite(Sprite, BaseManager):
         """
         return
 
-    def set_image(self, gfx_id: str):
+    def set_image(self, gfx_id: GfxID):
         if self.gfx_id != gfx_id:
             self.image = self.graphics[gfx_id]
             self.gfx_id = gfx_id

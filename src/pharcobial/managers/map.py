@@ -2,7 +2,7 @@ from typing import List
 
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import Positional, TileKey
+from pharcobial.types import MapID, Positional, TileKey
 from pharcobial.utils import game_paths, to_px
 
 
@@ -19,7 +19,7 @@ class MapManager(BaseManager):
     def __getitem__(self, idx: int | slice):
         return self.active[idx]
 
-    def load(self, map_id: str):
+    def load(self, map_id: MapID):
         file_path = game_paths.get_map(map_id)
         with open(file_path, "r") as file:
             lines = file.readlines()
