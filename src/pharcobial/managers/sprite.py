@@ -9,9 +9,8 @@ from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
-from pharcobial.sprites.tile import Tile
-from pharcobial.types import MapID, Position
-from pharcobial.utils import to_px
+from pharcobial.sprites.tile import Ground, Tile, Void
+from pharcobial.types import MapID, Position, SpriteID
 
 
 class SpriteManager(BaseManager):
@@ -48,33 +47,24 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def tiles(self) -> List[Tile]:
-        # Find all row boundary tiles.
-
         return [
-            Tile(
-                Position(to_px(x), to_px(y)),
-                tile_key,
-                (self.world.group,)
-                if tile_key != MAP_VOID
-                else (
-                    self.world.group,
-                    self.collision.group,
-                ),
-            )
+            Void(Position.parse_coordinates(x=x, y=y), (self.world.group, self.collision.group))
+            if tile_key == MAP_VOID
+            else Ground(Position.parse_coordinates(x=x, y=y), tile_key, (self.world.group,))
             for y, row in enumerate(self.map)
             for x, tile_key in enumerate(row)
         ]
 
     @cached_property
     def npcs(self) -> List[NPC]:
-        character_list: List[NPC] = []
+        npc_list: List[NPC] = []
         for npc, pos in self.map.npcs_start:
             if npc.startswith("bush-"):
                 index = npc.replace("bush-", "").strip()
                 bush = Bush(pos, index, (self.world.group, self.collision.group))
-                character_list.append(bush)
+                npc_list.append(bush)
 
-        return character_list
+        return npc_list
 
     @property
     def all_sprites(self) -> Iterable[BaseSprite]:
@@ -86,7 +76,7 @@ class SpriteManager(BaseManager):
         for tile in self.tiles:
             yield tile
 
-    def __getitem__(self, key: str) -> BaseSprite:
+    def __getitem__(self, key: SpriteID) -> BaseSprite:
         if key in self._sprite_cache:
             return self._sprite_cache[key]
 

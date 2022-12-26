@@ -32,6 +32,10 @@ class MapMetaData:
         data = safe_load(path)
         data["player"] = MapCharacterData.parse_obj(data["player"])
         data["npcs"] = [MapCharacterData.parse_obj(npc) for npc in data.get("npcs", [])]
+
+        if MAP_VOID not in data["tile_set"]:
+            data["tile_set"][MAP_VOID] = None
+
         return cls(**data)
 
 
@@ -45,16 +49,8 @@ class Map:
     def parse_file(cls, path: Path) -> "Map":
         metadata_file = path.parent / f"{path.stem}.json"
         metadata = MapMetaData.parse_file(metadata_file)
-        tiles_lists: List[List[TileKey]] = []
-
-        for row in safe_load_csv(path):
-            tiles: List[TileKey] = []
-            for tile in row:
-                tiles.append(tile)
-
-            tiles_lists.append(tiles)
-
-        return cls(map_id=path.stem, tiles=tiles_lists, metadata=metadata)
+        tiles = safe_load_csv(path)
+        return cls(map_id=path.stem, tiles=tiles, metadata=metadata)
 
     def __iter__(self) -> Iterator[List[TileKey]]:
         yield from self.tiles
@@ -78,17 +74,25 @@ class MapManager(BaseManager):
     @property
     def player_start(self) -> Positional:
         if not self.active:
-            raise ValueError("No map loaded.")
+            # Shouldn't really happen.
+            return Position(x=0, y=0)
 
         return self.active.metadata.player.location
 
     @property
     def npcs_start(self) -> Iterator[Tuple[SpriteID, Positional]]:
         if not self.active:
-            raise ValueError("No map loaded.")
+            return
 
         for npc in self.active.metadata.npcs:
             yield npc.sprite_id, npc.location
+
+    @property
+    def tile_set(self) -> Dict[TileKey, GfxID]:
+        if not self.active:
+            return {}
+
+        return self.active.metadata.tile_set
 
     def __iter__(self):
         yield from self.active or []
@@ -104,14 +108,6 @@ class MapManager(BaseManager):
         assert self.player_start
         assert self.active
         game_logger.debug("Map ready.")
-
-    def get_tile_info(self, tile_key: str) -> Tuple[GfxID | None, Positional]:
-        active = self.active
-        if tile_key == MAP_VOID or not active:
-            return None, (0, -10)
-
-        gfx_id = active.metadata.tile_set[tile_key]
-        return gfx_id, (0, 0)
 
 
 map_manager = MapManager()

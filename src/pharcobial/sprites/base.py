@@ -18,7 +18,7 @@ class BaseSprite(Sprite, BaseManager):
         position: Positional,
         gfx_id: GfxID | None,
         groups: Iterable[AbstractGroup],
-        hitbox_inflation: Positional,
+        hitbox_inflation: Positional | None,
     ) -> None:
         super().__init__()
         self.sprite_id = sprite_id
@@ -27,7 +27,7 @@ class BaseSprite(Sprite, BaseManager):
             self.graphics[gfx_id] if gfx_id else self.graphics.get_filled_surface("black")
         )
         self.rect: Rect = self.image.get_rect(topleft=position)
-        self.hitbox = self.rect.inflate(hitbox_inflation)
+        self.hitbox = self.rect.inflate(hitbox_inflation) if hitbox_inflation else self.rect
         self.visible = True
 
         for group in groups:
