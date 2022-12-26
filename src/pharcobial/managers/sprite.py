@@ -76,8 +76,8 @@ class SpriteManager(BaseManager):
     def all_sprites(self) -> Iterable[BaseSprite]:
         yield self.player
 
-        for bush in self.npcs:
-            yield bush
+        for npc in self.npcs:
+            yield npc
 
         for tile in self.tiles:
             yield tile

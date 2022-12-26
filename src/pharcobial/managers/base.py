@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .display import DisplayManager
     from .event import EventManager
     from .graphics import GraphicsManager
+    from .inventory import InventoryManager
     from .map import MapManager
     from .menu import MenuManager
     from .options import OptionsManager
@@ -65,6 +66,14 @@ class ManagerAccess:
         """
 
         return cast("GraphicsManager", self._("graphics"))
+
+    @cached_property
+    def inventory(self) -> "InventoryManager":
+        """
+        The inventory manger. Manages inventory for all sprites.
+        """
+
+        return cast("InventoryManager", self._("inventory"))
 
     @cached_property
     def map(self) -> "MapManager":
