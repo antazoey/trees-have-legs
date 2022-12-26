@@ -103,7 +103,7 @@ class GameOptions:
     full_screen: bool = False
 
     # Game settings
-    map_id: MapID | None = None
+    map_id: MapID = DEFAULT_MAP
     """Load a particular map from start."""
 
     save_id: SaveID | None = None  # Set when loading a saved game.

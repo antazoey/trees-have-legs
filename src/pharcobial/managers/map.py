@@ -31,7 +31,21 @@ class MapMetaData:
     def parse_file(cls, path: Path) -> "MapMetaData":
         data = safe_load(path)
         data["player"] = MapCharacterData.parse_obj(data["player"])
-        data["npcs"] = [MapCharacterData.parse_obj(npc) for npc in data.get("npcs", [])]
+
+        npc_list = list(data.get("npcs", []))
+        data["npcs"] = []
+        for npc_obj in npc_list:
+            is_multiple = npc_obj.get("multiple", False)
+            if is_multiple:
+                sprite_id_format = npc_obj.get("sprite_id")
+                locations = npc_obj["locations"]
+                for idx, location in enumerate(locations):
+                    sprite_id = sprite_id_format.format(x=idx)
+                    location = Position.parse_coordinates(**location)
+                    data["npcs"].append(MapCharacterData(sprite_id=sprite_id, location=location))
+
+            else:
+                data["npcs"].append(MapCharacterData.parse_obj(npc_obj))
 
         if MAP_VOID not in data["tile_set"]:
             data["tile_set"][MAP_VOID] = None
@@ -62,47 +76,36 @@ class Map:
 class MapManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
-        self.active: Map | None = None
+        self.active = self.load(self.options.map_id)
 
     @property
     def map_id(self) -> MapID | None:
-        if not self.active:
-            return None
-
         return self.active.map_id
 
     @property
     def player_start(self) -> Positional:
-        if not self.active:
-            # Shouldn't really happen.
-            return Position(x=0, y=0)
-
         return self.active.metadata.player.location
 
     @property
     def npcs_start(self) -> Iterator[Tuple[SpriteID, Positional]]:
-        if not self.active:
-            return
-
         for npc in self.active.metadata.npcs:
             yield npc.sprite_id, npc.location
 
     @property
     def tile_set(self) -> Dict[TileKey, GfxID]:
-        if not self.active:
-            return {}
-
         return self.active.metadata.tile_set
 
     def __iter__(self):
-        yield from self.active or []
+        yield from self.active
 
     def __getitem__(self, idx: int | slice):
-        return (self.active or [])[idx]
+        return self.active[idx]
 
-    def load(self, map_id: MapID):
+    def load(self, map_id: MapID) -> Map:
         file_path = game_paths.get_map(map_id)
-        self.active = Map.parse_file(file_path)
+        loaded_map = Map.parse_file(file_path)
+        self.active = loaded_map
+        return loaded_map
 
     def validate(self):
         assert self.player_start

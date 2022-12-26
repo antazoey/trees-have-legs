@@ -1,5 +1,6 @@
 from functools import cached_property
-from typing import Dict, Iterable, List
+from importlib import import_module
+from typing import Dict, Iterable, List, Type
 
 from pygame.event import Event
 
@@ -7,7 +8,6 @@ from pharcobial.constants import MAP_VOID, Maps
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import NPC, BaseSprite
-from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Ground, Tile, Void
 from pharcobial.types import MapID, Position, SpriteID
@@ -59,10 +59,18 @@ class SpriteManager(BaseManager):
     def npcs(self) -> List[NPC]:
         npc_list: List[NPC] = []
         for npc, pos in self.map.npcs_start:
-            if npc.startswith("bush-"):
-                index = npc.replace("bush-", "").strip()
-                bush = Bush(pos, index, (self.world.group, self.collision.group))
-                npc_list.append(bush)
+            npc_cls = _sprite_id_to_npc_cls(npc)
+
+            # NOTE: These kwargs are likely overriden in certain NPC classes
+            # some of these values act as "defaults".
+            npc_obj = npc_cls(
+                sprite_id=npc,
+                position=pos,
+                gfx_id=npc,
+                groups=(self.world.group, self.collision.group),
+                hitbox_inflation=None,
+            )
+            npc_list.append(npc_obj)
 
         return npc_list
 
@@ -93,6 +101,20 @@ class SpriteManager(BaseManager):
 
     def handle_event(self, event: Event):
         self.player.handle_event(event)
+
+
+ROOT_SPRITE_MODULE = ".".join(BaseSprite.__module__.split(".")[:-1])
+
+
+def _sprite_id_to_npc_cls(sprite_id: SpriteID) -> Type[NPC]:
+    parts = sprite_id.split("-")
+    if parts[-1].isnumeric():
+        parts = parts[:-1]
+
+    mod_name = "_".join(x for x in parts)
+    cls_name = "".join([x.capitalize() for x in parts])
+    module = import_module(f"{ROOT_SPRITE_MODULE}.{mod_name}")
+    return getattr(module, cls_name)
 
 
 sprite_manager = SpriteManager()

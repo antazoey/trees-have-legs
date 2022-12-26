@@ -5,7 +5,7 @@ from pygame.surface import Surface
 
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager, ViewController
-from pharcobial.sprites.base import BaseSprite
+from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.player import Player
 
 
@@ -25,11 +25,7 @@ class CameraGroup(Group):
             offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
 
             # Draw bottom layer first
-            if (
-                isinstance(sprite, Player)
-                or "adversary-" in sprite.sprite_id
-                or "-bubble" in sprite.sprite_id
-            ):
+            if isinstance(sprite, Player) or isinstance(sprite, NPC):
                 pending.append((sprite.image, offset_pos))
             else:
                 self.surface.blit(sprite.image, offset_pos)
