@@ -28,9 +28,6 @@ class Game(BaseManager):
         Else, load from a saved state.
         """
 
-        # Process a map CSV file so it can be used for sprite-generation.
-        self.map.load(self.options.map_id)
-
         # Validate is used to ensure the creation of a dependency
         # before other logic. This is to help the dependency injection
         # have some ordering, as needed.

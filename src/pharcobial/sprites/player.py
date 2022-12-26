@@ -5,9 +5,9 @@ from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
 
-from pharcobial.constants import Graphics
+from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from pharcobial.logging import game_logger
-from pharcobial.sprites.base import MobileSprite
+from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
 from pharcobial.types import KeyBinding, UserInput
 
@@ -89,13 +89,22 @@ class Controller:
         return self.direction
 
 
-class Player(MobileSprite):
+class Player(Character):
     """
     The main character.
     """
 
-    def __init__(self, groups: Iterable[Group], character: str = "pharma"):
-        super().__init__(character, self.map.player_start, character, groups, (0, -10))
+    def __init__(
+        self,
+        groups: Iterable[Group],
+        character: str = "pharma",
+        hp: int = DEFAULT_HP,
+        max_hp: int = DEFAULT_MAX_HP,
+        ap: int = DEFAULT_AP,
+    ):
+        super().__init__(
+            character, self.map.player_start, character, groups, (0, -10), hp, max_hp, ap
+        )
         self.move_gfx_id: int = -1
         self.speed = 2
         self.controller = Controller(self.options.key_bindings)

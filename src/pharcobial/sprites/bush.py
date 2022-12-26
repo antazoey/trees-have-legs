@@ -5,8 +5,8 @@ from pygame.sprite import Group
 
 from pharcobial.constants import Graphics
 from pharcobial.logging import game_logger
-from pharcobial.sprites.base import NPC, BaseSprite
-from pharcobial.types import Position, Positional, SpriteID
+from pharcobial.sprites.base import NPC
+from pharcobial.types import Positional, SpriteID
 from pharcobial.utils import chance
 
 
@@ -22,7 +22,7 @@ class Bush(NPC):
             (-30, -26),
         )
         self.speed = 1
-        self.vision = self.rect.inflate((2 * self.rect.height, 2 * self.rect.width))
+        self.vision = self.rect.inflate((4 * self.rect.height, 2 * self.rect.width))
         self.direction = Vector2()
         self.player_is_near: bool = False
         self.is_alive: bool = False
@@ -37,18 +37,15 @@ class Bush(NPC):
         Else, it stands still.
         """
 
-        player = self.sprites.player
         player_was_near = self.player_is_near
         if player_was_near:
             # Player is hanging around a tree.
             self.player_is_near = self.vision.colliderect(self.sprites.player.rect)
             if self.player_is_near and self.is_alive:
-                self.move_towards(player)
+                self.move_towards_player()
 
             elif not self.player_is_near and self.is_alive:
-                # Player has escaped a tree that was chasing.
-                game_logger.debug(f"Tree {self.bush_index} going back to sleep.")
-                self.set_image(Graphics.BUSH)
+                self.sleep()
 
         else:
             self.player_is_near = self.vision.colliderect(self.sprites.player.rect)
@@ -56,32 +53,27 @@ class Bush(NPC):
                 # Player approaches a tree.
                 game_logger.debug(f"Player approaches bush {self.bush_index}.")
 
-                self.is_alive = chance((1, 2))
-                if self.is_alive:
-                    # Tree is now going to chase you for a bit.
-                    game_logger.debug(
-                        f"{Graphics.BUSH.capitalize()} {self.bush_index} has come to life!"
-                    )
-                    self.set_image(f"{Graphics.BUSH}-monster")
-                    self.move_towards(player)
+                # TODO: Have based on difficulty.
+                if chance((1, 2)):
+                    self.come_alive()
 
-    def move_towards(self, sprite: BaseSprite):
-        new_position = Position(self.hitbox.x, self.hitbox.y)
+    def sleep(self):
+        self.is_alive = False
+        game_logger.debug(f"Tree {self.bush_index} going back to sleep.")
+        self.set_image(Graphics.BUSH)
 
-        # Handle x
-        if sprite.hitbox.x > self.hitbox.x:
-            new_position.x = round(self.hitbox.x + min(self.speed, sprite.hitbox.x - self.hitbox.x))
-            self.direction.x = 1
-        elif sprite.hitbox.x < self.hitbox.x:
-            new_position.x = round(self.hitbox.x - min(self.speed, self.hitbox.x - sprite.hitbox.x))
-            self.direction.x = -1
+    def come_alive(self):
+        self.is_alive = True
+        game_logger.debug(f"{Graphics.BUSH.capitalize()} {self.bush_index} has come to life!")
+        self.set_image(f"{Graphics.BUSH}-monster")
+        self.move_towards_player()
 
-        # Handle y
-        if sprite.hitbox.y > self.hitbox.y:
-            new_position.y = round(self.hitbox.y + min(self.speed, sprite.hitbox.y - self.hitbox.y))
-            self.direction.y = 1
-        elif sprite.hitbox.y < self.hitbox.y:
-            new_position.y = round(self.hitbox.y - min(self.speed, self.hitbox.y - sprite.hitbox.y))
-            self.direction.y = -1
+    def move_towards_player(self):
+        collided_x, collided_y = self.move_towards(self.sprites.player)
 
-        self.move(new_position.x, new_position.y)
+        # Deal damage
+        player = self.sprites.player
+        if (collided_x and collided_x.sprite_id == player.sprite_id) or (
+            collided_y and collided_y.sprite_id == player.sprite_id
+        ):
+            self.deal_damage(player)

@@ -15,7 +15,7 @@ class CameraGroup(Group):
         self.surface = surface
 
     def draw_in_view(self, offset: Vector2):
-        pending = []
+        top_layer = []
         for sprite in sorted(self.sprites(), key=lambda s: s.rect is not None and s.rect.centery):
             assert isinstance(sprite, BaseSprite)  # for Mypy
             if not sprite.visible:
@@ -24,13 +24,13 @@ class CameraGroup(Group):
             # Mypy doesn't realize this is valid.
             offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
 
-            # Draw bottom layer first
             if isinstance(sprite, Player) or isinstance(sprite, NPC):
-                pending.append((sprite.image, offset_pos))
+                top_layer.append((sprite.image, offset_pos))
             else:
+                # Draw ground layer
                 self.surface.blit(sprite.image, offset_pos)
 
-        for img, offset in pending:
+        for img, offset in top_layer:
             self.surface.blit(img, offset)
 
 
@@ -63,9 +63,11 @@ class WorldManager(ViewController):
     def update(self):
         self.camera.update()
         self.group.update()
+        self.hud.update()
 
     def draw(self):
         self.group.draw_in_view(self.camera.offset)
+        self.hud.draw()
 
     def follow(self, sprite: BaseSprite):
         self.camera.followee = sprite

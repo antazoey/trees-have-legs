@@ -16,39 +16,41 @@ class CollisionManager(BaseManager):
         assert self.group is not None
         game_logger.debug("Collision-detection ready.")
 
-    def check_x(self, target: MobileSprite):
+    def check_x(self, target: MobileSprite) -> BaseSprite | None:
         def fn(sprite: BaseSprite):
             if not self.collides(target, sprite):
-                return True
+                return None
 
             if target.direction.x < 0:
                 target.hitbox.right += 2 * int(abs(target.direction.x))
-                return False
+                return sprite
 
             elif target.direction.x > 0:
                 target.hitbox.left -= 2 * int(abs(target.direction.x))
-                return False
+                return sprite
 
-            return True
+            # Not sure it's possible  to get here.
+            return None
 
-        self.for_each(fn)
+        return self._check(fn)
 
-    def check_y(self, target: MobileSprite):
+    def check_y(self, target: MobileSprite) -> BaseSprite | None:
         def fn(sprite):
             if not self.collides(target, sprite):
-                return True
+                return None
 
             if target.direction.y < 0:
                 target.hitbox.bottom += 2 * int(abs(target.direction.y))
-                return False
+                return sprite
 
             elif target.direction.y > 0:
                 target.hitbox.top -= 2 * int(abs(target.direction.y))
-                return False
+                return sprite
 
-            return True
+            # Not sure it's possible  to get here.
+            return None
 
-        self.for_each(fn)
+        return self._check(fn)
 
     def collides(self, sprite_0: BaseSprite, sprite_1: BaseSprite) -> bool:
         if sprite_0 == sprite_1:
@@ -56,19 +58,21 @@ class CollisionManager(BaseManager):
             return False
 
         if sprite_0.hitbox.colliderect(sprite_1.hitbox):
-            game_logger.debug(
-                f"Collision between '{sprite_0.sprite_id}' " f"and '{sprite_1.sprite_id}' detected."
-            )
+            id_0 = sprite_0.sprite_id
+            id_1 = sprite_1.sprite_id
+            game_logger.debug(f"Collision between '{id_0}' and '{id_1}' detected.")
             return True
 
         return False
 
-    def for_each(self, fn: Callable):
+    def _check(self, fn: Callable) -> BaseSprite | None:
         for sprite in self.group.sprites():
             assert isinstance(sprite, BaseSprite)
-            keep_going = fn(sprite)
-            if not keep_going:
-                break
+            collided = fn(sprite)
+            if collided is not None:
+                return collided
+
+        return None
 
 
 collision_manager = CollisionManager()
