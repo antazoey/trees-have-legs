@@ -9,7 +9,7 @@ from pharcobial.constants import Graphics
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import MobileSprite
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import KeyBinding, Positional, UserInput
+from pharcobial.types import KeyBinding, UserInput
 
 
 class Controller:
@@ -94,8 +94,8 @@ class Player(MobileSprite):
     The main character.
     """
 
-    def __init__(self, position: Positional, groups: Iterable[Group], character: str = "pharma"):
-        super().__init__("player", position, character, groups, (0, -10))
+    def __init__(self, groups: Iterable[Group], character: str = "pharma"):
+        super().__init__("player", self.map.player_start, character, groups, (0, -10))
         self.move_gfx_id: int = -1
         self.speed = 2
         self.character = character

@@ -42,8 +42,7 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def player(self) -> Player:
-        assert self.map.player_start
-        player = Player(self.map.player_start, (self.world.group, self.collision.group))
+        player = Player((self.world.group, self.collision.group))
         self._sprite_cache["player"] = player
         return player
 
