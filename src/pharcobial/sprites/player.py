@@ -95,10 +95,9 @@ class Player(MobileSprite):
     """
 
     def __init__(self, groups: Iterable[Group], character: str = "pharma"):
-        super().__init__("player", self.map.player_start, character, groups, (0, -10))
+        super().__init__(character, self.map.player_start, character, groups, (0, -10))
         self.move_gfx_id: int = -1
         self.speed = 2
-        self.character = character
         self.controller = Controller(self.options.key_bindings)
         self.direction = self.controller.direction
         self.chat_bubble = ChatBubble(self)
@@ -142,7 +141,7 @@ class Player(MobileSprite):
         if not self.moving:
             # Return a standing-still graphic of the last direction facing.
             flip = self.controller.right_focused
-            image = self.graphics.get(self.character, flip_vertically=flip)
+            image = self.graphics.get(self.sprite_id, flip_vertically=flip)
             return image or self.image
 
         self.move_gfx_id += 1
@@ -155,6 +154,6 @@ class Player(MobileSprite):
             suffix = ""
             self.move_gfx_id = -1
 
-        gfx_id = f"{self.character}{suffix}"
+        gfx_id = f"{self.sprite_id}{suffix}"
         graphic = self.graphics.get(gfx_id, flip_vertically=self.controller.right_focused)
         return graphic or self.image

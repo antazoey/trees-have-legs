@@ -42,7 +42,7 @@ class SpriteManager(BaseManager):
     @cached_property
     def player(self) -> Player:
         player = Player((self.world.group, self.collision.group))
-        self._sprite_cache["player"] = player
+        self._sprite_cache[player.sprite_id] = player
         return player
 
     @cached_property
@@ -79,9 +79,6 @@ class SpriteManager(BaseManager):
     def __getitem__(self, key: SpriteID) -> BaseSprite:
         if key in self._sprite_cache:
             return self._sprite_cache[key]
-
-        elif key == "player":
-            return self.player
 
         # Brute force find it and cache it
         for sprite in self.all_sprites:

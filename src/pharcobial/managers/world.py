@@ -6,6 +6,7 @@ from pygame.surface import Surface
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager, ViewController
 from pharcobial.sprites.base import BaseSprite
+from pharcobial.sprites.player import Player
 
 
 class CameraGroup(Group):
@@ -25,7 +26,7 @@ class CameraGroup(Group):
 
             # Draw bottom layer first
             if (
-                sprite.sprite_id == "player"
+                isinstance(sprite, Player)
                 or "adversary-" in sprite.sprite_id
                 or "-bubble" in sprite.sprite_id
             ):
