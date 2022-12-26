@@ -5,6 +5,7 @@ from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
 
+from pharcobial.constants import Graphics
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import MobileSprite
 from pharcobial.sprites.bubble import ChatBubble
@@ -133,7 +134,7 @@ class Player(MobileSprite):
         new_y = round(self.hitbox.y + self.controller.y * self.speed)
         self.move(new_x, new_y)
         self.chat_bubble.image = (
-            self.graphics.get("chat-bubble", flip_vertically=self.controller.right_focused)
+            self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=self.controller.right_focused)
             or self.chat_bubble.image
         )
 

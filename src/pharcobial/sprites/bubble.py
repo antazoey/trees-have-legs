@@ -1,3 +1,4 @@
+from pharcobial.constants import Graphics
 from pharcobial.sprites.base import MobileSprite
 
 
@@ -10,7 +11,7 @@ class ChatBubble(MobileSprite):
         super().__init__(
             "{self.parent_id}-bubble",
             parent.rect.inflate((0, -5)).topleft,
-            "chat-bubble",
+            Graphics.CHAT_BUBBLE,
             (parent.camera_group,),
             (0, 0),
         )

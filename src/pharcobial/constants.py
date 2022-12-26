@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
-    from pharcobial.types import Color
+    from pharcobial.types import Color, GfxID, MapID
 
 
 BLOCK_SIZE = 32
@@ -21,7 +21,11 @@ RGB: Dict[str, "Color"] = {
 
 
 class Maps:
-    BUFFER_PROPERTY = "buffer_property"
+    BUFFER_PROPERTY: "MapID" = "buffer_property"
+
+
+class Graphics:
+    CHAT_BUBBLE: "GfxID" = "chat-bubble"
 
 
 # Default settings
