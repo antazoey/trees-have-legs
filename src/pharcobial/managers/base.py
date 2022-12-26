@@ -31,7 +31,7 @@ class ManagerAccess:
         Responsible for overall game framerate.
         """
 
-        return cast("ClockManager", self._get_manager("clock"))
+        return cast("ClockManager", self._("clock"))
 
     @cached_property
     def collision(self) -> "CollisionManager":
@@ -40,7 +40,7 @@ class ManagerAccess:
         collision-sprite group.
         """
 
-        return cast("CollisionManager", self._get_manager("collision"))
+        return cast("CollisionManager", self._("collision"))
 
     @cached_property
     def display(self) -> "DisplayManager":
@@ -48,7 +48,7 @@ class ManagerAccess:
         Responsible for showing things on the screen.
         """
 
-        return cast("DisplayManager", self._get_manager("display"))
+        return cast("DisplayManager", self._("display"))
 
     @cached_property
     def events(self) -> "EventManager":
@@ -56,7 +56,7 @@ class ManagerAccess:
         Responsible for handling events, such as key-down events.
         """
 
-        return cast("EventManager", self._get_manager("event"))
+        return cast("EventManager", self._("event"))
 
     @cached_property
     def graphics(self) -> "GraphicsManager":
@@ -64,7 +64,7 @@ class ManagerAccess:
         An easy way to access graphics.
         """
 
-        return cast("GraphicsManager", self._get_manager("graphics"))
+        return cast("GraphicsManager", self._("graphics"))
 
     @cached_property
     def map(self) -> "MapManager":
@@ -72,7 +72,7 @@ class ManagerAccess:
         Responsible for loading .csv files and turning them into game maps.
         """
 
-        return cast("MapManager", self._get_manager("map"))
+        return cast("MapManager", self._("map"))
 
     @cached_property
     def menu(self) -> "MenuManager":
@@ -80,7 +80,7 @@ class ManagerAccess:
         Responsible for the pause menu.
         """
 
-        return cast("MenuManager", self._get_manager("menu"))
+        return cast("MenuManager", self._("menu"))
 
     @cached_property
     def options(self) -> "OptionsManager":
@@ -88,7 +88,7 @@ class ManagerAccess:
         Game options, as set from CLI or config.
         """
 
-        return cast("OptionsManager", self._get_manager("options"))
+        return cast("OptionsManager", self._("options"))
 
     @cached_property
     def sprites(self) -> "SpriteManager":
@@ -98,7 +98,7 @@ class ManagerAccess:
         Holds references to all sprites in the game.
         """
 
-        return cast("SpriteManager", self._get_manager("sprite"))
+        return cast("SpriteManager", self._("sprite"))
 
     @cached_property
     def state(self) -> "StateManager":
@@ -106,7 +106,7 @@ class ManagerAccess:
         Responsible for saving and loading.
         """
 
-        return cast("StateManager", self._get_manager("state"))
+        return cast("StateManager", self._("state"))
 
     @cached_property
     def views(self) -> "ViewManager":
@@ -114,7 +114,7 @@ class ManagerAccess:
         The view stack for popping and pushing.
         """
 
-        return cast("ViewManager", self._get_manager("view"))
+        return cast("ViewManager", self._("view"))
 
     @cached_property
     def world(self) -> "WorldManager":
@@ -122,9 +122,9 @@ class ManagerAccess:
         Responsible for the camera and sprite group for all in-world sprites.
         """
 
-        return cast("WorldManager", self._get_manager("world"))
+        return cast("WorldManager", self._("world"))
 
-    def _get_manager(self, name: str) -> "BaseManager":
+    def _(self, name: str) -> "BaseManager":
         module = import_module(f"{ROOT_MODULE}.{name}")
         return getattr(module, f"{name}_manager")
 
