@@ -1,12 +1,14 @@
+import json
 import random
 import sys
 import time
 from pathlib import Path
-from typing import Callable, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import pygame
 
 from pharcobial.constants import BLOCK_SIZE, SOURCE_DIR
+from pharcobial.logging import game_logger
 from pharcobial.types import FontName, GfxID, MapID
 
 
@@ -66,6 +68,29 @@ def quit():
 
 
 game_paths = GamePaths(SOURCE_DIR)
+
+
+def safe_load(path: Path) -> Dict:
+    """
+    Will delete file if the JSON is corrupt and return an empty dict.
+    """
+    if not path.is_file():
+        return {}
+
+    text = path.read_text()
+    data = {}
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        game_logger.error("JSON file '{path}' corrupted. Deleting.")
+        path.unlink()
+
+    return data
+
+
+def safe_dump(path: Path, data: Dict):
+    path.unlink(missing_ok=True)
+    path.write_text(json.dumps(data))
 
 
 def safe_load_csv(path: Path, cb: Callable = str) -> List[List]:

@@ -56,6 +56,13 @@ class MapManager(BaseManager):
         self.active: Map | None = None
 
     @property
+    def map_id(self) -> MapID | None:
+        if not self.active:
+            return None
+
+        return self.active.map_id
+
+    @property
     def player_start(self) -> Positional:
         if not self.active:
             raise ValueError("No map loaded.")
