@@ -11,6 +11,7 @@ GAME_NAME = "Pharcobial"
 SOURCE_DIR = Path(__file__).parent.parent.parent
 DATA_DIRECTORY = Path.home() / f".{GAME_NAME.lower()}"
 SAVES_DIRECTORY = DATA_DIRECTORY / "saves"
+SAVES_METADATA_FILE = DATA_DIRECTORY / "saves_meta.json"
 
 RGB: Dict[str, "Color"] = {
     "white": (255, 255, 255),
