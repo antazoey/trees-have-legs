@@ -2,7 +2,7 @@ import random
 import sys
 import time
 from pathlib import Path
-from typing import Tuple
+from typing import Callable, List, Tuple
 
 import pygame
 
@@ -66,3 +66,18 @@ def quit():
 
 
 game_paths = GamePaths(SOURCE_DIR)
+
+
+def safe_load_csv(path: Path, cb: Callable = str) -> List[List]:
+    if not path.is_file():
+        return []
+
+    rows: List[List] = []
+    with open(path, "r") as file:
+        lines = file.readlines()
+
+    for line in lines:
+        row: List = [cb(x.strip()) for x in line.split(",")]
+        rows.append(row)
+
+    return rows

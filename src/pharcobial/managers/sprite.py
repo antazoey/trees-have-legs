@@ -6,7 +6,7 @@ from pygame.event import Event
 from pharcobial.constants import Maps
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.sprites.base import BaseSprite
+from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.bush import Bush
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.tile import Tile
@@ -26,13 +26,13 @@ class SpriteManager(BaseManager):
 
         assert map_id == Maps.BUFFER_PROPERTY  # Currently only one.
         _ = self.player
-        _ = self.bushes
+        _ = self.npcs
         _ = self.tiles
 
     def dict(self) -> Dict:
         return {
             "player": self.player.dict(),
-            "bushes": [x.dict() for x in self.bushes],
+            "bushes": [x.dict() for x in self.npcs],
             "tiles": [x.dict() for x in self.tiles],
         }
 
@@ -67,17 +67,17 @@ class SpriteManager(BaseManager):
         ]
 
     @cached_property
-    def bushes(self) -> List[Bush]:
+    def npcs(self) -> List[NPC]:
         return [
             Bush(p, str(i), (self.world.group, self.collision.group))
-            for i, p in enumerate(self.map.bushes_start)
+            for i, p in enumerate(self.map.npcs_start)
         ]
 
     @property
     def all_sprites(self) -> Iterable[BaseSprite]:
         yield self.player
 
-        for bush in self.bushes:
+        for bush in self.npcs:
             yield bush
 
         for tile in self.tiles:

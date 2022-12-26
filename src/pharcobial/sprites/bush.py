@@ -4,12 +4,12 @@ from pygame.math import Vector2
 from pygame.sprite import Group
 
 from pharcobial.logging import game_logger
-from pharcobial.sprites.base import BaseSprite, MobileSprite
+from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.types import Position, Positional
 from pharcobial.utils import chance
 
 
-class Bush(MobileSprite):
+class Bush(NPC):
     def __init__(self, position: Positional, bush_id: str, groups: Iterable[Group]):
         self.character = "bush"
         self.bush_id: str = bush_id

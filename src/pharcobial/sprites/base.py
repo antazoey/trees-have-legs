@@ -84,4 +84,10 @@ class MobileSprite(BaseSprite):
         return round(self.direction.magnitude()) != 0
 
 
-__all__ = ["BaseSprite"]
+class NPC(MobileSprite):
+    """
+    A non-player character.
+    """
+
+
+__all__ = ["BaseSprite", "MobileSprite", "NPC"]
