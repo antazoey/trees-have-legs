@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Dict, Iterable, Tuple
+from typing import Dict, Iterable, Tuple, cast
 
 from pygame.event import Event
 from pygame.math import Vector2
@@ -66,54 +66,53 @@ class MobileSprite(BaseSprite):
     speed: float = 0
     direction: Vector2
 
-    def move(self, x: int, y: int) -> Tuple[BaseSprite | None, BaseSprite | None]:
+    def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
         collided_x = None
         collided_y = None
-        changed = False
-        if self.hitbox.x != x:
-            self.hitbox.x = x
-            collided_x = self.collision.check_x(self)
-            changed = True
 
-        if self.hitbox.y != y:
-            self.hitbox.y = y
-            collided_y = self.collision.check_y(self)
-            changed = True
+        collided_x, collided_y = self.collision.check(self, position)
 
-        if changed:
-            self.rect.center = self.hitbox.center
+        if not collided_x and not collided_y:
+            self.hitbox.topleft = cast(Tuple[int, int], position)
 
+        self.rect.center = self.hitbox.center
         return (collided_x, collided_y)
 
     @property
     def moving(self) -> bool:
         return round(self.direction.magnitude()) != 0
 
-    def move_towards(self, sprite: BaseSprite) -> Tuple[BaseSprite | None, BaseSprite | None]:
+    def follow(self, sprite: BaseSprite) -> Tuple[BaseSprite | None, BaseSprite | None]:
         """
         Move this sprite towards the given sprite, based on its movement ability.
         Returns ``True`` if collided.
         """
+        return self.move_towards(sprite.hitbox.topleft)
 
+    def move_towards(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
+        """
+        Move this sprite towards the given coordinates.
+        """
         new_position = Position(self.hitbox.x, self.hitbox.y)
+        x, y = position
 
         # Handle x
-        if sprite.hitbox.x > self.hitbox.x:
-            new_position.x = round(self.hitbox.x + min(self.speed, sprite.hitbox.x - self.hitbox.x))
+        if x > self.hitbox.x:
+            new_position.x = round(self.hitbox.x + min(self.speed, x - self.hitbox.x))
             self.direction.x = 1
-        elif sprite.hitbox.x < self.hitbox.x:
-            new_position.x = round(self.hitbox.x - min(self.speed, self.hitbox.x - sprite.hitbox.x))
+        elif x < self.hitbox.x:
+            new_position.x = round(self.hitbox.x - min(self.speed, self.hitbox.x - x))
             self.direction.x = -1
 
         # Handle y
-        if sprite.hitbox.y > self.hitbox.y:
-            new_position.y = round(self.hitbox.y + min(self.speed, sprite.hitbox.y - self.hitbox.y))
+        if y > self.hitbox.y:
+            new_position.y = round(self.hitbox.y + min(self.speed, y - self.hitbox.y))
             self.direction.y = 1
-        elif sprite.hitbox.y < self.hitbox.y:
-            new_position.y = round(self.hitbox.y - min(self.speed, self.hitbox.y - sprite.hitbox.y))
+        elif y < self.hitbox.y:
+            new_position.y = round(self.hitbox.y - min(self.speed, self.hitbox.y - y))
             self.direction.y = -1
 
-        return self.move(new_position.x, new_position.y)
+        return self.move(new_position)
 
 
 class Character(MobileSprite):

@@ -42,7 +42,7 @@ class Bush(NPC):
             # Player is hanging around a tree.
             self.player_is_near = self.vision.colliderect(self.sprites.player.rect)
             if self.player_is_near and self.is_alive:
-                self.move_towards_player()
+                self.chase_player()
 
             elif not self.player_is_near and self.is_alive:
                 self.sleep()
@@ -66,10 +66,10 @@ class Bush(NPC):
         self.is_alive = True
         game_logger.debug(f"{Graphics.BUSH.capitalize()} {self.bush_index} has come to life!")
         self.set_image(f"{Graphics.BUSH}-monster")
-        self.move_towards_player()
+        self.chase_player()
 
-    def move_towards_player(self):
-        collided_x, collided_y = self.move_towards(self.sprites.player)
+    def chase_player(self):
+        collided_x, collided_y = self.follow(self.sprites.player)
 
         # Deal damage
         player = self.sprites.player
