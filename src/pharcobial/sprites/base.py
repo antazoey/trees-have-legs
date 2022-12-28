@@ -66,10 +66,11 @@ class MobileSprite(BaseSprite):
     speed: float = 0
     direction: Vector2
 
-    def move(self, x: int, y: int) -> Tuple[BaseSprite | None, BaseSprite | None]:
+    def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
         collided_x = None
         collided_y = None
         changed = False
+        x, y = position
         if self.hitbox.x != x:
             self.hitbox.x = x
             collided_x = self.collision.check_x(self)
@@ -113,7 +114,7 @@ class MobileSprite(BaseSprite):
             new_position.y = round(self.hitbox.y - min(self.speed, self.hitbox.y - sprite.hitbox.y))
             self.direction.y = -1
 
-        return self.move(new_position.x, new_position.y)
+        return self.move(new_position)
 
 
 class Character(MobileSprite):
