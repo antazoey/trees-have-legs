@@ -59,7 +59,8 @@ class WorldManager(ViewController):
         game_logger.debug("World ready.")
 
     def handle_event(self, event: Event):
-        self.sprites.player.handle_event(event)
+        # NOTE: Player events are handled in the Controller.
+        pass
 
     def update(self):
         self.camera.update()

@@ -1,15 +1,13 @@
 from typing import Iterable
 
-from pygame.event import Event
 from pygame.sprite import Group
 from pygame.surface import Surface
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from pharcobial.controller import Controller
-from pharcobial.logging import game_logger
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import SpriteID, UserInput
+from pharcobial.types import SpriteID
 
 
 class Player(Character):
@@ -35,23 +33,23 @@ class Player(Character):
         self.direction = self.controller.direction
         self.chat_bubble = ChatBubble(self)
 
-    def handle_event(self, event: Event):
-        """
-        Handle when a user presses a key. If the user holds a key,
-        the character continuously moves that direction. This method
-        gets called once for the event whereas ``move()`` gets called
-        every game loop.
-        """
+        self.ease_effect_min = 0.8
+        self.ease_effect = self.ease_effect_min
+        self.slide_increment = 0.002
+        self.slide_start = 0.02
+        self.slide = self.slide_start
 
-        if event.type == UserInput.KEY_DOWN:
-            game_logger.debug(f"{event.key} key pressed.")
-            self.controller.handle_key_down(event)
-            self.direction = self.controller.direction
-            self.chat_bubble.visible = self.controller.activate
+    @property
+    def stopped(self) -> bool:
+        return not self.moving and self.ease_effect <= self.ease_effect_min
 
-        elif event.type == UserInput.KEY_UP:
-            self.controller.handle_key_up(event)
-            self.direction = self.controller.direction
+    @property
+    def coming_to_stop(self) -> bool:
+        return not self.moving and self.ease_effect > self.ease_effect_min
+
+    @property
+    def accelerating(self) -> bool:
+        return self.moving and self.ease_effect < 1
 
     def activate(self):
         """
@@ -59,27 +57,46 @@ class Player(Character):
         """
 
     def update(self, *args, **kwargs):
+        self.controller.update()
+        self.direction = self.controller.direction
         self.image = self._get_graphic() or self.image
 
-        if not self.moving:
+        if self.stopped:
+            self.slide = self.slide_start
+            self.ease_effect = self.ease_effect_min
             return
 
-        new_x = self.hitbox.x + self.controller.direction.x * self.speed
-        new_y = self.hitbox.y + self.controller.direction.y * self.speed
+        elif self.coming_to_stop:
+            new_x = self.hitbox.x + self.controller.forward.x * self.speed * self.ease_effect
+            new_y = self.hitbox.y + self.controller.forward.y * self.speed * self.ease_effect
+
+            if self.ease_effect > self.ease_effect_min:
+                self.ease_effect -= self.slide
+                self.slide += self.slide_increment
+
+        else:
+            new_x = self.hitbox.x + self.controller.direction.x * self.speed * self.ease_effect
+            new_y = self.hitbox.y + self.controller.direction.y * self.speed * self.ease_effect
+            if self.ease_effect < 1:
+                self.ease_effect += self.slide
+                self.slide += self.slide_increment
+
         self.move((new_x, new_y))
-        flip = self.controller.forward_vector.x > 0
+
+        flip = self.controller.forward.x > 0
         image = self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=flip)
         self.chat_bubble.image = image or self.chat_bubble.image
 
     def _get_graphic(self) -> Surface | None:
-        if not self.moving:
+        if self.stopped:
             # Return a standing-still graphic of the last direction facing.
-            flip = self.controller.forward_vector.x > 0
+            flip = self.controller.forward.x > 0
             image = self.graphics.get(self.sprite_id, flip_vertically=flip)
             return image or self.image
 
         self.move_gfx_id += 1
-        rate = round(self.max_speed / 24)
+        ease = self.ease_effect if self.accelerating else 1 / self.ease_effect
+        rate = round(self.max_speed / 24 * ease)
         if self.move_gfx_id in range(rate):
             suffix = "-walk-1"
         elif self.move_gfx_id in range(rate, rate * 2 + 1):
@@ -89,6 +106,6 @@ class Player(Character):
             self.move_gfx_id = -1
 
         gfx_id = f"{self.sprite_id}{suffix}"
-        flip = self.controller.forward_vector.x > 0
+        flip = self.controller.forward.x > 0
         graphic = self.graphics.get(gfx_id, flip_vertically=flip)
         return graphic or self.image

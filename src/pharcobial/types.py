@@ -74,21 +74,25 @@ Map = List[List[TileKey]]
 class KeyBinding:
     def __init__(
         self,
-        up: int = K_UP,
-        down: int = K_DOWN,
         left: int = K_LEFT,
         right: int = K_RIGHT,
+        up: int = K_UP,
+        down: int = K_DOWN,
         activate: int = K_SPACE,
         escape: int = K_ESCAPE,
         enter: int = K_RETURN,
     ) -> None:
-        self.up = up
-        self.down = down
         self.left = left
         self.right = right
+        self.up = up
+        self.down = down
         self.activate = activate
         self.escape = escape
         self.enter = enter
+
+    @property
+    def movement(self) -> Tuple[int, int, int, int]:
+        return (self.left, self.right, self.up, self.down)
 
 
 @dataclass

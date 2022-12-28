@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Tuple
 
-from pygame.event import Event
+from pygame.key import get_pressed
+from pygame.key import ScancodeWrapper  # type: ignore
 from pygame.math import Vector2
 
 from pharcobial.types import KeyBinding
@@ -14,67 +15,36 @@ class Controller:
 
     def __init__(self, bindings: KeyBinding) -> None:
         self.direction = Vector2()
-        self.forward_vector = Vector2()
+        self.forward = Vector2(x=-1, y=0)  # Init facing left.
         self.keys_held: List[int] = []
         self.bindings = bindings
         self.activate = False
 
-    def handle_key_down(self, event: Event):
-        if event.key not in self.keys_held:
-            self.keys_held.append(event.key)
+    @property
+    def keys_pressed(self) -> ScancodeWrapper:
+        return get_pressed()
 
-        if event.key == self.bindings.left:
-            self.direction.x = max(-1, self.direction.x - 1)
-            self.forward_vector.x = -1
+    @property
+    def movement_keys_pressed(self) -> List[int]:
+        return [k for k in self.bindings.movement if self.keys_pressed[k]]
 
-        elif event.key == self.bindings.right:
-            self.direction.x = min(1, self.direction.x + 1)
-            self.forward_vector.x = 1
+    def update(self):
+        keys = self.movement_keys_pressed
+        new_direction = Vector2()
+        if self.bindings.left in keys:
+            new_direction.x -= 1
+        if self.bindings.right in keys:
+            new_direction.x += 1
+        if self.bindings.up in keys:
+            new_direction.y -= 1
+        if self.bindings.down in keys:
+            new_direction.y += 1
 
-        elif event.key == self.bindings.up:
-            self.direction.y = max(-1, self.direction.y - 1)
-            if self.bindings.right not in self.keys_held:
-                # Characters face left when going up.
-                self.forward_vector.x = -1
+        if new_direction.magnitude() not in (0, 1):
+            new_direction = new_direction.normalize()
 
-        elif event.key == self.bindings.down:
-            self.direction.y = min(1, self.direction.y + 1)
-            if self.bindings.left not in self.keys_held:
-                # Characters face right when going down.
-                self.forward_vector.x = 1
+        self.direction = new_direction
 
-        elif event.key == self.bindings.activate:
-            self.activate = True
-
-        if self.direction.magnitude() not in (0, 1):
-            self.direction = self.direction.normalize()
-
-    def handle_key_up(self, event: Event):
-        self.keys_held = [k for k in self.keys_held if k != event.key]
-
-        if event.key == self.bindings.left:
-            val = 1 if self.direction.x == 0 else abs(self.direction.x)
-            self.direction.x = min(1, self.direction.x + val)
-            self.direction.y = round(self.direction.y)
-            self.forward_vector.x = 1 if self.direction.x > 0 else self.forward_vector.x
-
-        elif event.key == self.bindings.right:
-            val = 1 if self.direction.x == 0 else abs(self.direction.x)
-            self.direction.x = max(-1, self.direction.x - val)
-            self.direction.y = round(self.direction.y)
-            self.forward_vector.x = -1 if self.direction.x < 0 else self.forward_vector.x
-
-        elif event.key == self.bindings.down:
-            val = 1 if self.direction.y == 0 else abs(self.direction.y)
-            self.direction.y = max(-1, self.direction.y - val)
-            self.direction.x = round(self.direction.x)
-            self.forward_vector.x = -1 if self.direction.y < 0 else self.forward_vector.x
-
-        elif event.key == self.bindings.up:
-            val = 1 if self.direction.y == 0 else abs(self.direction.y)
-            self.direction.y = min(1, self.direction.y + val)
-            self.direction.x = round(self.direction.x)
-            self.forward_vector.x = 1 if self.direction.y > 0 else self.forward_vector.x
-
-        elif event.key == self.bindings.activate:
-            self.activate = False
+        # Always face last moving direction.
+        if self.direction.magnitude() != 0:
+            self.forward = self.direction.copy()
