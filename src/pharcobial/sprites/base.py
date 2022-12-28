@@ -63,8 +63,12 @@ class BaseSprite(Sprite, BaseManager):
 
 
 class MobileSprite(BaseSprite):
-    speed: float = 0
+    max_speed: float = 0
     direction: Vector2
+
+    @property
+    def speed(self) -> float:
+        return self.max_speed * self.clock.deltatime
 
     def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
         collided_x = None

@@ -8,9 +8,10 @@ class ClockManager(BaseManager):
         super().__init__()
         self._clock = pygame.time.Clock()
         self.paused = False
+        self.deltatime: float = 0.0
 
     def tick(self):
-        self._clock.tick(self.options.fps)
+        self.deltatime = self._clock.tick(self.options.fps) / 1000
 
 
 clock_manager = ClockManager()

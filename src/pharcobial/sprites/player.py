@@ -9,7 +9,7 @@ from pharcobial.controller import Controller
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import UserInput
+from pharcobial.types import SpriteID, UserInput
 
 
 class Player(Character):
@@ -20,7 +20,8 @@ class Player(Character):
     def __init__(
         self,
         groups: Iterable[Group],
-        character: str = Graphics.PHARMA,
+        character: SpriteID = Graphics.PHARMA,
+        speed: int = 128,
         hp: int = DEFAULT_HP,
         max_hp: int = DEFAULT_MAX_HP,
         ap: int = DEFAULT_AP,
@@ -29,7 +30,7 @@ class Player(Character):
             character, self.map.player_start, character, groups, (0, -10), hp, max_hp, ap
         )
         self.move_gfx_id: int = -1
-        self.speed = 2
+        self.max_speed = speed
         self.controller = Controller(self.options.key_bindings)
         self.direction = self.controller.direction
         self.chat_bubble = ChatBubble(self)
@@ -78,7 +79,7 @@ class Player(Character):
             return image or self.image
 
         self.move_gfx_id += 1
-        rate = round(self.speed * 4)
+        rate = round(self.max_speed / 24)
         if self.move_gfx_id in range(rate):
             suffix = "-walk-1"
         elif self.move_gfx_id in range(rate, rate * 2 + 1):

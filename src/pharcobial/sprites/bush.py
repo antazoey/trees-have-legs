@@ -22,7 +22,7 @@ class Bush(NPC):
             groups,
             (-30, -26),
         )
-        self.speed = 1
+        self.max_speed = 64
         self.vision = self.set_vision()
         self.direction = Vector2()
         self.player_is_near: bool = False
