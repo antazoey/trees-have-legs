@@ -97,7 +97,7 @@ class Player(Character):
     def __init__(
         self,
         groups: Iterable[Group],
-        character: str = "pharma",
+        character: str = Graphics.PHARMA,
         hp: int = DEFAULT_HP,
         max_hp: int = DEFAULT_MAX_HP,
         ap: int = DEFAULT_AP,

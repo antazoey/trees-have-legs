@@ -28,6 +28,7 @@ class Maps:
 class Graphics:
     BUSH: "GfxID" = "bush"
     CHAT_BUBBLE: "GfxID" = "chat-bubble"
+    PHARMA: "GfxID" = "pharma"
 
 
 # Default settings
