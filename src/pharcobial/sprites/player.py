@@ -66,7 +66,6 @@ class Player(Character):
         self.move((new_x, new_y))
         flip = self.controller.forward_vector.x > 0
         image = self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=flip)
-        print(image)
         self.chat_bubble.image = image or self.chat_bubble.image
 
     def _get_graphic(self) -> Surface | None:

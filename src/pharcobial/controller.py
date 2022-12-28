@@ -42,11 +42,13 @@ class Controller:
         elif event.key == self.bindings.up:
             self.direction.y -= 1
             if self.bindings.right not in self.keys_held:
+                # Characters face left when going up.
                 self.forward_vector.x = -1
 
         elif event.key == self.bindings.down:
             self.direction.y += 1
             if self.bindings.left not in self.keys_held:
+                # Characters face right when going down.
                 self.forward_vector.x = 1
 
         elif event.key == self.bindings.activate:
