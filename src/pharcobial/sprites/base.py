@@ -69,13 +69,21 @@ class MobileSprite(BaseSprite):
     def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
         collided_x = None
         collided_y = None
+        changed = False
+        x, y = position
+        if self.hitbox.x != x:
+            self.hitbox.x = x
+            collided_x = self.collision.check_x(self)
+            changed = True
 
-        collided_x, collided_y = self.collision.check(self, position)
+        if self.hitbox.y != y:
+            self.hitbox.y = y
+            collided_y = self.collision.check_y(self)
+            changed = True
 
-        if not collided_x and not collided_y:
-            self.hitbox.topleft = cast(Tuple[int, int], position)
+        if changed:
+            self.rect.center = self.hitbox.center
 
-        self.rect.center = self.hitbox.center
         return (collided_x, collided_y)
 
     @property
