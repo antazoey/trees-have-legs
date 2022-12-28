@@ -14,7 +14,7 @@ class Controller:
 
     def __init__(self, bindings: KeyBinding) -> None:
         self.direction = Vector2()
-        self.right_focused: bool = False
+        self.forward_vector = Vector2()
         self.keys_held: List[int] = []
         self.bindings = bindings
         self.activate = False
@@ -33,21 +33,21 @@ class Controller:
 
         if event.key == self.bindings.left:
             self.direction.x -= 1
-            self.right_focused = False
+            self.forward_vector.x = -1
 
         elif event.key == self.bindings.right:
             self.direction.x += 1
-            self.right_focused = True
+            self.forward_vector.x = 1
 
         elif event.key == self.bindings.up:
             self.direction.y -= 1
             if self.bindings.right not in self.keys_held:
-                self.right_focused = False
+                self.forward_vector.x = -1
 
         elif event.key == self.bindings.down:
             self.direction.y += 1
             if self.bindings.left not in self.keys_held:
-                self.right_focused = True
+                self.forward_vector.x = 1
 
         elif event.key == self.bindings.activate:
             self.activate = True
@@ -60,22 +60,22 @@ class Controller:
         if event.key == self.bindings.left:
             self.direction.x += 1
             if self.direction.x > 0:
-                self.right_focused = True
+                self.forward_vector.x = 1
 
         elif event.key == self.bindings.right:
             self.direction.x -= 1
             if self.direction.x < 0:
-                self.right_focused = False
+                self.forward_vector.x = -1
 
         elif event.key == self.bindings.down:
             self.direction.y -= 1
             if self.direction.y < 0:
-                self.right_focused = False
+                self.forward_vector.x = -1
 
         elif event.key == self.bindings.up:
             self.direction.y += 1
             if self.direction.y > 0:
-                self.right_focused = True
+                self.forward_vector.x = 1
 
         elif event.key == self.bindings.activate:
             self.activate = False

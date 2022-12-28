@@ -64,15 +64,14 @@ class Player(Character):
         new_x = round(self.hitbox.x + self.controller.x * self.speed)
         new_y = round(self.hitbox.y + self.controller.y * self.speed)
         self.move((new_x, new_y))
-        self.chat_bubble.image = (
-            self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=self.controller.right_focused)
-            or self.chat_bubble.image
-        )
+        flip = self.controller.forward_vector.x > 0
+        image = self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=flip)
+        self.chat_bubble.image = image or self.chat_bubble.image
 
     def _get_graphic(self) -> Surface | None:
         if not self.moving:
             # Return a standing-still graphic of the last direction facing.
-            flip = self.controller.right_focused
+            flip = self.controller.forward_vector.x > 0
             image = self.graphics.get(self.sprite_id, flip_vertically=flip)
             return image or self.image
 
@@ -87,5 +86,6 @@ class Player(Character):
             self.move_gfx_id = -1
 
         gfx_id = f"{self.sprite_id}{suffix}"
-        graphic = self.graphics.get(gfx_id, flip_vertically=self.controller.right_focused)
+        flip = self.controller.forward_vector.x > 0
+        graphic = self.graphics.get(gfx_id, flip_vertically=flip)
         return graphic or self.image
