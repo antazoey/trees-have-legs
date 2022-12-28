@@ -7,6 +7,7 @@ from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager, ViewController
 from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.player import Player
+from pharcobial.sprites.bubble import ChatBubble
 
 
 class CameraGroup(Group):
@@ -15,6 +16,7 @@ class CameraGroup(Group):
         self.surface = surface
 
     def draw_in_view(self, offset: Vector2):
+        top_layer_types = (Player, NPC, ChatBubble)
         top_layer = []
         for sprite in sorted(self.sprites(), key=lambda s: s.rect is not None and s.rect.centery):
             assert isinstance(sprite, BaseSprite)  # for Mypy
@@ -23,8 +25,7 @@ class CameraGroup(Group):
 
             # Mypy doesn't realize this is valid.
             offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
-
-            if isinstance(sprite, Player) or isinstance(sprite, NPC):
+            if any(isinstance(sprite, t) for t in top_layer_types):
                 top_layer.append((sprite.image, offset_pos))
             else:
                 # Draw ground layer
