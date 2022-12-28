@@ -6,8 +6,8 @@ from pygame.surface import Surface
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager, ViewController
 from pharcobial.sprites.base import NPC, BaseSprite
-from pharcobial.sprites.player import Player
 from pharcobial.sprites.bubble import ChatBubble
+from pharcobial.sprites.player import Player
 
 
 class CameraGroup(Group):

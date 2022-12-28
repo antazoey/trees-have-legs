@@ -44,11 +44,13 @@ class Player(Character):
 
         if event.type == UserInput.KEY_DOWN:
             game_logger.debug(f"{event.key} key pressed.")
-            self.direction = self.controller.handle_key_down(event)
+            self.controller.handle_key_down(event)
+            self.direction = self.controller.direction
             self.chat_bubble.visible = self.controller.activate
 
         elif event.type == UserInput.KEY_UP:
-            self.direction = self.controller.handle_key_up(event)
+            self.controller.handle_key_up(event)
+            self.direction = self.controller.direction
 
     def activate(self):
         """

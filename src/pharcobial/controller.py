@@ -27,7 +27,7 @@ class Controller:
     def y(self):
         return self.direction.y
 
-    def handle_key_down(self, event: Event) -> Vector2:
+    def handle_key_down(self, event: Event):
         if event.key not in self.keys_held:
             self.keys_held.append(event.key)
 
@@ -54,9 +54,7 @@ class Controller:
         elif event.key == self.bindings.activate:
             self.activate = True
 
-        return self.direction
-
-    def handle_key_up(self, event: Event) -> Vector2:
+    def handle_key_up(self, event: Event):
         self.keys_held = [k for k in self.keys_held if k != event.key]
 
         if event.key == self.bindings.left:
@@ -81,5 +79,3 @@ class Controller:
 
         elif event.key == self.bindings.activate:
             self.activate = False
-
-        return self.direction

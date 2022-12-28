@@ -1,5 +1,3 @@
-import pytest
-
 from pharcobial.types import Position
 
 
