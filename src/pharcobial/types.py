@@ -45,6 +45,10 @@ class Position(tuple):
             self.y = x[1]
 
         super().__init__()
+    
+    def __iter__(self):
+        yield self.x
+        yield self.y
 
     @classmethod
     def parse_coordinates(cls, x: int, y: int) -> "Position":
