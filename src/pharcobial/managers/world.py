@@ -60,7 +60,7 @@ class WorldManager(ViewController):
 
     def handle_event(self, event: Event):
         # NOTE: Player events are handled in the Controller.
-        pass
+        self.sprites.player.handle_event(event)
 
     def update(self):
         self.camera.update()

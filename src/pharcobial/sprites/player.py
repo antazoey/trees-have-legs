@@ -1,5 +1,6 @@
 from typing import Iterable
 
+from pygame.event import Event
 from pygame.sprite import Group
 from pygame.surface import Surface
 
@@ -7,7 +8,7 @@ from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphic
 from pharcobial.controller import Controller
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import SpriteID
+from pharcobial.types import SpriteID, UserInput
 
 
 class Player(Character):
@@ -55,6 +56,10 @@ class Player(Character):
         """
         The user hitting the action key on something.
         """
+
+    def handle_event(self, event: Event):
+        if event.type == UserInput.KEY_DOWN and event.key == self.controller.bindings.activate:
+            self.chat_bubble.visible = True
 
     def update(self, *args, **kwargs):
         self.controller.update()

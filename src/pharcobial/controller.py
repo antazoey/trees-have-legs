@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 from pygame.key import get_pressed
 from pygame.key import ScancodeWrapper  # type: ignore
@@ -16,9 +16,7 @@ class Controller:
     def __init__(self, bindings: KeyBinding) -> None:
         self.direction = Vector2()
         self.forward = Vector2(x=-1, y=0)  # Init facing left.
-        self.keys_held: List[int] = []
         self.bindings = bindings
-        self.activate = False
 
     @property
     def keys_pressed(self) -> ScancodeWrapper:
@@ -29,6 +27,8 @@ class Controller:
         return [k for k in self.bindings.movement if self.keys_pressed[k]]
 
     def update(self):
+        self.activate = self.keys_pressed[self.bindings.activate]
+
         keys = self.movement_keys_pressed
         new_direction = Vector2()
         if self.bindings.left in keys:

@@ -26,7 +26,7 @@ class ChatBubble(MobileSprite):
             # for a brief moment.
             self.timer = 25  # frames
 
-        elif self.visible and self.timer == 0:
+        elif self.visible and (self.timer or 0) <= 0:
             self.visible = False
             self.timer = None
 
