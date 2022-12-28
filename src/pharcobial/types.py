@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Tuple, TypeAlias, Union
+from typing import Iterator, List, Tuple, TypeAlias, Union
 
 from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP
 
@@ -36,8 +36,8 @@ class Position(tuple):
 
         return super().__new__(cls, x_and_y)
 
-    def __init__(self, x: Union[int, "Positional"], y: int | None = None) -> None:
-        if isinstance(x, int) and isinstance(y, int):
+    def __init__(self, x: Union[float, "Positional"], y: float | None = None) -> None:
+        if isinstance(x, (int, float)) and isinstance(y, (int, float)):
             self.x = x
             self.y = y
         elif isinstance(x, tuple):
@@ -46,16 +46,16 @@ class Position(tuple):
 
         super().__init__()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[float]:
         yield self.x
         yield self.y
 
     @classmethod
-    def parse_coordinates(cls, x: int, y: int) -> "Position":
+    def parse_coordinates(cls, x: float, y: float) -> "Position":
         return cls(x=x * BLOCK_SIZE, y=y * BLOCK_SIZE)
 
 
-Positional = Tuple[int, int] | Position
+Positional = Tuple[float, float] | Position
 
 
 class GameEvent(Enum):

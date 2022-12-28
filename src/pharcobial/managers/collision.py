@@ -22,11 +22,11 @@ class CollisionManager(BaseManager):
                 return None
 
             elif target.direction.x < 0:
-                target.hitbox.right += 2 * int(abs(target.direction.x))
+                target.hitbox.x += round(target.speed)
                 return sprite
 
             elif target.direction.x > 0:
-                target.hitbox.left -= 2 * int(abs(target.direction.x))
+                target.hitbox.x -= round(target.speed)
                 return sprite
 
             # Not sure it's possible  to get here.
@@ -40,11 +40,11 @@ class CollisionManager(BaseManager):
                 return None
 
             elif target.direction.y < 0:
-                target.hitbox.bottom += 2 * int(abs(target.direction.y))
+                target.hitbox.y += round(target.speed)
                 return sprite
 
             elif target.direction.y > 0:
-                target.hitbox.top -= 2 * int(abs(target.direction.y))
+                target.hitbox.y -= round(target.speed)
                 return sprite
 
             # Not sure it's possible  to get here.

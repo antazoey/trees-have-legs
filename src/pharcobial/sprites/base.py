@@ -71,13 +71,15 @@ class MobileSprite(BaseSprite):
         collided_y = None
         changed = False
         x, y = position
-        if self.hitbox.x != x:
-            self.hitbox.x = x
+        x_rounded = round(x)
+        y_rounded = round(y)
+        if self.hitbox.x != x_rounded:
+            self.hitbox.x = x_rounded
             collided_x = self.collision.check_x(self)
             changed = True
 
-        if self.hitbox.y != y:
-            self.hitbox.y = y
+        if self.hitbox.y != y_rounded:
+            self.hitbox.y = y_rounded
             collided_y = self.collision.check_y(self)
             changed = True
 

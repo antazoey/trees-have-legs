@@ -63,8 +63,8 @@ class Player(Character):
         if not self.moving:
             return
 
-        new_x = round(self.hitbox.x + self.controller.x * self.speed)
-        new_y = round(self.hitbox.y + self.controller.y * self.speed)
+        new_x = self.hitbox.x + self.controller.direction.x * self.speed
+        new_y = self.hitbox.y + self.controller.direction.y * self.speed
         self.move((new_x, new_y))
         flip = self.controller.forward_vector.x > 0
         image = self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=flip)

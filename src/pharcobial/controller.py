@@ -19,34 +19,26 @@ class Controller:
         self.bindings = bindings
         self.activate = False
 
-    @property
-    def x(self):
-        return self.direction.x
-
-    @property
-    def y(self):
-        return self.direction.y
-
     def handle_key_down(self, event: Event):
         if event.key not in self.keys_held:
             self.keys_held.append(event.key)
 
         if event.key == self.bindings.left:
-            self.direction.x -= 1
+            self.direction.x = max(-1, self.direction.x - 1)
             self.forward_vector.x = -1
 
         elif event.key == self.bindings.right:
-            self.direction.x += 1
+            self.direction.x = min(1, self.direction.x + 1)
             self.forward_vector.x = 1
 
         elif event.key == self.bindings.up:
-            self.direction.y -= 1
+            self.direction.y = max(-1, self.direction.y - 1)
             if self.bindings.right not in self.keys_held:
                 # Characters face left when going up.
                 self.forward_vector.x = -1
 
         elif event.key == self.bindings.down:
-            self.direction.y += 1
+            self.direction.y = min(1, self.direction.y + 1)
             if self.bindings.left not in self.keys_held:
                 # Characters face right when going down.
                 self.forward_vector.x = 1
@@ -54,28 +46,35 @@ class Controller:
         elif event.key == self.bindings.activate:
             self.activate = True
 
+        if self.direction.magnitude() not in (0, 1):
+            self.direction = self.direction.normalize()
+
     def handle_key_up(self, event: Event):
         self.keys_held = [k for k in self.keys_held if k != event.key]
 
         if event.key == self.bindings.left:
-            self.direction.x += 1
-            if self.direction.x > 0:
-                self.forward_vector.x = 1
+            val = 1 if self.direction.x == 0 else abs(self.direction.x)
+            self.direction.x = min(1, self.direction.x + val)
+            self.direction.y = round(self.direction.y)
+            self.forward_vector.x = 1 if self.direction.x > 0 else self.forward_vector.x
 
         elif event.key == self.bindings.right:
-            self.direction.x -= 1
-            if self.direction.x < 0:
-                self.forward_vector.x = -1
+            val = 1 if self.direction.x == 0 else abs(self.direction.x)
+            self.direction.x = max(-1, self.direction.x - val)
+            self.direction.y = round(self.direction.y)
+            self.forward_vector.x = -1 if self.direction.x < 0 else self.forward_vector.x
 
         elif event.key == self.bindings.down:
-            self.direction.y -= 1
-            if self.direction.y < 0:
-                self.forward_vector.x = -1
+            val = 1 if self.direction.y == 0 else abs(self.direction.y)
+            self.direction.y = max(-1, self.direction.y - val)
+            self.direction.x = round(self.direction.x)
+            self.forward_vector.x = -1 if self.direction.y < 0 else self.forward_vector.x
 
         elif event.key == self.bindings.up:
-            self.direction.y += 1
-            if self.direction.y > 0:
-                self.forward_vector.x = 1
+            val = 1 if self.direction.y == 0 else abs(self.direction.y)
+            self.direction.y = min(1, self.direction.y + val)
+            self.direction.x = round(self.direction.x)
+            self.forward_vector.x = 1 if self.direction.y > 0 else self.forward_vector.x
 
         elif event.key == self.bindings.activate:
             self.activate = False
