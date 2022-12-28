@@ -21,7 +21,7 @@ class CollisionManager(BaseManager):
             if not self.collides(target, sprite):
                 return None
 
-            if target.direction.x < 0:
+            elif target.direction.x < 0:
                 target.hitbox.right += 2 * int(abs(target.direction.x))
                 return sprite
 
@@ -39,7 +39,7 @@ class CollisionManager(BaseManager):
             if not self.collides(target, sprite):
                 return None
 
-            if target.direction.y < 0:
+            elif target.direction.y < 0:
                 target.hitbox.bottom += 2 * int(abs(target.direction.y))
                 return sprite
 
