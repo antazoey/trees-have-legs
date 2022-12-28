@@ -1,6 +1,7 @@
 from typing import Iterable
 
 from pygame.math import Vector2
+from pygame.rect import Rect
 from pygame.sprite import Group
 
 from pharcobial.constants import Graphics
@@ -22,7 +23,7 @@ class Bush(NPC):
             (-30, -26),
         )
         self.speed = 1
-        self.vision = self.rect.inflate((4 * self.rect.height, 2 * self.rect.width))
+        self.vision = self.set_vision()
         self.direction = Vector2()
         self.player_is_near: bool = False
         self.is_alive: bool = False
@@ -72,7 +73,7 @@ class Bush(NPC):
         collided_x, collided_y = self.move_towards(self.sprites.player)
 
         # Update vision to continuously chase player.
-        self.vision = self.rect.inflate((4 * self.rect.height, 2 * self.rect.width))
+        self.set_vision()
 
         # Deal damage
         player = self.sprites.player
@@ -80,3 +81,7 @@ class Bush(NPC):
             collided_y and collided_y.sprite_id == player.sprite_id
         ):
             self.deal_damage(player)
+
+    def set_vision(self) -> Rect:
+        self.vision = self.rect.inflate((4 * self.rect.height, 2 * self.rect.width))
+        return self.vision
