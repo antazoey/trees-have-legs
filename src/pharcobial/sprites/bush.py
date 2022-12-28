@@ -71,6 +71,9 @@ class Bush(NPC):
     def move_towards_player(self):
         collided_x, collided_y = self.move_towards(self.sprites.player)
 
+        # Update vision to continuously chase player.
+        self.vision = self.rect.inflate((4 * self.rect.height, 2 * self.rect.width))
+
         # Deal damage
         player = self.sprites.player
         if (collided_x and collided_x.sprite_id == player.sprite_id) or (
