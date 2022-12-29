@@ -1,8 +1,9 @@
 from random import randint
 
+from pharcobial.constants import Graphics
+from pharcobial.logging import game_logger
 from pharcobial.sprites.base import NPC
 from pharcobial.types import Positional
-from pharcobial.constants import Graphics
 
 
 class Taylor(NPC):
@@ -20,7 +21,7 @@ class Taylor(NPC):
         self.attention_threshold_range = (64, 128)
 
     def update(self, *args, **kwargs) -> None:
-        if self.focus_index == self.attention_threshold:
+        if self.focus_index >= self.attention_threshold:
             self.refocus()
             self.focus_index = 0
         else:
@@ -31,12 +32,17 @@ class Taylor(NPC):
         self.forward = self.direction.copy()
         self.update_position()
         if self.direction.magnitude() != 0 and self.rect.x == x_before and self.rect.y == y_before:
+            game_logger.debug("Taylor is stuck.")
             self.refocus()
 
     def refocus(self):
+        game_logger.debug("Taylor is refocusing.")
         self.direction.x = randint(-1, 1)
         self.direction.y = randint(-1, 1)
         if not self.direction.magnitude() == 0:
             self.direction = self.direction.normalize()
 
         self.attention_threshold = randint(*self.attention_threshold_range)
+
+    def activated(self):
+        breakpoint()

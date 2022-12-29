@@ -40,10 +40,11 @@ class Player(Character):
         """
         The user hitting the action key on something.
         """
+        self.chat_bubble.visible = True
 
     def handle_event(self, event: Event):
         if event.type == UserInput.KEY_DOWN and event.key == self.controller.bindings.activate:
-            self.chat_bubble.visible = True
+            self.activate()
 
     def update(self, *args, **kwargs):
         self.controller.update()

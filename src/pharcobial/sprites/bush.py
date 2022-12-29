@@ -96,5 +96,5 @@ class Bush(NPC):
             self.set_image(gfx_id)
 
     def set_vision(self) -> Rect:
-        self.vision = self.rect.inflate((4 * self.rect.height, 2 * self.rect.width))
+        self.vision = self.rect.inflate((4 * self.rect.width, 2 * self.rect.height))
         return self.vision

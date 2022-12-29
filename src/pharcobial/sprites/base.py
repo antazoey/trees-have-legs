@@ -63,24 +63,37 @@ class BaseSprite(Sprite, ManagerAccess):
 
 
 class Ease:
-    def __init__(self) -> None:
+    def __init__(self):
+        self.forward = None
         self.start = 0.8
         self.effect = self.start
         self.slide_increment = 0.002
         self.slide_start = 0.02
         self.slide = self.slide_start
+        self.last = "r"
 
     def _in(self):
+        if self.last == "o":
+            # Always enforce reset in between segments.
+            self.reset()
+
         self.effect += self.slide
         self.slide += self.slide_increment
+        self.last = "i"
 
     def out(self):
+        if self.last == "i":
+            # Always enforce reset in between segments.
+            self.reset()
+
         self.effect -= self.slide
         self.slide += self.slide_increment
+        self.last = "o"
 
     def reset(self):
         self.effect = self.start
         self.slide = self.slide_start
+        self.last = "r"
 
 
 class Walk:
@@ -248,7 +261,7 @@ class Character(MobileSprite):
             if self.ease.effect > self.ease.start:
                 self.ease.out()
 
-        else:
+        else:  # Start moving (Ease-in)
             new_x = self.hitbox.x + self.direction.x * self.speed * self.ease.effect
             new_y = self.hitbox.y + self.direction.y * self.speed * self.ease.effect
             if self.ease.effect < 1:
