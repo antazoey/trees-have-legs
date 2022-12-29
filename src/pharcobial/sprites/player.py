@@ -34,23 +34,17 @@ class Player(Character):
         self.direction = self.controller.direction
         self.chat_bubble = ChatBubble(self)
 
-        self.ease_effect_min = 0.8
-        self.ease_effect = self.ease_effect_min
-        self.slide_increment = 0.002
-        self.slide_start = 0.02
-        self.slide = self.slide_start
-
     @property
     def stopped(self) -> bool:
-        return not self.moving and self.ease_effect <= self.ease_effect_min
+        return not self.moving and self.ease.effect <= self.ease.start
 
     @property
     def coming_to_stop(self) -> bool:
-        return not self.moving and self.ease_effect > self.ease_effect_min
+        return not self.moving and self.ease.effect > self.ease.start
 
     @property
     def accelerating(self) -> bool:
-        return self.moving and self.ease_effect < 1
+        return self.moving and self.ease.effect < 1
 
     def activate(self):
         """
@@ -67,24 +61,21 @@ class Player(Character):
         self.image = self._get_graphic() or self.image
 
         if self.stopped:
-            self.slide = self.slide_start
-            self.ease_effect = self.ease_effect_min
+            self.ease.reset()
             return
 
         elif self.coming_to_stop:
-            new_x = self.hitbox.x + self.controller.forward.x * self.speed * self.ease_effect
-            new_y = self.hitbox.y + self.controller.forward.y * self.speed * self.ease_effect
+            new_x = self.hitbox.x + self.controller.forward.x * self.speed * self.ease.effect
+            new_y = self.hitbox.y + self.controller.forward.y * self.speed * self.ease.effect
 
-            if self.ease_effect > self.ease_effect_min:
-                self.ease_effect -= self.slide
-                self.slide += self.slide_increment
+            if self.ease.effect > self.ease.start:
+                self.ease.out()
 
         else:
-            new_x = self.hitbox.x + self.controller.direction.x * self.speed * self.ease_effect
-            new_y = self.hitbox.y + self.controller.direction.y * self.speed * self.ease_effect
-            if self.ease_effect < 1:
-                self.ease_effect += self.slide
-                self.slide += self.slide_increment
+            new_x = self.hitbox.x + self.controller.direction.x * self.speed * self.ease.effect
+            new_y = self.hitbox.y + self.controller.direction.y * self.speed * self.ease.effect
+            if self.ease.effect < 1:
+                self.ease._in()
 
         self.move((new_x, new_y))
 
@@ -100,7 +91,7 @@ class Player(Character):
             return image or self.image
 
         self.move_gfx_id += 1
-        ease = self.ease_effect if self.accelerating else 1 / self.ease_effect
+        ease = self.ease.effect if self.accelerating else 1 / self.ease.effect
         rate = round(self.max_speed / 24 * ease)
         if self.move_gfx_id in range(rate):
             suffix = "-walk-1"

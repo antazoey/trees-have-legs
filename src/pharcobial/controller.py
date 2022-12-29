@@ -1,7 +1,7 @@
 from typing import List
 
-from pygame.key import get_pressed
 from pygame.key import ScancodeWrapper  # type: ignore
+from pygame.key import get_pressed
 from pygame.math import Vector2
 
 from pharcobial.types import KeyBinding

@@ -62,9 +62,31 @@ class BaseSprite(Sprite, BaseManager):
             self.gfx_id = gfx_id
 
 
+class Ease:
+    def __init__(self) -> None:
+        self.start = 0.8
+        self.effect = self.start
+        self.slide_increment = 0.002
+        self.slide_start = 0.02
+        self.slide = self.slide_start
+
+    def _in(self):
+        self.effect += self.slide
+        self.slide += self.slide_increment
+
+    def out(self):
+        self.effect -= self.slide
+        self.slide += self.slide_increment
+
+    def reset(self):
+        self.effect = self.start
+        self.slide = self.slide_start
+
+
 class MobileSprite(BaseSprite):
     max_speed: float = 0
     direction: Vector2
+    ease = Ease()
 
     @property
     def speed(self) -> float:
@@ -73,18 +95,31 @@ class MobileSprite(BaseSprite):
     def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
         collided_x = None
         collided_y = None
-        changed = False
+        changed_x = False
+        changed_y = False
         x, y = position
         x_rounded = round(x)
         y_rounded = round(y)
         if self.hitbox.x != x_rounded:
+            pre_check = self.hitbox.x
             self.hitbox.x = x_rounded
             collided_x = self.collision.check_x(self)
-            changed = True
+            self.hitbox.x = pre_check
+            changed_x = True
 
         if self.hitbox.y != y_rounded:
+            pre_check = self.hitbox.y
             self.hitbox.y = y_rounded
             collided_y = self.collision.check_y(self)
+            self.hitbox.y = pre_check
+            changed_y = True
+
+        changed = False
+        if changed_x and not collided_y and not collided_x:
+            self.hitbox.x = x_rounded
+            changed = True
+        if changed_y and not collided_x and not collided_y:
+            self.hitbox.y = y_rounded
             changed = True
 
         if changed:

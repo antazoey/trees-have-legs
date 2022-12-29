@@ -66,6 +66,14 @@ class Map:
         tiles = safe_load_csv(path)
         return cls(map_id=path.stem, tiles=tiles, metadata=metadata)
 
+    @property
+    def width(self) -> int:
+        return len(self.tiles[0])
+
+    @property
+    def height(self) -> int:
+        return len(self.tiles)
+
     def __iter__(self) -> Iterator[List[TileKey]]:
         yield from self.tiles
 
@@ -94,6 +102,14 @@ class MapManager(BaseManager):
     @property
     def tile_set(self) -> Dict[TileKey, GfxID]:
         return self.active.metadata.tile_set
+
+    @property
+    def width(self) -> int:
+        return self.active.width
+
+    @property
+    def height(self) -> int:
+        return self.active.height
 
     def __iter__(self):
         yield from self.active

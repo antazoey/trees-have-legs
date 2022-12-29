@@ -23,10 +23,12 @@ class CollisionManager(BaseManager):
 
             elif target.direction.x < 0:
                 target.hitbox.x += round(target.speed)
+                target.ease.reset()
                 return sprite
 
             elif target.direction.x > 0:
                 target.hitbox.x -= round(target.speed)
+                target.ease.reset()
                 return sprite
 
             # Not sure it's possible  to get here.
@@ -41,10 +43,12 @@ class CollisionManager(BaseManager):
 
             elif target.direction.y < 0:
                 target.hitbox.y += round(target.speed)
+                target.ease.reset()
                 return sprite
 
             elif target.direction.y > 0:
                 target.hitbox.y -= round(target.speed)
+                target.ease.reset()
                 return sprite
 
             # Not sure it's possible  to get here.
@@ -53,7 +57,7 @@ class CollisionManager(BaseManager):
         return self._check(fn)
 
     def collides(self, sprite_0: BaseSprite, sprite_1: BaseSprite) -> bool:
-        if sprite_0 == sprite_1:
+        if sprite_0.sprite_id == sprite_1.sprite_id:
             # Ignore when sprites are the same
             return False
 

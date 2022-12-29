@@ -70,13 +70,17 @@ class Bush(NPC):
         self.move_towards_player()
 
     def move_towards_player(self):
+        player = self.sprites.player
+        if not player:
+            return
+
         collided_x, collided_y = self.move_towards(self.sprites.player)
 
         # Update vision to continuously chase player.
         self.set_vision()
 
         # Deal damage
-        player = self.sprites.player
+
         if (collided_x and collided_x.sprite_id == player.sprite_id) or (
             collided_y and collided_y.sprite_id == player.sprite_id
         ):
