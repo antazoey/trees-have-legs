@@ -104,10 +104,19 @@ class Walk:
 
 
 class MobileSprite(BaseSprite):
-    max_speed: float = 0
-    direction: Vector2
-    forward: Vector2
-    ease = Ease()
+    def __init__(
+        self,
+        sprite_id: SpriteID,
+        position: Positional,
+        gfx_id: GfxID | None,
+        groups: Iterable[AbstractGroup],
+        hitbox_inflation: Positional | None,
+    ) -> None:
+        super().__init__(sprite_id, position, gfx_id, groups, hitbox_inflation)
+        self.max_speed: float = 0
+        self.direction = Vector2()
+        self.forward = Vector2()
+        self.ease = Ease()
 
     @cached_property
     def walk_animation(self) -> Walk:
@@ -209,10 +218,6 @@ class MobileSprite(BaseSprite):
 
 
 class Character(MobileSprite):
-    hp: int
-    max_hp: int
-    ap: int
-
     def __init__(
         self,
         sprite_id: SpriteID,
@@ -228,6 +233,28 @@ class Character(MobileSprite):
         self.hp = hp
         self.max_hp = max_hp
         self.ap = ap
+
+    def update_position(self):
+        self.image = self.get_graphic() or self.image
+
+        if self.stopped:
+            self.ease.reset()
+            return
+
+        elif self.coming_to_stop:
+            new_x = self.hitbox.x + self.forward.x * self.speed * self.ease.effect
+            new_y = self.hitbox.y + self.forward.y * self.speed * self.ease.effect
+
+            if self.ease.effect > self.ease.start:
+                self.ease.out()
+
+        else:
+            new_x = self.hitbox.x + self.direction.x * self.speed * self.ease.effect
+            new_y = self.hitbox.y + self.direction.y * self.speed * self.ease.effect
+            if self.ease.effect < 1:
+                self.ease._in()
+
+        self.move((new_x, new_y))
 
     def deal_damage(self, other: "Character"):
         other.handle_attack(self.ap)
@@ -258,8 +285,6 @@ class NPC(Character):
         max_hp: int = DEFAULT_MAX_HP,
         ap: int = DEFAULT_AP,
     ) -> None:
-        hp = hp or DEFAULT_HP
-        hp
         super().__init__(sprite_id, position, gfx_id, groups, hitbox_inflation, hp, max_hp, ap)
 
 

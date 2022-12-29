@@ -1,15 +1,42 @@
+from random import randint
+
 from pharcobial.sprites.base import NPC
+from pharcobial.types import Positional
+from pharcobial.constants import Graphics
 
 
 class Taylor(NPC):
-    def __init__(self):
+    def __init__(self, position: Positional, *args, **kwargs):
         super().__init__(
-            "taylor",
-            (200, 300),
-            "taylor",
+            Graphics.TAYLOR,
+            position,
+            Graphics.TAYLOR,
             (self.world.group, self.collision.group),
-            (-10, -20),
+            (-10, -10),
         )
+        self.max_speed = 150
+        self.focus_index = 0
+        self.attention_threshold = 96
+        self.attention_threshold_range = (64, 128)
 
     def update(self, *args, **kwargs) -> None:
-        self.move((200, 200))
+        if self.focus_index == self.attention_threshold:
+            self.refocus()
+            self.focus_index = 0
+        else:
+            self.focus_index += 1
+
+        x_before = self.rect.x
+        y_before = self.rect.y
+        self.forward = self.direction.copy()
+        self.update_position()
+        if self.direction.magnitude() != 0 and self.rect.x == x_before and self.rect.y == y_before:
+            self.refocus()
+
+    def refocus(self):
+        self.direction.x = randint(-1, 1)
+        self.direction.y = randint(-1, 1)
+        if not self.direction.magnitude() == 0:
+            self.direction = self.direction.normalize()
+
+        self.attention_threshold = randint(*self.attention_threshold_range)

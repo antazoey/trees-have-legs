@@ -7,16 +7,16 @@
     "player": {
         "sprite_id": "jules",
         "location": {
-            "x": 10,
-            "y": 4
+            "x": 6,
+            "y": 3
         }
     },
     "npcs": [
         {
             "sprite_id": "taylor",
             "location": {
-                "x": 16,
-                "y": 16
+                "x": 5,
+                "y": 5
             }
         },
         {

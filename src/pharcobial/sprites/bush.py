@@ -1,6 +1,5 @@
 from typing import Iterable
 
-from pygame.math import Vector2
 from pygame.rect import Rect
 from pygame.sprite import Group
 
@@ -24,7 +23,6 @@ class Bush(NPC):
         )
         self.max_speed = 64
         self.vision = self.set_vision()
-        self.direction = Vector2()
         self.player_is_near: bool = False
         self.is_alive: bool = False
         self.walk_animation.rate_fn = lambda: 10

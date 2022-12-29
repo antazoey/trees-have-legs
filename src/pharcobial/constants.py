@@ -29,6 +29,7 @@ class Graphics:
     BUSH: "GfxID" = "bush"
     CHAT_BUBBLE: "GfxID" = "chat-bubble"
     JULES: "GfxID" = "jules"
+    TAYLOR: "GfxID" = "taylor"
 
 
 # Default settings
