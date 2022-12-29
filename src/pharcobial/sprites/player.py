@@ -2,13 +2,12 @@ from typing import Iterable
 
 from pygame.event import Event
 from pygame.sprite import Group
-from pygame.surface import Surface
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from pharcobial.controller import Controller
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import SpriteID, UserInput, GfxID
+from pharcobial.types import SpriteID, UserInput
 
 
 class Player(Character):
@@ -18,7 +17,6 @@ class Player(Character):
 
     def __init__(
         self,
-        groups: Iterable[Group],
         character: SpriteID = Graphics.JULES,
         speed: int = 128,
         hp: int = DEFAULT_HP,
@@ -26,7 +24,14 @@ class Player(Character):
         ap: int = DEFAULT_AP,
     ):
         super().__init__(
-            character, self.map.player_start, character, groups, (-10, -20), hp, max_hp, ap
+            character,
+            self.map.player_start,
+            character,
+            (self.world.group, self.collision.group),
+            (-10, -20),
+            hp,
+            max_hp,
+            ap,
         )
         self.max_speed = speed
         self.controller = Controller(self.options.key_bindings)

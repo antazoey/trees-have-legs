@@ -27,6 +27,7 @@ class Bush(NPC):
         self.direction = Vector2()
         self.player_is_near: bool = False
         self.is_alive: bool = False
+        self.walk_animation.rate_fn = lambda: 10
         self.walk_animation.sprite_id = f"{Graphics.BUSH}-monster"
 
     @property
@@ -91,7 +92,7 @@ class Bush(NPC):
             collided_y and collided_y.sprite_id == player.sprite_id
         ):
             self.deal_damage(player)
-        
+
         else:
             gfx_id = self.walk_animation.get_gfx_id()
             self.set_image(gfx_id)

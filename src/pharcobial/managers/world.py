@@ -54,7 +54,7 @@ class YouDied(ManagerAccess):
         self.total_frames = 75
         self.font_size = 75
         self.timer = VisibilityTimer(amount=self.total_frames)
-    
+
     @property
     def frames_left(self) -> int:
         return self.timer.timer or 0

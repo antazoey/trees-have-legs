@@ -88,7 +88,7 @@ class Walk:
         self.sprite_id = sprite_id
         self.index = 0
         self.rate_fn = rate_fn
-    
+
     def get_gfx_id(self) -> GfxID:
         self.index += 1
         rate = self.rate_fn()
@@ -144,7 +144,7 @@ class MobileSprite(BaseSprite):
             return image or self.image
 
         gfx_id = self.walk_animation.get_gfx_id()
-        flip = self.controller.forward.x > 0
+        flip = self.forward.x > 0
         graphic = self.graphics.get(gfx_id, flip_vertically=flip)
         return graphic or self.image
 

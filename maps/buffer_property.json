@@ -13,6 +13,13 @@
     },
     "npcs": [
         {
+            "sprite_id": "taylor",
+            "location": {
+                "x": 16,
+                "y": 16
+            }
+        },
+        {
             "sprite_id": "bush-{x}",
             "multiple": true,
             "locations": [
