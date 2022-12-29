@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Dict, Iterable, Tuple
+from typing import Callable, Dict, Iterable, Tuple
 
 from pygame.event import Event
 from pygame.math import Vector2
@@ -56,10 +56,10 @@ class BaseSprite(Sprite, ManagerAccess):
         """
         return
 
-    def set_image(self, gfx_id: GfxID):
-        if self.gfx_id != gfx_id:
-            self.image = self.graphics[gfx_id]
-            self.gfx_id = gfx_id
+    def set_image(self, gfx: GfxID):
+        if self.gfx_id != gfx:
+            self.image = self.graphics[gfx]
+            self.gfx_id = gfx
 
 
 class Ease:
@@ -83,14 +83,70 @@ class Ease:
         self.slide = self.slide_start
 
 
+class Walk:
+    def __init__(self, sprite_id: SpriteID, rate_fn: Callable) -> None:
+        self.sprite_id = sprite_id
+        self.index = 0
+        self.rate_fn = rate_fn
+    
+    def get_gfx_id(self) -> GfxID:
+        self.index += 1
+        rate = self.rate_fn()
+        if self.index in range(rate):
+            suffix = "-walk-1"
+        elif self.index in range(rate, rate * 2 + 1):
+            suffix = "-walk-2"
+        else:
+            suffix = ""
+            self.index = -1
+
+        return f"{self.sprite_id}{suffix}"
+
+
 class MobileSprite(BaseSprite):
     max_speed: float = 0
     direction: Vector2
+    forward: Vector2
     ease = Ease()
+
+    @cached_property
+    def walk_animation(self) -> Walk:
+        def get_rate():
+            ease = self.ease.effect if self.accelerating else 1 / self.ease.effect
+            return round(self.max_speed / 24 * ease)
+
+        return Walk(self.sprite_id, get_rate)
 
     @property
     def speed(self) -> float:
         return self.max_speed * self.clock.deltatime
+
+    @property
+    def moving(self) -> bool:
+        return round(self.direction.magnitude()) != 0
+
+    @property
+    def stopped(self) -> bool:
+        return not self.moving and self.ease.effect <= self.ease.start
+
+    @property
+    def coming_to_stop(self) -> bool:
+        return not self.moving and self.ease.effect > self.ease.start
+
+    @property
+    def accelerating(self) -> bool:
+        return self.moving and self.ease.effect < 1
+
+    def get_graphic(self) -> Surface | None:
+        if self.stopped:
+            # Return a standing-still graphic of the last direction facing.
+            image = self.graphics.get(self.sprite_id, flip_vertically=self.forward.x > 0)
+            return image or self.image
+
+        gfx_id = self.walk_animation.get_gfx_id()
+        flip = self.controller.forward.x > 0
+        graphic = self.graphics.get(gfx_id, flip_vertically=flip)
+        return graphic or self.image
 
     def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
         collided_x = collided_y = None
@@ -124,10 +180,6 @@ class MobileSprite(BaseSprite):
             self.rect.center = self.hitbox.center
 
         return (collided_x, collided_y)
-
-    @property
-    def moving(self) -> bool:
-        return round(self.direction.magnitude()) != 0
 
     def move_towards(self, sprite: BaseSprite) -> Tuple[BaseSprite | None, BaseSprite | None]:
         """

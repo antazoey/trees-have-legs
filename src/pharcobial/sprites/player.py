@@ -8,7 +8,7 @@ from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphic
 from pharcobial.controller import Controller
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import SpriteID, UserInput
+from pharcobial.types import SpriteID, UserInput, GfxID
 
 
 class Player(Character):
@@ -28,23 +28,11 @@ class Player(Character):
         super().__init__(
             character, self.map.player_start, character, groups, (-10, -20), hp, max_hp, ap
         )
-        self.move_gfx_id: int = -1
         self.max_speed = speed
         self.controller = Controller(self.options.key_bindings)
         self.direction = self.controller.direction
+        self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
-
-    @property
-    def stopped(self) -> bool:
-        return not self.moving and self.ease.effect <= self.ease.start
-
-    @property
-    def coming_to_stop(self) -> bool:
-        return not self.moving and self.ease.effect > self.ease.start
-
-    @property
-    def accelerating(self) -> bool:
-        return self.moving and self.ease.effect < 1
 
     def activate(self):
         """
@@ -58,6 +46,7 @@ class Player(Character):
     def update(self, *args, **kwargs):
         self.controller.update()
         self.direction = self.controller.direction
+        self.forward = self.controller.forward
         self.image = self.get_graphic() or self.image
 
         if self.stopped:
@@ -82,29 +71,6 @@ class Player(Character):
         flip = self.controller.forward.x > 0
         image = self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=flip)
         self.chat_bubble.image = image or self.chat_bubble.image
-
-    def get_graphic(self) -> Surface | None:
-        if self.stopped:
-            # Return a standing-still graphic of the last direction facing.
-            flip = self.controller.forward.x > 0
-            image = self.graphics.get(self.sprite_id, flip_vertically=flip)
-            return image or self.image
-
-        self.move_gfx_id += 1
-        ease = self.ease.effect if self.accelerating else 1 / self.ease.effect
-        rate = round(self.max_speed / 24 * ease)
-        if self.move_gfx_id in range(rate):
-            suffix = "-walk-1"
-        elif self.move_gfx_id in range(rate, rate * 2 + 1):
-            suffix = "-walk-2"
-        else:
-            suffix = ""
-            self.move_gfx_id = -1
-
-        gfx_id = f"{self.sprite_id}{suffix}"
-        flip = self.controller.forward.x > 0
-        graphic = self.graphics.get(gfx_id, flip_vertically=flip)
-        return graphic or self.image
 
     def die(self):
         super().die()

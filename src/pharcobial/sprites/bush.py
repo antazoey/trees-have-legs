@@ -27,6 +27,7 @@ class Bush(NPC):
         self.direction = Vector2()
         self.player_is_near: bool = False
         self.is_alive: bool = False
+        self.walk_animation.sprite_id = f"{Graphics.BUSH}-monster"
 
     @property
     def bush_index(self) -> int:
@@ -70,7 +71,8 @@ class Bush(NPC):
     def come_alive(self):
         self.is_alive = True
         game_logger.debug(f"{Graphics.BUSH.capitalize()} {self.bush_index} has come to life!")
-        self.set_image(f"{Graphics.BUSH}-monster")
+        gfx_id = self.walk_animation.get_gfx_id()
+        self.set_image(gfx_id)
         self.move_towards_player()
 
     def move_towards_player(self):
@@ -89,6 +91,10 @@ class Bush(NPC):
             collided_y and collided_y.sprite_id == player.sprite_id
         ):
             self.deal_damage(player)
+        
+        else:
+            gfx_id = self.walk_animation.get_gfx_id()
+            self.set_image(gfx_id)
 
     def set_vision(self) -> Rect:
         self.vision = self.rect.inflate((4 * self.rect.height, 2 * self.rect.width))
