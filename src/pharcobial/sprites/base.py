@@ -9,11 +9,11 @@ from pygame.surface import Surface
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP
 from pharcobial.logging import game_logger
-from pharcobial.managers.base import BaseManager
+from pharcobial.managers.base import ManagerAccess
 from pharcobial.types import GfxID, Position, Positional, SpriteID
 
 
-class BaseSprite(Sprite, BaseManager):
+class BaseSprite(Sprite, ManagerAccess):
     def __init__(
         self,
         sprite_id: SpriteID,
@@ -184,7 +184,10 @@ class Character(MobileSprite):
         self.hp -= ap
 
         if self.hp <= 0:
-            game_logger.debug(f"'{self.sprite_id}' died.")
+            self.die()
+
+    def die(self):
+        game_logger.debug(f"'{self.sprite_id}' died.")
 
 
 class NPC(Character):

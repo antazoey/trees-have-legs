@@ -6,6 +6,7 @@ from pygame.surface import Surface
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from pharcobial.controller import Controller
+from pharcobial.managers.base import ManagerAccess
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
 from pharcobial.types import SpriteID, UserInput
@@ -105,3 +106,9 @@ class Player(Character):
         flip = self.controller.forward.x > 0
         graphic = self.graphics.get(gfx_id, flip_vertically=flip)
         return graphic or self.image
+
+    def die(self):
+        super().die()
+        self.world.you_died.visible = True
+        self.hp = self.max_hp
+        self.move(self.map.player_start)

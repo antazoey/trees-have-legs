@@ -6,6 +6,7 @@ from pharcobial.constants import GAME_NAME, RGB
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.utils import game_paths
+from pharcobial.types import Positional
 
 
 class Display:
@@ -92,11 +93,15 @@ class DisplayManager(BaseManager):
         pygame.display.flip()
         self.clock.tick()
 
-    def show_text(self, text: str, font_size: int, x: int, y: int, color: str):
+    def show_text(self, text: str, font_size: int, position: Positional | str, color: str):
         font_file = game_paths.get_font("bold_game_font_7")
         font = pygame.font.Font(str(font_file), font_size)
-        surface = font.render(text, True, RGB[color])
-        self.active.screen.blit(surface, (x, y))
+        text = font.render(text, True, RGB[color])
+
+        if position == "center":
+            position = text.get_rect(center=(self.half_width, self.half_height))
+
+        self.active.screen.blit(text, position)
 
 
 display_manager = DisplayManager()

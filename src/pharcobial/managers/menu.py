@@ -19,7 +19,7 @@ class MenuManager(ViewController):
         for item in self.items:
             font_size = 33 if item.index == self.selected else 30
             offset = start_y + (item.index * font_size) + 10
-            self.display.show_text(item.title, font_size, start_x, start_y + offset, "red")
+            self.display.show_text(item.title, font_size, (start_x, start_y + offset), "red")
 
     def handle_event(self, event: Event):
         if event.type != UserInput.KEY_DOWN:

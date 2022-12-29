@@ -38,6 +38,10 @@ class Bush(NPC):
         Else, it stands still.
         """
 
+        if self.world.you_died.visible:
+            self.sleep()
+            return
+
         player_was_near = self.player_is_near
         if player_was_near:
             # Player is hanging around a tree.

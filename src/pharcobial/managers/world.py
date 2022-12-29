@@ -4,7 +4,7 @@ from pygame.sprite import Group
 from pygame.surface import Surface
 
 from pharcobial.logging import game_logger
-from pharcobial.managers.base import BaseManager, ViewController
+from pharcobial.managers.base import ManagerAccess, ViewController
 from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.bubble import ChatBubble
 from pharcobial.sprites.player import Player
@@ -35,7 +35,7 @@ class CameraGroup(Group):
             self.surface.blit(img, offset)
 
 
-class Camera(BaseManager):
+class Camera(ManagerAccess):
     def __init__(self) -> None:
         super().__init__()
         self.offset = Vector2()
@@ -47,11 +47,20 @@ class Camera(BaseManager):
             self.offset.y = self.followee.rect.centery - self.display.half_height
 
 
+class YouDied(ManagerAccess):
+    visible: bool = False
+
+    def draw(self):
+        if self.visible:
+            self.display.show_text("YOU DIED", 75, "center", "red")
+
+
 class WorldManager(ViewController):
     def __init__(self) -> None:
         super().__init__(CameraGroup(self.display.active.screen))
         self.camera = Camera()
         self.group: CameraGroup = self.group
+        self.you_died = YouDied()
 
     def validate(self):
         assert self.group is not None
@@ -70,6 +79,7 @@ class WorldManager(ViewController):
     def draw(self):
         self.group.draw_in_view(self.camera.offset)
         self.hud.draw()
+        self.you_died.draw()
 
     def follow(self, sprite: BaseSprite):
         self.camera.followee = sprite

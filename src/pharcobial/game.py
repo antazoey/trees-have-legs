@@ -1,11 +1,11 @@
 import pygame
 
-from pharcobial.managers.base import BaseManager
+from pharcobial.managers.base import ManagerAccess
 from pharcobial.types import GameEvent, GameOptions
 from pharcobial.utils import quit
 
 
-class Game(BaseManager):
+class Game(ManagerAccess):
     def __init__(self, game_options: GameOptions):
         super().__init__()
         pygame.init()
