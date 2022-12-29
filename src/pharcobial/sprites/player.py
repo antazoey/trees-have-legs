@@ -26,7 +26,7 @@ class Player(Character):
         ap: int = DEFAULT_AP,
     ):
         super().__init__(
-            character, self.map.player_start, character, groups, (0, -10), hp, max_hp, ap
+            character, self.map.player_start, character, groups, (-10, -20), hp, max_hp, ap
         )
         self.move_gfx_id: int = -1
         self.max_speed = speed
@@ -58,7 +58,7 @@ class Player(Character):
     def update(self, *args, **kwargs):
         self.controller.update()
         self.direction = self.controller.direction
-        self.image = self._get_graphic() or self.image
+        self.image = self.get_graphic() or self.image
 
         if self.stopped:
             self.ease.reset()
@@ -83,7 +83,7 @@ class Player(Character):
         image = self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=flip)
         self.chat_bubble.image = image or self.chat_bubble.image
 
-    def _get_graphic(self) -> Surface | None:
+    def get_graphic(self) -> Surface | None:
         if self.stopped:
             # Return a standing-still graphic of the last direction facing.
             flip = self.controller.forward.x > 0

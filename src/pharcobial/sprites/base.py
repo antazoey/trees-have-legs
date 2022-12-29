@@ -93,10 +93,8 @@ class MobileSprite(BaseSprite):
         return self.max_speed * self.clock.deltatime
 
     def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
-        collided_x = None
-        collided_y = None
-        changed_x = False
-        changed_y = False
+        collided_x = collided_y = None
+        changed_x = changed_y = False
         x, y = position
         x_rounded = round(x)
         y_rounded = round(y)
