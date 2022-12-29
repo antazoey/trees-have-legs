@@ -49,15 +49,22 @@ class Camera(ManagerAccess):
 
 
 class YouDied(ManagerAccess):
-    visible: bool = False
-    timer = VisibilityTimer(amount=50)  # Show for 50 frames.
+    def __init__(self) -> None:
+        self.visible: bool = False
+        self.total_frames = 75
+        self.font_size = 75
+        self.timer = VisibilityTimer(amount=self.total_frames)
+    
+    @property
+    def frames_left(self) -> int:
+        return self.timer.timer or 0
 
     def update(self):
         self.timer.update(self)
 
     def draw(self):
         if self.visible:
-            self.display.show_text("YOU DIED", 75, "center", "red")
+            self.display.show_text("YOU DIED", self.font_size, "center", "red")
 
 
 class WorldManager(ViewController):
@@ -77,15 +84,16 @@ class WorldManager(ViewController):
         self.sprites.player.handle_event(event)
 
     def update(self):
+        self.you_died.update()
         self.camera.update()
         self.group.update()
         self.hud.update()
-        self.you_died.update()
 
     def draw(self):
-        self.group.draw_in_view(self.camera.offset)
-        self.hud.draw()
         self.you_died.draw()
+        if self.you_died.frames_left < 0.25 * self.you_died.total_frames:
+            self.group.draw_in_view(self.camera.offset)
+            self.hud.draw()
 
     def follow(self, sprite: BaseSprite):
         self.camera.followee = sprite
