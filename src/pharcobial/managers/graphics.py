@@ -6,7 +6,7 @@ from pygame.surface import Surface
 from pharcobial.constants import BLOCK_SIZE, RGB
 from pharcobial.managers.base import BaseManager
 from pharcobial.types import GfxID
-from pharcobial.utils import game_paths
+from pharcobial.utils.paths import game_paths
 
 
 class GraphicsManager(BaseManager):

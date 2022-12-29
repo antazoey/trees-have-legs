@@ -1,12 +1,13 @@
 from contextlib import contextmanager
 
 import pygame
+from pygame.rect import Rect
 
 from pharcobial.constants import GAME_NAME, RGB
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.utils import game_paths
 from pharcobial.types import Positional
+from pharcobial.utils.paths import game_paths
 
 
 class Display:
@@ -96,12 +97,17 @@ class DisplayManager(BaseManager):
     def show_text(self, text: str, font_size: int, position: Positional | str, color: str):
         font_file = game_paths.get_font("bold_game_font_7")
         font = pygame.font.Font(str(font_file), font_size)
-        text = font.render(text, True, RGB[color])
+        surface = font.render(text, True, RGB[color])
 
+        destination: Positional | Rect
         if position == "center":
-            position = text.get_rect(center=(self.half_width, self.half_height))
+            destination = surface.get_rect(center=(self.half_width, self.half_height))
+        elif not isinstance(position, str):
+            destination = position
+        else:
+            raise TypeError(str(position))
 
-        self.active.screen.blit(text, position)
+        self.active.screen.blit(surface, destination)
 
 
 display_manager = DisplayManager()

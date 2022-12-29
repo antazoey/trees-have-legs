@@ -6,7 +6,6 @@ from pygame.surface import Surface
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from pharcobial.controller import Controller
-from pharcobial.managers.base import ManagerAccess
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
 from pharcobial.types import SpriteID, UserInput

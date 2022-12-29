@@ -7,7 +7,7 @@ from pharcobial.constants import SAVES_DIRECTORY, SAVES_METADATA_FILE
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.types import MapID, SaveID
-from pharcobial.utils import safe_dump, safe_load
+from pharcobial.utils.loaders import safe_dump, safe_load
 
 
 @dataclass

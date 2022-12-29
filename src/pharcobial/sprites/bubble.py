@@ -1,5 +1,6 @@
 from pharcobial.constants import Graphics
 from pharcobial.sprites.base import MobileSprite
+from pharcobial.utils.timer import VisibilityTimer
 
 
 class ChatBubble(MobileSprite):
@@ -17,18 +18,8 @@ class ChatBubble(MobileSprite):
         )
         self.parent_id = parent.sprite_id
         self.visible = False
-        self.timer: int | None = None
+        self.timer = VisibilityTimer()
 
     def update(self, *args, **kwargs):
         self.rect = self.sprites[self.parent_id].rect.inflate((0, -5))
-        if self.visible and self.timer is None:
-            # Chat bubble was activated. Set a timer to only show
-            # for a brief moment.
-            self.timer = 25  # frames
-
-        elif self.visible and (self.timer or 0) <= 0:
-            self.visible = False
-            self.timer = None
-
-        elif self.visible and self.timer is not None:
-            self.timer -= 1
+        self.timer.update(self)

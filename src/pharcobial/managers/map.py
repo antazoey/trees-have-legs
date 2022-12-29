@@ -6,7 +6,8 @@ from pharcobial.constants import MAP_VOID
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.types import GfxID, MapID, Position, Positional, SpriteID, TileKey
-from pharcobial.utils import game_paths, safe_load, safe_load_csv
+from pharcobial.utils.loaders import safe_load, safe_load_csv
+from pharcobial.utils.paths import game_paths
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterator, List, Tuple, TypeAlias, Union
+from typing import Iterator, List, Protocol, Tuple, TypeAlias, Union
 
 from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP
 
@@ -129,3 +129,7 @@ class GameOptions:
         elif self.map_id is None:
             # Both save and map are None. Load default map.
             self.map_id = DEFAULT_MAP
+
+
+class Visible(Protocol):
+    visible: bool

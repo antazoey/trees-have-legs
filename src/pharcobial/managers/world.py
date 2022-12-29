@@ -8,6 +8,7 @@ from pharcobial.managers.base import ManagerAccess, ViewController
 from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.bubble import ChatBubble
 from pharcobial.sprites.player import Player
+from pharcobial.utils.timer import VisibilityTimer
 
 
 class CameraGroup(Group):
@@ -49,6 +50,10 @@ class Camera(ManagerAccess):
 
 class YouDied(ManagerAccess):
     visible: bool = False
+    timer = VisibilityTimer(amount=50)  # Show for 50 frames.
+
+    def update(self):
+        self.timer.update(self)
 
     def draw(self):
         if self.visible:
@@ -75,6 +80,7 @@ class WorldManager(ViewController):
         self.camera.update()
         self.group.update()
         self.hud.update()
+        self.you_died.update()
 
     def draw(self):
         self.group.draw_in_view(self.camera.offset)
