@@ -5,7 +5,7 @@
         "1": "road"
     },
     "player": {
-        "sprite_id": "pharma",
+        "sprite_id": "jules",
         "location": {
             "x": 10,
             "y": 4

@@ -19,7 +19,7 @@ class Player(Character):
     def __init__(
         self,
         groups: Iterable[Group],
-        character: SpriteID = Graphics.PHARMA,
+        character: SpriteID = Graphics.JULES,
         speed: int = 128,
         hp: int = DEFAULT_HP,
         max_hp: int = DEFAULT_MAX_HP,
