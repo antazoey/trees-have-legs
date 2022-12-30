@@ -29,9 +29,7 @@ class Taylor(NPC):
             return
 
         elif self.hysteria <= 0:
-            self.max_speed = self.sprites.player.max_speed
-            self.forward = self.direction.copy()
-            self.walk_towards(self.sprites.player)
+            self.follow(self.sprites.player)
 
         else:
             # Is hysterical.
@@ -63,7 +61,7 @@ class Taylor(NPC):
         self.attention_threshold = randint(*self.attention_threshold_range)
 
     def activated(self):
-        new_value = randint(-1, 2)
+        new_value = randint(-1, 5)
         new_total = self.hysteria - new_value
         if new_total < 100:
             self.hysteria = new_total

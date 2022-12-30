@@ -7,10 +7,10 @@ from pygame.rect import Rect
 from pygame.sprite import AbstractGroup, Sprite
 from pygame.surface import Surface
 
-from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP
+from pharcobial.constants import BLOCK_SIZE, DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import ManagerAccess
-from pharcobial.types import Collision, GfxID, Positional, SpriteID
+from pharcobial.types import Collision, GfxID, Locatable, Position, Positional, SpriteID
 
 
 class BaseSprite(Sprite, ManagerAccess):
@@ -34,6 +34,14 @@ class BaseSprite(Sprite, ManagerAccess):
 
         for group in groups:
             group.add(self)
+
+    @property
+    def x(self) -> int:
+        return self.hitbox.x
+
+    @property
+    def y(self) -> int:
+        return self.hitbox.y
 
     @cached_property
     def camera_group(self) -> AbstractGroup:
@@ -175,11 +183,15 @@ class MobileSprite(BaseSprite):
         graphic = self.graphics.get(gfx_id, flip_x=flip)
         return graphic or self.image
 
-    def walk_towards(self, rect: Rect | BaseSprite) -> Collision:
-        self.face(rect)
-        return self.walk()
+    def walk_towards(self, obj: Locatable) -> Collision:
+        position = Position.from_obj(obj)
+        self.face(position)
+        return self.walk(limit=position)
 
-    def walk(self) -> Collision:
+    def walk(self, limit: Locatable | None = None) -> Collision:
+        if limit is not None:
+            limit = Position.from_obj(limit)
+
         self.image = self.get_graphic() or self.image
 
         if self.stopped:
@@ -196,6 +208,17 @@ class MobileSprite(BaseSprite):
         else:  # Start moving (Ease-in)
             new_x = self.hitbox.x + self.direction.x * self.speed * self.ease.effect
             new_y = self.hitbox.y + self.direction.y * self.speed * self.ease.effect
+
+            if limit:
+                if (new_x < self.hitbox.x and new_x < limit.x) or (
+                    new_x > self.hitbox.x and new_x > limit.x
+                ):
+                    new_x = limit[0]
+                if (new_y < self.hitbox.y and new_y < limit.y) or (
+                    new_x > self.hitbox.x and new_y > limit.y
+                ):
+                    new_y = limit[1]
+
             if self.ease.effect < 1:
                 self.ease._in()
 
@@ -234,31 +257,46 @@ class MobileSprite(BaseSprite):
 
         return Collision(x=collided_x, y=collided_y)
 
-    def face(self, obj: Rect | BaseSprite):
+    def face(self, obj: Locatable):
         """
         Move this sprite towards the given sprite, based on its movement ability.
         Returns ``True`` if collided.
         """
 
-        if isinstance(obj, BaseSprite):
-            rect = obj.rect
-        else:
-            rect = obj
-
+        position = Position.from_obj(obj)
         # Handle x
-        if rect.x > self.hitbox.x:
+        if position.x > self.hitbox.x:
             self.direction.x = 1
-        elif rect.x < self.hitbox.x:
+        elif position.x < self.hitbox.x:
             self.direction.x = -1
 
         # Handle y
-        if rect.y > self.hitbox.y:
+        if position.y > self.hitbox.y:
             self.direction.y = 1
-        elif rect.y < self.hitbox.y:
+        elif position.y < self.hitbox.y:
             self.direction.y = -1
 
         if self.direction.magnitude() not in (0, 1):
             self.direction = self.direction.normalize()
+
+        magnitude = self.direction.magnitude()
+        if magnitude not in (0, 1):
+            self.direction = self.direction.normalize()
+            self.forward = self.direction.copy()
+        elif magnitude != 0:
+            self.forward = self.direction.copy()
+
+    def follow(self, sprite: "MobileSprite"):
+        self.max_speed = sprite.max_speed
+
+        if not self.hitbox.colliderect(sprite.hitbox.inflate(BLOCK_SIZE, BLOCK_SIZE)):
+            behind_vector = -self.sprites.player.forward
+            x_behind = behind_vector.x * BLOCK_SIZE + self.sprites.player.x
+            y_behind = behind_vector.y * BLOCK_SIZE + self.sprites.player.y
+            self.walk_towards((x_behind, y_behind))
+        else:
+            self.ease.reset()
+            self.image = self.graphics.get(self.sprite_id, flip_x=self.forward.x > 0) or self.image
 
 
 class Character(MobileSprite):

@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Iterator, List, Protocol, Tuple, TypeAlias, Union
 
-from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP
+from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP, Rect
+from pyparsing import Any
 
 from pharcobial.constants import (
     BLOCK_SIZE,
@@ -55,11 +56,21 @@ class Position(tuple):
         yield self.y
 
     @classmethod
+    def from_obj(self, obj: Any) -> "Position":
+        if hasattr(obj, "rect") and hasattr(obj.rect, "topleft"):
+            return Position(*obj.rect.topleft)
+
+        elif isinstance(obj, Rect):
+            return Position(*obj.topleft)
+
+        return Position(*obj)
+
+    @classmethod
     def parse_coordinates(cls, x: float, y: float) -> "Position":
         return cls(x=x * BLOCK_SIZE, y=y * BLOCK_SIZE)
 
 
-Positional = Tuple[float, float] | Position
+Positional = Union[Tuple[float, float], Position]
 
 
 class GameEvent(Enum):
@@ -143,3 +154,6 @@ class Visible(Protocol):
 class Collision:
     x: Union["BaseSprite", None] = None
     y: Union["BaseSprite", None] = None
+
+
+Locatable = Union[Rect, "BaseSprite", Positional]

@@ -38,7 +38,7 @@ class Bush(NPC):
         Else, it stands still.
         """
 
-        if self.world.you_died.visible:
+        if self.sprites.player.is_dead:
             self.sleep()
             return
 
