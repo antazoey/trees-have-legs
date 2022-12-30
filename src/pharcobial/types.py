@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Iterator, List, Protocol, Tuple, TypeAlias, Union
+from typing import TYPE_CHECKING, Callable, Iterator, List, Protocol, Tuple, TypeAlias, Union
 
 from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP, Rect
 from pyparsing import Any
@@ -112,8 +112,9 @@ class KeyBinding:
 
 @dataclass
 class MenuItem:
-    index: int
     title: str
+    index: int
+    action: Callable
 
 
 @dataclass

@@ -21,9 +21,11 @@ class EventManager(BaseManager):
             escape_key_pressed = event.type == UserInput.KEY_DOWN and event.key == escape_key
             if escape_key_pressed:
                 yield GameEvent.MENU
+                return  # Return early to prevent double-processing.
 
             elif event.type == QUIT:
                 yield GameEvent.QUIT
+                return  # No need to continue processing events.
 
             self.views.active.handle_event(event)
 
