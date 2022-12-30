@@ -79,15 +79,15 @@ class Bush(NPC):
         if not player:
             return
 
-        collided_x, collided_y = self.move_towards(self.sprites.player)
+        collision = self.walk_towards(self.sprites.player)
 
         # Update vision to continuously chase player.
         self.set_vision()
 
         # Deal damage
 
-        if (collided_x and collided_x.sprite_id == player.sprite_id) or (
-            collided_y and collided_y.sprite_id == player.sprite_id
+        if (collision.x and collision.x.sprite_id == player.sprite_id) or (
+            collision.y and collision.y.sprite_id == player.sprite_id
         ):
             self.deal_damage(player)
 

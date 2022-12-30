@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Callable, Dict, Iterable, Tuple
+from typing import Callable, Dict, Iterable
 
 from pygame.event import Event
 from pygame.math import Vector2
@@ -10,7 +10,7 @@ from pygame.surface import Surface
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import ManagerAccess
-from pharcobial.types import GfxID, Position, Positional, SpriteID
+from pharcobial.types import Collision, GfxID, Positional, SpriteID
 
 
 class BaseSprite(Sprite, ManagerAccess):
@@ -167,15 +167,41 @@ class MobileSprite(BaseSprite):
     def get_graphic(self) -> Surface | None:
         if self.stopped:
             # Return a standing-still graphic of the last direction facing.
-            image = self.graphics.get(self.sprite_id, flip_vertically=self.forward.x > 0)
+            image = self.graphics.get(self.sprite_id, flip_x=self.forward.x > 0)
             return image or self.image
 
         gfx_id = self.walk_animation.get_gfx_id()
         flip = self.forward.x > 0
-        graphic = self.graphics.get(gfx_id, flip_vertically=flip)
+        graphic = self.graphics.get(gfx_id, flip_x=flip)
         return graphic or self.image
 
-    def move(self, position: Positional) -> Tuple[BaseSprite | None, BaseSprite | None]:
+    def walk_towards(self, rect: Rect | BaseSprite) -> Collision:
+        self.face(rect)
+        return self.walk()
+
+    def walk(self) -> Collision:
+        self.image = self.get_graphic() or self.image
+
+        if self.stopped:
+            self.ease.reset()
+            return Collision()
+
+        elif self.coming_to_stop:
+            new_x = self.hitbox.x + self.forward.x * self.speed * self.ease.effect
+            new_y = self.hitbox.y + self.forward.y * self.speed * self.ease.effect
+
+            if self.ease.effect > self.ease.start:
+                self.ease.out()
+
+        else:  # Start moving (Ease-in)
+            new_x = self.hitbox.x + self.direction.x * self.speed * self.ease.effect
+            new_y = self.hitbox.y + self.direction.y * self.speed * self.ease.effect
+            if self.ease.effect < 1:
+                self.ease._in()
+
+        return self.move((new_x, new_y))
+
+    def move(self, position: Positional) -> Collision:
         collided_x = collided_y = None
         changed_x = changed_y = False
         x, y = position
@@ -206,33 +232,33 @@ class MobileSprite(BaseSprite):
         if changed:
             self.rect.center = self.hitbox.center
 
-        return (collided_x, collided_y)
+        return Collision(x=collided_x, y=collided_y)
 
-    def move_towards(self, sprite: BaseSprite) -> Tuple[BaseSprite | None, BaseSprite | None]:
+    def face(self, obj: Rect | BaseSprite):
         """
         Move this sprite towards the given sprite, based on its movement ability.
         Returns ``True`` if collided.
         """
 
-        new_position = Position(self.hitbox.x, self.hitbox.y)
+        if isinstance(obj, BaseSprite):
+            rect = obj.rect
+        else:
+            rect = obj
 
         # Handle x
-        if sprite.hitbox.x > self.hitbox.x:
-            new_position.x = round(self.hitbox.x + min(self.speed, sprite.hitbox.x - self.hitbox.x))
+        if rect.x > self.hitbox.x:
             self.direction.x = 1
-        elif sprite.hitbox.x < self.hitbox.x:
-            new_position.x = round(self.hitbox.x - min(self.speed, self.hitbox.x - sprite.hitbox.x))
+        elif rect.x < self.hitbox.x:
             self.direction.x = -1
 
         # Handle y
-        if sprite.hitbox.y > self.hitbox.y:
-            new_position.y = round(self.hitbox.y + min(self.speed, sprite.hitbox.y - self.hitbox.y))
+        if rect.y > self.hitbox.y:
             self.direction.y = 1
-        elif sprite.hitbox.y < self.hitbox.y:
-            new_position.y = round(self.hitbox.y - min(self.speed, self.hitbox.y - sprite.hitbox.y))
+        elif rect.y < self.hitbox.y:
             self.direction.y = -1
 
-        return self.move(new_position)
+        if self.direction.magnitude() not in (0, 1):
+            self.direction = self.direction.normalize()
 
 
 class Character(MobileSprite):
@@ -251,28 +277,6 @@ class Character(MobileSprite):
         self.hp = hp
         self.max_hp = max_hp
         self.ap = ap
-
-    def update_position(self):
-        self.image = self.get_graphic() or self.image
-
-        if self.stopped:
-            self.ease.reset()
-            return
-
-        elif self.coming_to_stop:
-            new_x = self.hitbox.x + self.forward.x * self.speed * self.ease.effect
-            new_y = self.hitbox.y + self.forward.y * self.speed * self.ease.effect
-
-            if self.ease.effect > self.ease.start:
-                self.ease.out()
-
-        else:  # Start moving (Ease-in)
-            new_x = self.hitbox.x + self.direction.x * self.speed * self.ease.effect
-            new_y = self.hitbox.y + self.direction.y * self.speed * self.ease.effect
-            if self.ease.effect < 1:
-                self.ease._in()
-
-        self.move((new_x, new_y))
 
     def deal_damage(self, other: "Character"):
         other.handle_attack(self.ap)

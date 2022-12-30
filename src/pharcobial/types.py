@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterator, List, Protocol, Tuple, TypeAlias, Union
+from typing import TYPE_CHECKING, Iterator, List, Protocol, Tuple, TypeAlias, Union
 
 from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP
 
@@ -12,6 +12,10 @@ from pharcobial.constants import (
     DEFAULT_MAP,
     DEFAULT_WIDTH,
 )
+
+if TYPE_CHECKING:
+    from pharcobial.sprites.base import BaseSprite
+
 
 Color = Tuple[int, int, int]
 
@@ -133,3 +137,9 @@ class GameOptions:
 
 class Visible(Protocol):
     visible: bool
+
+
+@dataclass
+class Collision:
+    x: Union["BaseSprite", None] = None
+    y: Union["BaseSprite", None] = None

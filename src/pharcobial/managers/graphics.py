@@ -19,8 +19,8 @@ class GraphicsManager(BaseManager):
 
         return gfx
 
-    def get(self, gfx_id: GfxID, flip_vertically: bool = False) -> Surface | None:
-        if flip_vertically:
+    def get(self, gfx_id: GfxID, flip_x: bool = False) -> Surface | None:
+        if flip_x:
             # Handle the case where we need to flip the graphic vertically.
             gfx_cache_id = f"{gfx_id}-right"
             if gfx_cache_id in self.gfx_cache:

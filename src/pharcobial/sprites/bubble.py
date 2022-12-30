@@ -20,6 +20,10 @@ class ChatBubble(MobileSprite):
         self.visible = False
         self.timer = VisibilityTimer()
 
+    def set_graphic(self, flip_x: bool):
+        bubble = self.graphics.get(Graphics.CHAT_BUBBLE, flip_x=flip_x)
+        self.image = bubble or self.image
+
     def update(self, *args, **kwargs):
         self.rect = self.sprites[self.parent_id].rect.inflate((0, -5))
         self.timer.update(self)

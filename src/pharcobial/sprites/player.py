@@ -54,10 +54,8 @@ class Player(Character):
         self.controller.update()
         self.direction = self.controller.direction
         self.forward = self.controller.forward
-        self.update_position()
-        flip = self.forward.x > 0
-        image = self.graphics.get(Graphics.CHAT_BUBBLE, flip_vertically=flip)
-        self.chat_bubble.image = image or self.chat_bubble.image
+        self.walk()
+        self.chat_bubble.set_graphic(self.forward.x > 0)
 
     def die(self):
         super().die()

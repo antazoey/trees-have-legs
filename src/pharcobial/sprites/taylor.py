@@ -29,7 +29,7 @@ class Taylor(NPC):
             return
 
         elif self.hysteria <= 0:
-            self.move_towards(self.sprites.player)
+            self.walk_towards(self.sprites.player.hitbox)
 
         else:
             # Is hysterical.
@@ -42,8 +42,12 @@ class Taylor(NPC):
             x_before = self.rect.x
             y_before = self.rect.y
             self.forward = self.direction.copy()
-            self.update_position()
-            if self.direction.magnitude() != 0 and self.rect.x == x_before and self.rect.y == y_before:
+            self.walk()
+            if (
+                self.direction.magnitude() != 0
+                and self.rect.x == x_before
+                and self.rect.y == y_before
+            ):
                 game_logger.debug("Taylor is stuck.")
                 self.refocus()
 
