@@ -29,7 +29,9 @@ class Taylor(NPC):
             return
 
         elif self.hysteria <= 0:
-            self.walk_towards(self.sprites.player.hitbox)
+            self.max_speed = self.sprites.player.max_speed
+            self.forward = self.direction.copy()
+            self.walk_towards(self.sprites.player)
 
         else:
             # Is hysterical.
