@@ -20,12 +20,13 @@ class Taylor(NPC):
         self.focus_index = 50  # Initialize to 50 to not start off waiting still too long.
         self.attention_threshold = 96
         self.attention_threshold_range = (64, 128)
-        self.hysteria = 100
+        self.max_hysteria = 100
+        self.hysteria = self.max_hysteria
 
     def update(self, *args, **kwargs) -> None:
         if self.sprites.player.is_dead:
             self.move(self.start_position)
-            self.hysteria = 100
+            self.hysteria = self.max_hysteria
             return
 
         elif self.hysteria <= 0:
@@ -61,8 +62,29 @@ class Taylor(NPC):
         self.attention_threshold = randint(*self.attention_threshold_range)
 
     def activated(self):
+        # The user calms Taylor.
+        self.calm()
+
+    def calm(self):
         new_value = randint(-1, 5)
         new_total = self.hysteria - new_value
-        if new_total < 100:
-            self.hysteria = new_total
-            self.max_speed = new_total + 50
+        new_total = self._validate_value(new_total)
+        self.hysteria = new_total
+
+        # Slows down as gets more calm.
+        self.max_speed = new_total + 50
+
+    def get_scared(self, value: int):
+        new_total = self._validate_value(self.hysteria + value)
+        self.hysteria = new_total
+
+        # Speeds up as gets more scared.
+        self.max_speed = new_total + 50
+
+    def _validate_value(self, value: int) -> int:
+        if value > self.max_hysteria:
+            return self.max_hysteria
+        elif value < 0:
+            return 0
+
+        return value

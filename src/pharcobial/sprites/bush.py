@@ -76,20 +76,25 @@ class Bush(NPC):
 
     def move_towards_player(self):
         player = self.sprites.player
-        if not player:
-            return
-
         collision = self.walk_towards(self.sprites.player)
 
         # Update vision to continuously chase player.
         self.set_vision()
+        taylor = self.sprites.taylor
 
         # Deal damage
-
         if (collision.x and collision.x.sprite_id == player.sprite_id) or (
             collision.y and collision.y.sprite_id == player.sprite_id
         ):
             self.deal_damage(player)
+
+        if (collision.x and collision.x.sprite_id == taylor.sprite_id) or (
+            collision.y and collision.y.sprite_id == taylor.sprite_id
+        ):
+            taylor.get_scared(100)
+
+        elif self.vision.colliderect(taylor.hitbox):
+            taylor.get_scared(2)
 
         else:
             gfx_id = self.walk_animation.get_gfx_id()

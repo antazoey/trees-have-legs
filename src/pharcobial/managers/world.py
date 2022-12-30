@@ -1,3 +1,6 @@
+from random import randint
+from typing import Tuple
+
 from pygame.event import Event
 from pygame.math import Vector2
 from pygame.sprite import Group
@@ -52,8 +55,9 @@ class YouDied(ManagerAccess):
     def __init__(self) -> None:
         self.visible: bool = False
         self.total_frames = 75
-        self.font_size = 75
         self.timer = VisibilityTimer(amount=self.total_frames)
+        self.message_selections = [("YOU DIED", 75), ("OWL FOOD", 75), ("BLAME THE PINES", 75)]
+        self.selected: Tuple[str, int] | None = None
 
     @property
     def frames_left(self) -> int:
@@ -64,7 +68,13 @@ class YouDied(ManagerAccess):
 
     def draw(self):
         if self.visible:
-            self.display.show_text("YOU DIED", self.font_size, "center", "red")
+            if not self.selected:
+                index = randint(0, len(self.message_selections) - 1)
+                self.selected = self.message_selections[index]
+    
+            self.display.show_text(*self.selected, "center", "red")
+        else:
+            self.selected = None
 
 
 class WorldManager(ViewController):
