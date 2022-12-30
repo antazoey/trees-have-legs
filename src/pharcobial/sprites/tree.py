@@ -10,14 +10,14 @@ from pharcobial.types import Positional, SpriteID
 from pharcobial.utils import chance
 
 
-class Bush(NPC):
+class Tree(NPC):
     def __init__(
         self, sprite_id: SpriteID, position: Positional, groups: Iterable[Group], *args, **kwargs
     ):
         super().__init__(
             sprite_id,
             position,
-            Graphics.BUSH,
+            Graphics.TREE,
             groups,
             (-30, -26),
         )
@@ -26,15 +26,15 @@ class Bush(NPC):
         self.player_is_near: bool = False
         self.is_alive: bool = False
         self.walk_animation.rate_fn = lambda: 10
-        self.walk_animation.sprite_id = f"{Graphics.BUSH}-monster"
+        self.walk_animation.sprite_id = f"{Graphics.TREE}-monster"
 
     @property
-    def bush_index(self) -> int:
-        return int(self.sprite_id.replace(f"{Graphics.BUSH}-", ""))
+    def index(self) -> int:
+        return int(self.sprite_id.replace(f"{Graphics.TREE}-", ""))
 
     def update(self, *args, **kwargs):
         """
-        When in monster mode, the bush is always moving towards the player.
+        When in monster mode, the tree is always moving towards the player.
         Else, it stands still.
         """
 
@@ -56,7 +56,7 @@ class Bush(NPC):
             self.player_is_near = self.vision.colliderect(self.sprites.player.rect)
             if self.player_is_near:
                 # Player approaches a tree.
-                game_logger.debug(f"Player approaches bush {self.bush_index}.")
+                game_logger.debug(f"Player approaches tree {self.index}.")
 
                 # TODO: Have based on difficulty.
                 if chance((1, 2)):
@@ -64,12 +64,12 @@ class Bush(NPC):
 
     def sleep(self):
         self.is_alive = False
-        game_logger.debug(f"Tree {self.bush_index} going back to sleep.")
-        self.set_image(Graphics.BUSH)
+        game_logger.debug(f"Tree {self.index} going back to sleep.")
+        self.set_image(Graphics.TREE)
 
     def come_alive(self):
         self.is_alive = True
-        game_logger.debug(f"{Graphics.BUSH.capitalize()} {self.bush_index} has come to life!")
+        game_logger.debug(f"{Graphics.TREE.capitalize()} {self.index} has come to life!")
         gfx_id = self.walk_animation.get_gfx_id()
         self.set_image(gfx_id)
         self.move_towards_player()

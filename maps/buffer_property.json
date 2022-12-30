@@ -20,7 +20,7 @@
             }
         },
         {
-            "sprite_id": "bush-{x}",
+            "sprite_id": "tree-{x}",
             "multiple": true,
             "locations": [
                 { "x": 2, "y": 8 },

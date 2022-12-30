@@ -28,7 +28,7 @@ class Maps:
 
 
 class Graphics:
-    BUSH: "GfxID" = "bush"
+    TREE: "GfxID" = "tree"
     CHAT_BUBBLE: "GfxID" = "chat-bubble"
     JULES: "GfxID" = "jules"
     TAYLOR: "GfxID" = "taylor"
