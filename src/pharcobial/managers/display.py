@@ -1,12 +1,16 @@
 from contextlib import contextmanager
 
-import pygame
+from pygame import BLEND_RGBA_MULT, DOUBLEBUF, FULLSCREEN, SRCALPHA
+from pygame.display import flip, set_caption, set_mode, update
+from pygame.font import Font, SysFont
 from pygame.rect import Rect
+from pygame.surface import Surface
+from pygame.transform import scale as scale_fn
 
 from pharcobial.constants import GAME_NAME, RGB
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import Positional
+from pharcobial.types import GfxID, Positional
 from pharcobial.utils.paths import game_paths
 
 
@@ -23,27 +27,27 @@ class Display:
         full_screen: bool = False,
     ) -> None:
 
-        modes = pygame.DOUBLEBUF
+        modes = DOUBLEBUF
         if full_screen:
-            modes |= pygame.FULLSCREEN
+            modes |= FULLSCREEN
 
         # The root is the root window and should not have anything rendered to it
         # besides self.screen.
-        self.window = pygame.display.set_mode((width, height), modes)
+        self.window = set_mode((width, height), modes)
 
         # self.screen is scaled up to the window size to properly increase the size of all graphics.
         self.width = width // 2
         self.height = height // 2
-        self.screen = pygame.Surface((self.width, self.height))
+        self.screen = Surface((self.width, self.height))
 
-        self.font = pygame.font.SysFont("comic-sans", font_size)
+        self.font = SysFont("comic-sans", font_size)
 
-        pygame.display.set_caption(GAME_NAME)
+        set_caption(GAME_NAME)
 
     def update(self):
-        screen = pygame.transform.scale(self.screen, (self.width * 2, self.height * 2))
+        screen = scale_fn(self.screen, (self.width * 2, self.height * 2))
         self.window.blit(screen, (0, 0))
-        pygame.display.update()
+        update()
 
     def clear(self):
         self.screen.fill(RGB["black"])
@@ -91,23 +95,47 @@ class DisplayManager(BaseManager):
 
     def tick(self):
         self.display.active.update()
-        pygame.display.flip()
+        flip()
         self.clock.tick()
+
+    def show_graphic(
+        self,
+        gfx_id: GfxID,
+        position: Positional | str,
+        scale: int | None,
+        transparent: bool = False,
+    ):
+        graphic = self.graphics[gfx_id]
+        rect = graphic.get_rect()
+
+        if scale:
+            graphic = scale_fn(graphic, (rect.width * scale, rect.height * scale))
+
+        if transparent:
+            alpha_surface = Surface(graphic.get_size(), SRCALPHA)
+            alpha_surface.fill((255, 255, 255, 90))
+            graphic.blit(alpha_surface, (0, 0), special_flags=BLEND_RGBA_MULT)
+
+        destination = self._get_destination(graphic, position)
+        self.active.screen.blit(graphic, destination)
 
     def show_text(self, text: str, font_size: int, position: Positional | str, color: str):
         font_file = game_paths.get_font("bold_game_font_7")
-        font = pygame.font.Font(str(font_file), font_size)
+        font = Font(str(font_file), font_size)
         surface = font.render(text, True, RGB[color])
-
-        destination: Positional | Rect
-        if position == "center":
-            destination = surface.get_rect(center=(self.half_width, self.half_height))
-        elif not isinstance(position, str):
-            destination = position
-        else:
-            raise TypeError(str(position))
-
+        destination = self._get_destination(surface, position)
         self.active.screen.blit(surface, destination)
+
+    def _get_destination(self, base: Surface, value: Positional | str) -> Positional | Rect:
+        destination: Positional | Rect
+        if value == "center":
+            destination = base.get_rect(center=(self.half_width, self.half_height))
+        elif not isinstance(value, str):
+            destination = value
+        else:
+            raise TypeError(str(value))
+
+        return destination
 
 
 display_manager = DisplayManager()

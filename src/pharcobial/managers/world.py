@@ -1,6 +1,3 @@
-from random import randint
-from typing import Tuple
-
 from pygame.event import Event
 from pygame.math import Vector2
 from pygame.sprite import Group
@@ -56,8 +53,6 @@ class YouDied(ManagerAccess):
         self.visible: bool = False
         self.total_frames = 75
         self.timer = VisibilityTimer(amount=self.total_frames)
-        self.message_selections = [("YOU DIED", 75), ("OWL FOOD", 75), ("BLAME THE PINES", 75)]
-        self.selected: Tuple[str, int] | None = None
 
     @property
     def frames_left(self) -> int:
@@ -68,13 +63,8 @@ class YouDied(ManagerAccess):
 
     def draw(self):
         if self.visible:
-            if not self.selected:
-                index = randint(0, len(self.message_selections) - 1)
-                self.selected = self.message_selections[index]
-    
-            self.display.show_text(*self.selected, "center", "red")
-        else:
-            self.selected = None
+            transparent = self.frames_left < 0.25 * self.total_frames
+            self.display.show_graphic("you-died", "center", scale=8, transparent=transparent)
 
 
 class WorldManager(ViewController):
@@ -94,16 +84,17 @@ class WorldManager(ViewController):
         self.sprites.player.handle_event(event)
 
     def update(self):
-        self.you_died.update()
         self.camera.update()
         self.group.update()
         self.hud.update()
+        self.you_died.update()
 
     def draw(self):
-        self.you_died.draw()
         if self.you_died.frames_left < 0.25 * self.you_died.total_frames:
             self.group.draw_in_view(self.camera.offset)
             self.hud.draw()
+
+        self.you_died.draw()
 
     def follow(self, sprite: BaseSprite):
         self.camera.followee = sprite
