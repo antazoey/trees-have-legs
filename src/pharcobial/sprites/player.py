@@ -36,6 +36,10 @@ class Player(Character):
         self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
 
+    @property
+    def is_dead(self) -> bool:
+        return self.world.you_died.visible
+
     def activate(self):
         """
         The user hitting the action key on something.

@@ -9,6 +9,7 @@ from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.player import Player
+from pharcobial.sprites.taylor import Taylor
 from pharcobial.sprites.tile import Ground, Tile, Void
 from pharcobial.types import MapID, Position, SpriteID
 
@@ -44,6 +45,12 @@ class SpriteManager(BaseManager):
         player = Player()
         self._sprite_cache[player.sprite_id] = player
         return player
+
+    @cached_property
+    def taylor(self) -> Taylor:
+        taylor = self.sprites["taylor"]
+        assert isinstance(taylor, Taylor)
+        return taylor
 
     @cached_property
     def tiles(self) -> List[Tile]:

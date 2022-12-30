@@ -61,6 +61,11 @@ class BaseSprite(Sprite, ManagerAccess):
             self.image = self.graphics[gfx]
             self.gfx_id = gfx
 
+    def activated(self):
+        """
+        Handle the player activating you. Defaults to do nothing.
+        """
+
 
 class Ease:
     def __init__(self):

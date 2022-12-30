@@ -15,25 +15,37 @@ class Taylor(NPC):
             (self.world.group, self.collision.group),
             (-10, -10),
         )
+        self.start_position = position
         self.max_speed = 150
-        self.focus_index = 0
+        self.focus_index = 50  # Initialize to 50 to not start off waiting still too long.
         self.attention_threshold = 96
         self.attention_threshold_range = (64, 128)
+        self.hysteria = 100
 
     def update(self, *args, **kwargs) -> None:
-        if self.focus_index >= self.attention_threshold:
-            self.refocus()
-            self.focus_index = 0
-        else:
-            self.focus_index += 1
+        if self.sprites.player.is_dead:
+            self.move(self.start_position)
+            self.hysteria = 100
+            return
 
-        x_before = self.rect.x
-        y_before = self.rect.y
-        self.forward = self.direction.copy()
-        self.update_position()
-        if self.direction.magnitude() != 0 and self.rect.x == x_before and self.rect.y == y_before:
-            game_logger.debug("Taylor is stuck.")
-            self.refocus()
+        elif self.hysteria <= 0:
+            self.move_towards(self.sprites.player)
+
+        else:
+            # Is hysterical.
+            if self.focus_index >= self.attention_threshold:
+                self.refocus()
+                self.focus_index = 0
+            else:
+                self.focus_index += 1
+
+            x_before = self.rect.x
+            y_before = self.rect.y
+            self.forward = self.direction.copy()
+            self.update_position()
+            if self.direction.magnitude() != 0 and self.rect.x == x_before and self.rect.y == y_before:
+                game_logger.debug("Taylor is stuck.")
+                self.refocus()
 
     def refocus(self):
         game_logger.debug("Taylor is refocusing.")
@@ -45,4 +57,8 @@ class Taylor(NPC):
         self.attention_threshold = randint(*self.attention_threshold_range)
 
     def activated(self):
-        breakpoint()
+        new_value = randint(-1, 2)
+        new_total = self.hysteria - new_value
+        if new_total < 100:
+            self.hysteria = new_total
+            self.max_speed = new_total + 50

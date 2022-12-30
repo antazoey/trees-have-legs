@@ -16,8 +16,10 @@ SAVES_METADATA_FILE = DATA_DIRECTORY / "saves_meta.json"
 RGB: Dict[str, "Color"] = {
     "white": (255, 255, 255),
     "black": (0, 0, 0),
-    "red": (150, 0, 0),
+    "onyx": (0, 0, 26),
+    "red": (153, 25, 0),
     "green": (0, 155, 0),
+    "blue": (0, 51, 77),
 }
 
 

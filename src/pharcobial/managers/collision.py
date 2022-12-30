@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Iterator
 
 from pygame.sprite import Group
 
@@ -11,6 +11,12 @@ class CollisionManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         self.group = Group()
+
+    @property
+    def _sprites(self) -> Iterator[BaseSprite]:
+        for sprite in self.group.sprites():
+            if isinstance(sprite, BaseSprite):
+                yield sprite
 
     def validate(self):
         assert self.group is not None
@@ -70,8 +76,7 @@ class CollisionManager(BaseManager):
         return False
 
     def _check(self, fn: Callable) -> BaseSprite | None:
-        for sprite in self.group.sprites():
-            assert isinstance(sprite, BaseSprite)
+        for sprite in self._sprites:
             collided = fn(sprite)
             if collided is not None:
                 return collided
