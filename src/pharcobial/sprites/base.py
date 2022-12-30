@@ -215,7 +215,7 @@ class MobileSprite(BaseSprite):
                 ):
                     new_x = limit[0]
                 if (new_y < self.hitbox.y and new_y < limit.y) or (
-                    new_x > self.hitbox.x and new_y > limit.y
+                    new_y > self.hitbox.y and new_y > limit.y
                 ):
                     new_y = limit[1]
 
