@@ -110,8 +110,8 @@ class Ease:
 
 
 class Walk:
-    def __init__(self, sprite_id: SpriteID, rate_fn: Callable) -> None:
-        self.sprite_id = sprite_id
+    def __init__(self, prefix: GfxID, rate_fn: Callable) -> None:
+        self.prefix = prefix
         self.index = 0
         self.rate_fn = rate_fn
 
@@ -126,7 +126,7 @@ class Walk:
             suffix = ""
             self.index = -1
 
-        return f"{self.sprite_id}{suffix}"
+        return f"{self.prefix}{suffix}"
 
 
 class MobileSprite(BaseSprite):
@@ -173,9 +173,12 @@ class MobileSprite(BaseSprite):
         return self.moving and self.ease.effect < 1
 
     def get_graphic(self) -> Surface | None:
+        if not self.gfx_id:
+            return None
+
         if self.stopped:
             # Return a standing-still graphic of the last direction facing.
-            image = self.graphics.get(self.sprite_id, flip_x=self.forward.x > 0)
+            image = self.graphics.get(self.gfx_id, flip_x=self.forward.x > 0)
             return image or self.image
 
         gfx_id = self.walk_animation.get_gfx_id()
@@ -316,11 +319,11 @@ class Character(MobileSprite):
         self.max_hp = max_hp
         self.ap = ap
 
-    def deal_damage(self, other: "Character"):
-        other.handle_attack(self.ap)
+    def deal_damage(self, other: "Character", penality: float = 1):
+        other.handle_attack(self.ap * penality)
 
-    def handle_attack(self, ap: int):
-        self.hp -= ap
+    def handle_attack(self, ap: float | int):
+        self.hp -= round(ap)
 
         if self.hp <= 0:
             self.die()

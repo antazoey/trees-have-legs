@@ -54,6 +54,10 @@ class Player(Character):
         self.controller.update()
         self.direction = self.controller.direction
         self.forward = self.controller.forward
+        self.gfx_id = (
+            f"{Graphics.JULES}-damaged" if self.hp < 0.25 * self.max_hp else Graphics.JULES
+        )
+        self.walk_animation.prefix = self.gfx_id
         self.walk()
         self.chat_bubble.set_graphic(self.forward.x > 0)
 
