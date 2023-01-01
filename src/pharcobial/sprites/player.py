@@ -67,3 +67,7 @@ class Player(Character):
         self.world.you_died.visible = True
         self.hp = self.max_hp
         self.move(self.map.player_start)
+
+    def heal(self):
+        if self.hp < self.max_hp:
+            self.hp += 1

@@ -389,6 +389,14 @@ class Character(MobileSprite):
         game_logger.debug(f"'{self.sprite_id}' died.")
         self.damage_blinker.reset()
 
+    def can_activate(self, obj: Rect | BaseSprite):
+        if isinstance(obj, BaseSprite):
+            rect = obj.hitbox
+        else:
+            rect = obj
+
+        self.hitbox.colliderect(rect.inflate(2, 2))
+
 
 class NPC(Character):
     """

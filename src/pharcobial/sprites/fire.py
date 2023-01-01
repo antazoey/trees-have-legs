@@ -11,3 +11,16 @@ class Fire(NPC):
         self.gfx_total = 3
         self.gfx_delay = 5
         self.gfx_delay_index = 0
+
+    def update(self):
+        # if self.can_activate(self.sprites.player):
+        #     self.sprites.player.heal()
+
+        if self.gfx_delay_index < self.gfx_delay:
+            self.gfx_delay_index += 1
+        
+        else:
+            # Rotate graphic for animation purposes.
+            self.gfx_index = (self.gfx_index + 1) % self.gfx_total
+            self.set_image(f"fire-{self.gfx_index + 1}")
+            self.gfx_delay_index = 0
