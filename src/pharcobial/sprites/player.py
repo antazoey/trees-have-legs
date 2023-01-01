@@ -66,7 +66,7 @@ class Player(Character):
         super().die()
         self.world.end_screen.lose()
         self.hp = self.max_hp
-        self.move(self.map.player_start)
+        self.sprites.reset()
 
     def heal(self):
         if self.hp < self.max_hp:

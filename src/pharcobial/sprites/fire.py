@@ -19,6 +19,8 @@ class Fire(NPC):
             and self.sprites.taylor.hysteria <= 0
         ):
             self.world.end_screen.win()
+            self.hp = self.max_hp
+            self.sprites.reset()
             return
 
         if self.is_reachable(self.sprites.player.rect.inflate(BLOCK_SIZE, BLOCK_SIZE)):

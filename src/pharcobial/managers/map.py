@@ -128,6 +128,9 @@ class MapManager(BaseManager):
         assert self.player_start
         assert self.active
         game_logger.debug("Map ready.")
+    
+    def reset(self):
+        self.load(self.active.map_id)
 
 
 map_manager = MapManager()

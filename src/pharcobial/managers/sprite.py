@@ -17,7 +17,8 @@ from pharcobial.types import MapID, Position, SpriteID
 class SpriteManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
-        self._sprite_cache: Dict[str, BaseSprite] = {}
+        self._sprite_cache: Dict[SpriteID, BaseSprite] = {}
+        self.npc_start_positions: Dict[SpriteID, Position] = {}
 
     def init_level(self, map_id: MapID):
         """
@@ -77,6 +78,7 @@ class SpriteManager(BaseManager):
                 groups=(self.world.group, self.collision.group),
                 hitbox_inflation=None,
             )
+            self.npc_start_positions[npc] = pos
             npc_list.append(npc_obj)
 
         return npc_list
@@ -90,6 +92,11 @@ class SpriteManager(BaseManager):
 
         for tile in self.tiles:
             yield tile
+        
+    def reset(self):
+        self.player.force_move(self.map.player_start)
+        for npc in self.npcs:
+            npc.force_move(self.npc_start_positions[npc.sprite_id])
 
     def __getitem__(self, key: SpriteID) -> BaseSprite:
         if key in self._sprite_cache:
