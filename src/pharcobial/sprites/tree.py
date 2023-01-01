@@ -5,7 +5,7 @@ from pygame.sprite import Group
 
 from pharcobial.constants import Graphics
 from pharcobial.logging import game_logger
-from pharcobial.sprites.base import NPC, BaseSprite
+from pharcobial.sprites.base import NPC, BaseSprite, Character
 from pharcobial.types import Positional, SpriteID
 from pharcobial.utils import chance
 
@@ -76,12 +76,7 @@ class Tree(NPC):
 
     def move_towards_player(self):
         player = self.sprites.player
-        attacking = self.hitbox.colliderect(self.sprites.player.hitbox.inflate(2, 2))
-        if attacking:
-            self.image = (
-                self.graphics.get(f"{Graphics.TREE}-monster-attack", flip_x=self.forward.x < 0)
-                or self.image
-            )
+        if self.is_reachable(self.sprites.player.hitbox):
             self.deal_damage(player)
             return
 
@@ -109,3 +104,10 @@ class Tree(NPC):
     def set_vision(self) -> Rect:
         self.vision = self.rect.inflate((4 * self.rect.width, 2 * self.rect.height))
         return self.vision
+
+    def deal_damage(self, other: Character, penality: float = 1):
+        self.image = (
+            self.graphics.get(f"{Graphics.TREE}-monster-attack", flip_x=self.forward.x < 0)
+            or self.image
+        )
+        return super().deal_damage(other, penality)
