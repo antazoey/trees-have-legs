@@ -48,15 +48,24 @@ class Camera(ManagerAccess):
             self.offset.y = self.followee.rect.centery - self.display.half_height
 
 
-class YouDied(ManagerAccess):
+class EndScreen(ManagerAccess):
     def __init__(self) -> None:
         self.visible: bool = False
         self.total_frames = 75
         self.timer = VisibilityTimer(amount=self.total_frames)
+        self.gfx_id = ""
 
     @property
     def frames_left(self) -> int:
         return self.timer.timer or 0
+
+    def win(self):
+        self.gfx_id = "you-won"
+        self.visible = True
+
+    def lose(self):
+        self.gfx_id = "you-died"
+        self.visible = True
 
     def update(self):
         self.timer.update(self)
@@ -64,7 +73,7 @@ class YouDied(ManagerAccess):
     def draw(self):
         if self.visible:
             transparent = self.frames_left < 0.25 * self.total_frames
-            self.display.show_graphic("you-died", "center", scale=8, transparent=transparent)
+            self.display.show_graphic(self.gfx_id, "center", scale=8, transparent=transparent)
 
 
 class WorldManager(ViewController):
@@ -72,7 +81,7 @@ class WorldManager(ViewController):
         super().__init__(CameraGroup(self.display.active.screen))
         self.camera = Camera()
         self.group: CameraGroup = self.group
-        self.you_died = YouDied()
+        self.end_screen = EndScreen()
 
     def validate(self):
         assert self.group is not None
@@ -87,14 +96,14 @@ class WorldManager(ViewController):
         self.camera.update()
         self.group.update()
         self.hud.update()
-        self.you_died.update()
+        self.end_screen.update()
 
     def draw(self):
-        if self.you_died.frames_left < 0.25 * self.you_died.total_frames:
+        if self.end_screen.frames_left < 0.25 * self.end_screen.total_frames:
             self.group.draw_in_view(self.camera.offset)
             self.hud.draw()
 
-        self.you_died.draw()
+        self.end_screen.draw()
 
     def follow(self, sprite: BaseSprite):
         self.camera.followee = sprite

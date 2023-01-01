@@ -38,7 +38,7 @@ class Player(Character):
 
     @property
     def is_dead(self) -> bool:
-        return self.world.you_died.visible
+        return self.world.end_screen.visible
 
     def activate(self):
         """
@@ -64,7 +64,7 @@ class Player(Character):
 
     def die(self):
         super().die()
-        self.world.you_died.visible = True
+        self.world.end_screen.lose()
         self.hp = self.max_hp
         self.move(self.map.player_start)
 

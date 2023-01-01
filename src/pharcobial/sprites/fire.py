@@ -14,6 +14,10 @@ class Fire(NPC):
         self.gfx_delay_index = 0
 
     def update(self):
+        if self.is_reachable(self.sprites.taylor.rect.inflate(BLOCK_SIZE // 2, BLOCK_SIZE // 2)):
+            self.world.end_screen.win()
+            return
+
         if self.is_reachable(self.sprites.player.rect.inflate(BLOCK_SIZE, BLOCK_SIZE)):
             self.sprites.player.heal()
 
