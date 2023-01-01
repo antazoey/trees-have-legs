@@ -1,8 +1,9 @@
 {
     "map_id": "buffer_property",
     "tile_set": {
-        "0": "grass",
-        "1": "road"
+        "0": { "gfx": "grass" },
+        "1": { "gfx": "road" },
+        "D": { "gfx": "debris", "collision": true }
     },
     "player": {
         "sprite_id": "jules",

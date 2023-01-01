@@ -25,7 +25,7 @@ class Player(Character):
             self.map.player_start,
             character,
             (self.world.group, self.collision.group),
-            (-20, -10),
+            (-18, -10),
             hp,
             max_hp,
             ap,

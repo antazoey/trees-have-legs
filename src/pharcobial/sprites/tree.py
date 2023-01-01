@@ -19,7 +19,7 @@ class Tree(NPC):
             position,
             Graphics.TREE,
             groups,
-            (0, 0),
+            (-10, -10),
         )
         self.max_speed = 64
         self.vision = self.set_vision()

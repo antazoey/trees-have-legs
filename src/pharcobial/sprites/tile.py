@@ -16,7 +16,7 @@ class Tile(BaseSprite):
         groups: Iterable[Group],
     ) -> None:
         self.tile_key = tile_key
-        gfx_id = self.map.tile_set[tile_key]
+        gfx_id = self.map.tile_set[tile_key]["gfx"]
         super().__init__(f"tile_({position[0]}, {position[1]})", position, gfx_id, groups, hitbox)
 
     def __repr__(self) -> str:
@@ -24,10 +24,11 @@ class Tile(BaseSprite):
 
 
 class Ground(Tile):
-    def __init__(self, position: Positional, tile_key: TileKey, groups: Iterable[Group]) -> None:
+    def __init__(self, position: Positional, tile_key: TileKey, collision: bool) -> None:
+        groups = (self.world.group, self.collision.group) if collision else (self.world.group,)
         super().__init__(position, tile_key, None, groups)
 
 
 class Void(Tile):
-    def __init__(self, position: Positional, groups: Iterable[Group]) -> None:
-        super().__init__(position, MAP_VOID, (0, -10), groups)
+    def __init__(self, position: Positional) -> None:
+        super().__init__(position, MAP_VOID, (0, -10), (self.world.group, self.collision.group))

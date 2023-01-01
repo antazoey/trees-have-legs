@@ -11,14 +11,14 @@ from pharcobial.sprites.base import NPC, BaseSprite
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.taylor import Taylor
 from pharcobial.sprites.tile import Ground, Tile, Void
-from pharcobial.types import MapID, Position, SpriteID
+from pharcobial.types import MapID, Position, Positional, SpriteID
 
 
 class SpriteManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         self._sprite_cache: Dict[SpriteID, BaseSprite] = {}
-        self.npc_start_positions: Dict[SpriteID, Position] = {}
+        self.npc_start_positions: Dict[SpriteID, Positional] = {}
 
     def init_level(self, map_id: MapID):
         """
@@ -56,9 +56,13 @@ class SpriteManager(BaseManager):
     @cached_property
     def tiles(self) -> List[Tile]:
         return [
-            Void(Position.parse_coordinates(x=x, y=y), (self.world.group, self.collision.group))
+            Void(Position.parse_coordinates(x=x, y=y))
             if tile_key == MAP_VOID
-            else Ground(Position.parse_coordinates(x=x, y=y), tile_key, (self.world.group,))
+            else Ground(
+                Position.parse_coordinates(x=x, y=y),
+                tile_key,
+                self.map.tile_set[tile_key].get("collision", False),
+            )
             for y, row in enumerate(self.map)
             for x, tile_key in enumerate(row)
         ]
@@ -92,7 +96,7 @@ class SpriteManager(BaseManager):
 
         for tile in self.tiles:
             yield tile
-        
+
     def reset(self):
         self.player.force_move(self.map.player_start)
         for npc in self.npcs:

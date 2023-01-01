@@ -12,7 +12,10 @@ from pharcobial.utils.paths import game_paths
 class GraphicsManager(BaseManager):
     gfx_cache: Dict[str, Surface] = {}
 
-    def __getitem__(self, gfx_id: GfxID) -> Surface:
+    def __getitem__(self, gfx_id: GfxID | None) -> Surface:
+        if gfx_id is None:
+            return self.get_filled_surface("black")
+
         gfx = self.get(gfx_id)
         if not gfx:
             raise IndexError(f"Graphics with ID '{gfx_id}' not found.")
@@ -43,7 +46,7 @@ class GraphicsManager(BaseManager):
 
     def load(self, gfx_id: GfxID) -> Surface:
         path = game_paths.get_graphic(gfx_id)
-        gfx = pygame.image.load(str(path))
+        gfx = pygame.image.load(path)
         gfx.convert_alpha()  # Allows transparency
         return gfx
 

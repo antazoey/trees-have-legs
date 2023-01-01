@@ -264,9 +264,9 @@ class MobileSprite(BaseSprite):
             self.rect.center = self.hitbox.center
 
         return Collision(x=collided_x, y=collided_y)
-    
+
     def force_move(self, position: Positional):
-        self.hitbox.topleft = (*position,)
+        self.hitbox.topleft = (*position,)  # type: ignore
         self.rect.center = self.hitbox.center
 
     def face(self, obj: Locatable):

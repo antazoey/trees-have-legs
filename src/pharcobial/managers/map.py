@@ -2,10 +2,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterator, List, Tuple
 
+from pyparsing import Any
+
 from pharcobial.constants import MAP_VOID
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.types import GfxID, MapID, Position, Positional, SpriteID, TileKey
+from pharcobial.types import MapID, Position, Positional, SpriteID, TileKey
 from pharcobial.utils.loaders import safe_load, safe_load_csv
 from pharcobial.utils.paths import game_paths
 
@@ -24,7 +26,7 @@ class MapCharacterData:
 @dataclass
 class MapMetaData:
     map_id: MapID
-    tile_set: Dict[TileKey, GfxID]
+    tile_set: Dict[TileKey, Dict[str, Any]]
     player: MapCharacterData
     npcs: List[MapCharacterData]
 
@@ -49,7 +51,7 @@ class MapMetaData:
                 data["npcs"].append(MapCharacterData.parse_obj(npc_obj))
 
         if MAP_VOID not in data["tile_set"]:
-            data["tile_set"][MAP_VOID] = None
+            data["tile_set"][MAP_VOID] = {"gfx": None, "collision": True}
 
         return cls(**data)
 
@@ -87,6 +89,9 @@ class MapManager(BaseManager):
         super().__init__()
         self.active = self.load(self.options.map_id)
 
+    def __repr__(self) -> str:
+        return repr(self.active)
+
     @property
     def map_id(self) -> MapID | None:
         return self.active.map_id
@@ -101,7 +106,7 @@ class MapManager(BaseManager):
             yield npc.sprite_id, npc.location
 
     @property
-    def tile_set(self) -> Dict[TileKey, GfxID]:
+    def tile_set(self) -> Dict[TileKey, Dict[str, Any]]:
         return self.active.metadata.tile_set
 
     @property
@@ -128,7 +133,7 @@ class MapManager(BaseManager):
         assert self.player_start
         assert self.active
         game_logger.debug("Map ready.")
-    
+
     def reset(self):
         self.load(self.active.map_id)
 
