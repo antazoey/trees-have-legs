@@ -102,7 +102,7 @@ class DisplayManager(BaseManager):
         self,
         gfx_id: GfxID,
         position: Positional | str,
-        scale: int | None,
+        scale: int | None = None,
         transparent: bool = False,
     ):
         graphic = self.graphics[gfx_id]

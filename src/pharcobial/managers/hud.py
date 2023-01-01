@@ -107,19 +107,17 @@ class HUDManager(BaseManager):
         super().__init__()
         player = self.sprites.player
         self.health_bar = HealthBar(self.display.active.screen, player.hp, player.max_hp)
-        self.taylor_calm_bar = TaylorCalmBar(
+        self.taylor_hysteria_bar = TaylorCalmBar(
             self.display.active.screen, self.sprites.taylor.hysteria, 100
         )
 
     def update(self):
         self.health_bar.update(self.sprites.player)
-        self.taylor_calm_bar.update(self.sprites.taylor)
+        self.taylor_hysteria_bar.update(self.sprites.taylor)
 
     def draw(self):
         self.health_bar.draw()
-        self.taylor_calm_bar.draw()
-
-    #  self.inventory.draw()
+        self.taylor_hysteria_bar.draw()
 
 
 hud_manager = HUDManager()

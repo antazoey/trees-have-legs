@@ -25,7 +25,7 @@ class Player(Character):
             self.map.player_start,
             character,
             (self.world.group, self.collision.group),
-            (-10, -10),
+            (-20, -10),
             hp,
             max_hp,
             ap,
@@ -60,6 +60,7 @@ class Player(Character):
         self.walk_animation.prefix = self.gfx_id
         self.walk()
         self.chat_bubble.set_graphic(self.forward.x > 0)
+        self.damage_blinker.update()
 
     def die(self):
         super().die()

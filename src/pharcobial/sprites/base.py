@@ -1,13 +1,14 @@
 from functools import cached_property
 from typing import Callable, Dict, Iterable
 
+from pygame import BLEND_RGBA_MULT, SRCALPHA
 from pygame.event import Event
 from pygame.math import Vector2
 from pygame.rect import Rect
 from pygame.sprite import AbstractGroup, Sprite
 from pygame.surface import Surface
 
-from pharcobial.constants import BLOCK_SIZE, DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP
+from pharcobial.constants import BLOCK_SIZE, DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, RGB
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import ManagerAccess
 from pharcobial.types import Collision, GfxID, Locatable, Position, Positional, SpriteID
@@ -42,6 +43,10 @@ class BaseSprite(Sprite, ManagerAccess):
     @property
     def y(self) -> int:
         return self.hitbox.y
+
+    @property
+    def position(self) -> Position:
+        return Position(*self.hitbox.topleft)
 
     @cached_property
     def camera_group(self) -> AbstractGroup:
@@ -302,6 +307,55 @@ class MobileSprite(BaseSprite):
             self.image = self.graphics.get(self.sprite_id, flip_x=self.forward.x > 0) or self.image
 
 
+class DamageBlinker:
+    def __init__(self, target: "Character"):
+        self.target = target
+        self.on = False
+
+        self.interval_length = 5
+        self.interval = 0
+        self.num_blinks = 1
+        self.blink_index = 0
+        self.on_blink = True
+
+    def update(self):
+        if not self.on or self.blink_index == self.num_blinks:
+            self.on = False
+            self.reset()
+            return
+
+        elif self.on_blink and self.interval < self.interval_length:
+            # Blink overlay remains on.
+            self.interval += 1
+
+            # Blink.
+            image_copy = self.target.image.copy()
+            alpha_surface = Surface(image_copy.get_size(), SRCALPHA)
+            alpha_surface.fill((*RGB["red"], 90))
+            image_copy.blit(alpha_surface, (0, 0), special_flags=BLEND_RGBA_MULT)
+            self.target.image = image_copy
+
+        elif self.on_blink and self.interval >= self.interval_length:
+            # Blink overlay turns off.
+            self.on_blink = False
+            self.interval = 0
+            self.blink_index += 1
+
+        elif not self.on_blink and self.interval < self.interval_length:
+            # Blink overlay remains off.
+            self.interval += 1
+
+        elif not self.on_blink and self.interval >= self.interval_length:
+            # Blink overlay turns on.
+            self.on_blink = True
+            self.interval = 0
+
+    def reset(self):
+        self.blink_index = 0
+        self.interval = 0
+        self.on_blink = True
+
+
 class Character(MobileSprite):
     def __init__(
         self,
@@ -318,6 +372,7 @@ class Character(MobileSprite):
         self.hp = hp
         self.max_hp = max_hp
         self.ap = ap
+        self.damage_blinker = DamageBlinker(self)
 
     def deal_damage(self, other: "Character", penality: float = 1):
         other.handle_attack(self.ap * penality)
@@ -328,8 +383,11 @@ class Character(MobileSprite):
         if self.hp <= 0:
             self.die()
 
+        self.damage_blinker.on = True
+
     def die(self):
         game_logger.debug(f"'{self.sprite_id}' died.")
+        self.damage_blinker.reset()
 
 
 class NPC(Character):
