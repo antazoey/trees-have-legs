@@ -22,12 +22,21 @@ class Taylor(NPC):
         self.attention_threshold_range = (64, 128)
         self.max_hysteria = 100
         self.hysteria = self.max_hysteria
+        self.made_fist_move = False
 
     def update(self, *args, **kwargs) -> None:
         if self.sprites.player.is_dead:
             self.move(self.start_position)
             self.hysteria = self.max_hysteria
             return
+
+        elif not self.made_fist_move:
+            self.direction.x = 1
+            self.direction.y = 1
+            self.direction.normalize_ip()
+            self.forward = self.direction.copy()
+            self.walk()
+            self.made_fist_move = True
 
         elif self.hysteria <= 0:
             self.follow(self.sprites.player)
@@ -57,7 +66,7 @@ class Taylor(NPC):
         self.direction.x = randint(-1, 1)
         self.direction.y = randint(-1, 1)
         if not self.direction.magnitude() == 0:
-            self.direction = self.direction.normalize()
+            self.direction.normalize_ip()
 
         self.attention_threshold = randint(*self.attention_threshold_range)
 

@@ -41,7 +41,7 @@ class Controller:
             new_direction.y += 1
 
         if new_direction.magnitude() not in (0, 1):
-            new_direction = new_direction.normalize()
+            new_direction.normalize_ip()
 
         self.direction = new_direction
 

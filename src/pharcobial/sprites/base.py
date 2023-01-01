@@ -285,11 +285,11 @@ class MobileSprite(BaseSprite):
             self.direction.y = -1
 
         if self.direction.magnitude() not in (0, 1):
-            self.direction = self.direction.normalize()
+            self.direction.normalize_ip()
 
         magnitude = self.direction.magnitude()
         if magnitude not in (0, 1):
-            self.direction = self.direction.normalize()
+            self.direction.normalize_ip()
             self.forward = self.direction.copy()
         elif magnitude != 0:
             self.forward = self.direction.copy()
