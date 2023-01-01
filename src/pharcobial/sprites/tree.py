@@ -76,8 +76,8 @@ class Tree(NPC):
 
     def move_towards_player(self):
         player = self.sprites.player
-        atttacking = self.hitbox.colliderect(self.sprites.player.hitbox.inflate(2, 2))
-        if atttacking:
+        attacking = self.hitbox.colliderect(self.sprites.player.hitbox.inflate(2, 2))
+        if attacking:
             self.image = (
                 self.graphics.get(f"{Graphics.TREE}-monster-attack", flip_x=self.forward.x < 0)
                 or self.image
