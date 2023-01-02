@@ -34,7 +34,7 @@ class ChatBubble(InGameItem):
         for sprite in self.collision._sprites:
             if sprite.sprite_id != Graphics.TAYLOR or not self.sprites[
                 self.parent_id
-            ].is_accessible(self.sprites.taylor, scalar=8):
+            ].is_accessible(self.sprites.taylor, scalar=4):
                 continue
 
             # Activate sprite.

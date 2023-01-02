@@ -75,7 +75,7 @@ class Taylor(NPC):
         self.calm()
 
     def calm(self):
-        new_value = randint(-5, 17)
+        new_value = randint(-5, 8)
         new_total = self.hysteria - new_value
         new_total = self._validate_value(new_total)
         self.hysteria = new_total
