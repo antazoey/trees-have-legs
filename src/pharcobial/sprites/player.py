@@ -1,4 +1,5 @@
 from typing import Dict
+
 from pygame.event import Event
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
@@ -53,7 +54,7 @@ class Player(Character):
         self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
         self.grab_animation = GrabAnimation()
-        self.inventory: Dict[str, Dict[int, InventoryItem]] = {}
+        self.inventory: Dict[str, InventoryItem] = {}
 
     @property
     def is_dead(self) -> bool:
@@ -65,7 +66,7 @@ class Player(Character):
         """
         if self.is_accessible(self.sprites["note"], scalar=3):
             self.grab_animation.on = True
-            self.acquire("note", "note") 
+            self.acquire("note", "note")
 
         else:
             self.chat_bubble.visible = True
@@ -106,3 +107,4 @@ class Player(Character):
     def acquire(self, name: str, gfx_id: GfxID):
         item = InventoryItem(name=name, gfx_id=gfx_id, index=len(self.inventory))
         self.inventory[name] = item
+        del self.sprites[name]

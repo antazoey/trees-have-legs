@@ -117,6 +117,13 @@ class SpriteManager(BaseManager):
 
         raise IndexError(f"Sprite with ID '{key}' not found.")
 
+    def __delitem__(self, key: SpriteID):
+        sprite = self[key]
+        if key in self._sprite_cache:
+            del self._sprite_cache[key]
+
+        sprite.kill()
+
     def handle_event(self, event: Event):
         self.player.handle_event(event)
 
