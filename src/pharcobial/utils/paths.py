@@ -20,6 +20,10 @@ class GamePaths:
     def fonts(self) -> Path:
         return self.base_dir / "fonts"
 
+    @property
+    def sfx(self) -> Path:
+        return self.base_dir / "sfx"
+
     def get_graphic(self, gfx_id: GfxID, ext: str = "png") -> Path:
         return self.gfx / f"{gfx_id}.{ext}"
 

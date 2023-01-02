@@ -6,6 +6,7 @@ from pygame.event import Event
 from pygame.sprite import AbstractGroup
 
 if TYPE_CHECKING:
+    from .audio import AudioManager
     from .clock import ClockManager
     from .collision import CollisionManager
     from .display import DisplayManager
@@ -25,6 +26,13 @@ class ManagerAccess:
     """
     A way to do dependency injection between all the managers.
     """
+
+    @cached_property
+    def audio(self) -> "AudioManager":
+        """
+        Controls audio and SFX.
+        """
+        return cast("AudioManager", self._("audio"))
 
     @cached_property
     def clock(self) -> "ClockManager":
@@ -174,6 +182,7 @@ class ViewController(BaseManager):
     def run(self):
         """Run the view."""
         self.update()
+        self.audio.update()
         with self.display.in_same_cycle():
             self.draw()
 
