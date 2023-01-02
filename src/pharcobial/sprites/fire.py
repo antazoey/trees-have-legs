@@ -1,8 +1,8 @@
-from pharcobial.sprites.base import NPC
+from pharcobial.sprites.base import InGameItem
 from pharcobial.types import Positional
 
 
-class Fire(NPC):
+class Fire(InGameItem):
     def __init__(self, position: Positional, *args, **kwargs) -> None:
         super().__init__(
             "fire", position, "fire-1", (self.world.group, self.collision.group), (-10, 0)
@@ -15,7 +15,6 @@ class Fire(NPC):
     def update(self):
         if self.is_reachable(self.sprites.taylor, scalar=1.5) and self.sprites.taylor.hysteria <= 0:
             self.world.end_screen.win()
-            self.hp = self.max_hp
             self.sprites.reset()
             return
 

@@ -7,7 +7,7 @@ from pygame.event import Event
 from pharcobial.constants import MAP_VOID, Graphics, Maps
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
-from pharcobial.sprites.base import NPC, BaseSprite
+from pharcobial.sprites.base import BaseSprite, WorldSprite
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.taylor import Taylor
 from pharcobial.sprites.tile import Ground, Tile, Void
@@ -18,7 +18,7 @@ class SpriteManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         self._sprite_cache: Dict[SpriteID, BaseSprite] = {}
-        self.npc_start_positions: Dict[SpriteID, Positional] = {}
+        self.world_sprite_start_positions: Dict[SpriteID, Positional] = {}
 
     def init_level(self, map_id: MapID):
         """
@@ -27,13 +27,13 @@ class SpriteManager(BaseManager):
 
         assert map_id == Maps.BUFFER_PROPERTY  # Currently only one.
         _ = self.player
-        _ = self.npcs
+        _ = self.world_sprites
         _ = self.tiles
 
     def dict(self) -> Dict:
         return {
             "player": self.player.dict(),
-            "npcs": [x.dict() for x in self.npcs],
+            "npcs": [x.dict() for x in self.world_sprites],
             "tiles": [x.dict() for x in self.tiles],
         }
 
@@ -68,30 +68,30 @@ class SpriteManager(BaseManager):
         ]
 
     @cached_property
-    def npcs(self) -> List[NPC]:
-        npc_list: List[NPC] = []
-        for npc, pos in self.map.npcs_start:
-            npc_cls = _sprite_id_to_npc_cls(npc)
+    def world_sprites(self) -> List[WorldSprite]:
+        sprite_list: List[WorldSprite] = []
+        for sprite_id, pos in self.map.start_positions:
+            sprite_cls = _sprite_id_to_cls(sprite_id)
 
-            # NOTE: These kwargs are likely overriden in certain NPC classes
+            # NOTE: These kwargs are likely overriden in certain sub-classes
             # some of these values act as "defaults".
-            npc_obj = npc_cls(
-                sprite_id=npc,
+            sprite = sprite_cls(
+                sprite_id=sprite_id,
                 position=pos,
-                gfx_id=npc,
+                gfx_id=sprite_id,
                 groups=(self.world.group, self.collision.group),
                 hitbox_inflation=None,
             )
-            self.npc_start_positions[npc] = pos
-            npc_list.append(npc_obj)
+            self.world_sprite_start_positions[sprite_id] = pos
+            sprite_list.append(sprite)
 
-        return npc_list
+        return sprite_list
 
     @property
     def all_sprites(self) -> Iterable[BaseSprite]:
         yield self.player
 
-        for npc in self.npcs:
+        for npc in self.world_sprites:
             yield npc
 
         for tile in self.tiles:
@@ -99,8 +99,8 @@ class SpriteManager(BaseManager):
 
     def reset(self):
         self.player.force_move(self.map.player_start)
-        for npc in self.npcs:
-            npc.force_move(self.npc_start_positions[npc.sprite_id])
+        for sprite in self.world_sprites:
+            sprite.force_move(self.world_sprite_start_positions[sprite.sprite_id])
 
     def __getitem__(self, key: SpriteID) -> BaseSprite:
         if key in self._sprite_cache:
@@ -124,7 +124,7 @@ class SpriteManager(BaseManager):
 ROOT_SPRITE_MODULE = ".".join(BaseSprite.__module__.split(".")[:-1])
 
 
-def _sprite_id_to_npc_cls(sprite_id: SpriteID) -> Type[NPC]:
+def _sprite_id_to_cls(sprite_id: SpriteID) -> Type[WorldSprite]:
     parts = sprite_id.split("-")
     if parts[-1].isnumeric():
         parts = parts[:-1]

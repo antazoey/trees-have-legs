@@ -1,14 +1,14 @@
 from pharcobial.constants import Graphics
-from pharcobial.sprites.base import MobileSprite
+from pharcobial.sprites.base import InGameItem, WorldSprite
 from pharcobial.utils.timer import VisibilityTimer
 
 
-class ChatBubble(MobileSprite):
+class ChatBubble(InGameItem):
     """
     A chat bubble that appears near the player.
     """
 
-    def __init__(self, parent: MobileSprite) -> None:
+    def __init__(self, parent: WorldSprite) -> None:
         super().__init__(
             "{self.parent_id}-bubble",
             parent.rect.inflate((0, -5)).topleft,

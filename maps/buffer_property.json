@@ -28,6 +28,13 @@
             }
         },
         {
+            "sprite_id": "note",
+            "location": {
+                "x": 6,
+                "y": 8
+            }
+        },
+        {
             "sprite_id": "tree-{x}",
             "multiple": true,
             "locations": [

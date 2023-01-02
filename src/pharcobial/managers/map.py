@@ -51,7 +51,7 @@ class MapMetaData:
                 data["npcs"].append(MapCharacterData.parse_obj(npc_obj))
 
         if MAP_VOID not in data["tile_set"]:
-            data["tile_set"][MAP_VOID] = {"gfx": None, "collision": True}
+            data["tile_set"][MAP_VOID] = {"gfx": "black", "collision": True}
 
         return cls(**data)
 
@@ -101,7 +101,7 @@ class MapManager(BaseManager):
         return self.active.metadata.player.location
 
     @property
-    def npcs_start(self) -> Iterator[Tuple[SpriteID, Positional]]:
+    def start_positions(self) -> Iterator[Tuple[SpriteID, Positional]]:
         for npc in self.active.metadata.npcs:
             yield npc.sprite_id, npc.location
 

@@ -19,15 +19,16 @@ class BaseSprite(Sprite, ManagerAccess):
         self,
         sprite_id: SpriteID,
         position: Positional,
-        gfx_id: GfxID | None,
+        gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional | None,
     ) -> None:
         super().__init__()
         self.sprite_id = sprite_id
         self.gfx_id = gfx_id
+
         self.image: Surface = (
-            self.graphics[gfx_id] if gfx_id else self.graphics.get_filled_surface("black")
+            self.graphics.get_filled_surface(gfx_id) if gfx_id in RGB else self.graphics[gfx_id]
         )
         self.rect: Rect = self.image.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(hitbox_inflation) if hitbox_inflation else self.rect
@@ -146,7 +147,7 @@ class MobileSprite(BaseSprite):
         self,
         sprite_id: SpriteID,
         position: Positional,
-        gfx_id: GfxID | None,
+        gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional | None,
     ) -> None:
@@ -318,6 +319,10 @@ class MobileSprite(BaseSprite):
             self.image = self.graphics.get(self.sprite_id, flip_x=self.forward.x > 0) or self.image
 
 
+class InGameItem(MobileSprite):
+    pass
+
+
 class DamageBlinker:
     def __init__(self, target: "Character"):
         self.target = target
@@ -372,12 +377,12 @@ class Character(MobileSprite):
         self,
         sprite_id: SpriteID,
         position: Positional,
-        gfx_id: GfxID | None,
+        gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional | None,
-        hp: int,
-        max_hp: int,
-        ap: int,
+        hp: int = DEFAULT_HP,
+        max_hp: int = DEFAULT_MAX_HP,
+        ap: int = DEFAULT_AP,
     ) -> None:
         super().__init__(sprite_id, position, gfx_id, groups, hitbox_inflation)
         self.hp = hp
@@ -409,7 +414,7 @@ class NPC(Character):
         self,
         sprite_id: SpriteID,
         position: Positional,
-        gfx_id: GfxID | None,
+        gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional | None,
         hp: int = DEFAULT_HP,
@@ -419,4 +424,8 @@ class NPC(Character):
         super().__init__(sprite_id, position, gfx_id, groups, hitbox_inflation, hp, max_hp, ap)
 
 
-__all__ = ["BaseSprite", "MobileSprite", "NPC"]
+WorldSprite = Union[InGameItem, Character]
+WORLD_SPRITE_TYPES = (InGameItem, Character)
+
+
+__all__ = ["BaseSprite", "InGameItem", "MobileSprite", "NPC", "WorldSprite"]
