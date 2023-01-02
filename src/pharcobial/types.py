@@ -166,3 +166,10 @@ class Collision:
 
 
 Locatable = Union[Rect, "BaseSprite", Positional]
+
+
+@dataclass
+class InventoryItem:
+    name: str
+    gfx_id: str
+    index: int

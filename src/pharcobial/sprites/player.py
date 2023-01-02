@@ -1,10 +1,11 @@
+from typing import Dict
 from pygame.event import Event
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from pharcobial.controller import Controller
 from pharcobial.sprites.base import Character
 from pharcobial.sprites.bubble import ChatBubble
-from pharcobial.types import SpriteID, UserInput
+from pharcobial.types import GfxID, InventoryItem, SpriteID, UserInput
 
 
 class GrabAnimation:
@@ -52,6 +53,7 @@ class Player(Character):
         self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
         self.grab_animation = GrabAnimation()
+        self.inventory: Dict[str, Dict[int, InventoryItem]] = {}
 
     @property
     def is_dead(self) -> bool:
@@ -63,6 +65,7 @@ class Player(Character):
         """
         if self.is_accessible(self.sprites["note"], scalar=3):
             self.grab_animation.on = True
+            self.acquire("note", "note") 
 
         else:
             self.chat_bubble.visible = True
@@ -99,3 +102,7 @@ class Player(Character):
     def heal(self):
         if self.hp < self.max_hp:
             self.hp += 1
+
+    def acquire(self, name: str, gfx_id: GfxID):
+        item = InventoryItem(name=name, gfx_id=gfx_id, index=len(self.inventory))
+        self.inventory[name] = item

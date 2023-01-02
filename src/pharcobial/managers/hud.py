@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-from typing import Dict
-
 import pygame
 from pygame.rect import Rect
 from pygame.surface import Surface
@@ -9,23 +6,12 @@ from pharcobial.constants import BLOCK_SIZE, RGB, Graphics
 from pharcobial.managers.base import BaseManager, ManagerAccess
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.taylor import Taylor
-from pharcobial.types import Positional, SpriteID
+from pharcobial.types import Positional
 
 
 class HUDItem(ManagerAccess):
     def __init__(self, display_surface: Surface) -> None:
         self.display_surface = display_surface
-
-
-@dataclass
-class InventoryItem:
-    name: str
-    gfx_id: str
-    index: int
-
-
-class Inventory(HUDItem):
-    items: Dict[SpriteID, Dict[int, InventoryItem]] = {}
 
 
 class Bar(HUDItem):
