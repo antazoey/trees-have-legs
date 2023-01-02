@@ -119,10 +119,17 @@ class DisplayManager(BaseManager):
         destination = self._get_destination(graphic, position)
         self.active.screen.blit(graphic, destination)
 
-    def show_text(self, text: str, font_size: int, position: Positional | str, color: str):
-        font_file = game_paths.get_font("bold_game_font_7")
+    def show_text(
+        self,
+        text: str,
+        font_size: int,
+        position: Positional | str,
+        color: str,
+        antialias: bool = True,
+    ):
+        font_file = game_paths.get_font("want-coffee")
         font = Font(str(font_file), font_size)
-        surface = font.render(text, True, RGB[color])
+        surface = font.render(text, antialias, RGB[color])
         destination = self._get_destination(surface, position)
         self.active.screen.blit(surface, destination)
 

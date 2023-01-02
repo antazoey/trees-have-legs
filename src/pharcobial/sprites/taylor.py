@@ -20,8 +20,8 @@ class Taylor(NPC):
         self.focus_index = 50  # Initialize to 50 to not start off waiting still too long.
         self.attention_threshold = 96
         self.attention_threshold_range = (64, 128)
-        self.max_hysteria = 100
-        self.hysteria = self.max_hysteria
+        self.max_hysteria: int = 100
+        self.hysteria: int = self.max_hysteria
         self.made_fist_move = False
 
     def update(self, *args, **kwargs) -> None:
