@@ -331,6 +331,11 @@ class InGameItem(MobileSprite):
     pass
 
 
+class InventorySprite(InGameItem):
+    def activate(self):
+        pass
+
+
 class DamageBlinker:
     def __init__(self, target: "Character"):
         self.target = target

@@ -4,7 +4,7 @@ from pygame.event import Event
 
 from pharcobial.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from pharcobial.controller import Controller
-from pharcobial.sprites.base import Character
+from pharcobial.sprites.base import Character, InventorySprite
 from pharcobial.sprites.bubble import ChatBubble
 from pharcobial.types import GfxID, InventoryItem, SpriteID, UserInput
 
@@ -54,7 +54,7 @@ class Player(Character):
         self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
         self.grab_animation = GrabAnimation()
-        self.inventory: Dict[str, InventoryItem] = {}
+        self.inventory: Dict[int, InventoryItem] = {}
 
     @property
     def is_dead(self) -> bool:
@@ -75,6 +75,13 @@ class Player(Character):
     def handle_event(self, event: Event):
         if event.type == UserInput.KEY_DOWN and event.key == self.controller.bindings.activate:
             self.activate()
+
+        elif event.type == UserInput.KEY_DOWN and event.key in self.controller.bindings.inventory:
+            index = self.controller.bindings.number_key_to_int(event.key)
+            item = self.inventory[index]
+            sprite = self.sprites[item.gfx_id]
+            assert isinstance(sprite, InventorySprite)
+            sprite.activate()
 
     def update(self, *args, **kwargs):
         if self.grab_animation.on:
@@ -105,6 +112,7 @@ class Player(Character):
             self.hp += 1
 
     def acquire(self, name: str, gfx_id: GfxID):
-        item = InventoryItem(name=name, gfx_id=gfx_id, index=len(self.inventory))
-        self.inventory[name] = item
+        index = len(self.inventory)
+        item = InventoryItem(name=name, gfx_id=gfx_id, index=index)
+        self.inventory[index] = item
         del self.sprites[name]

@@ -106,12 +106,12 @@ class InventoryDisplay(HUDItem):
         self.items = self.sprites.player.inventory
 
     def draw(self):
-        for offset, item in enumerate(self.items):
-            position = (BLOCK_SIZE + offset, self.display_surface.get_height() - BLOCK_SIZE * 1.2)
+        for index, item in self.items.items():
+            position = (BLOCK_SIZE + index, self.display_surface.get_height() - BLOCK_SIZE * 1.2)
             self.display.show_text(
-                f"{offset + 1}", 8, (position[0] + 6, position[1] + 4), "white", antialias=False
+                f"{index + 1}", 8, (position[0] + 6, position[1] + 4), "white", antialias=False
             )
-            self.display.show_graphic(item, position)
+            self.display.show_graphic(item.gfx_id, position)
             rect = Rect(*position, BLOCK_SIZE, BLOCK_SIZE)
             pygame.draw.rect(self.display_surface, RGB["white"], rect, 3)
 

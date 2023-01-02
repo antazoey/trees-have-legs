@@ -77,7 +77,9 @@ class EndScreen(ManagerAccess):
     def draw(self):
         if self.visible:
             transparent = self.frames_left < 0.25 * self.total_frames
-            self.display.show_graphic(self.gfx_id, "center", scale=8, transparent=transparent)
+            self.display.show_graphic(
+                self.gfx_id, "center", x_scale=8, y_scale=8, transparent=transparent
+            )
 
 
 class WorldManager(ViewController):

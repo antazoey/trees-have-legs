@@ -102,14 +102,17 @@ class DisplayManager(BaseManager):
         self,
         gfx_id: GfxID,
         position: Positional | str,
-        scale: int | None = None,
+        x_scale: int | None = None,
+        y_scale: int | None = None,
         transparent: bool = False,
     ):
         graphic = self.graphics[gfx_id]
         rect = graphic.get_rect()
 
-        if scale:
-            graphic = scale_fn(graphic, (rect.width * scale, rect.height * scale))
+        if x_scale or y_scale:
+            x_scale = x_scale or 1
+            y_scale = y_scale or 1
+            graphic = scale_fn(graphic, (rect.width * x_scale, rect.height * y_scale))
 
         if transparent:
             alpha_surface = Surface(graphic.get_size(), SRCALPHA)

@@ -2,7 +2,27 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Callable, Iterator, List, Protocol, Tuple, TypeAlias, Union
 
-from pygame import K_DOWN, K_ESCAPE, K_LEFT, K_RETURN, K_RIGHT, K_SPACE, K_UP, KEYDOWN, KEYUP, Rect
+from pygame import (
+    K_1,
+    K_2,
+    K_3,
+    K_4,
+    K_5,
+    K_6,
+    K_7,
+    K_8,
+    K_9,
+    K_DOWN,
+    K_ESCAPE,
+    K_LEFT,
+    K_RETURN,
+    K_RIGHT,
+    K_SPACE,
+    K_UP,
+    KEYDOWN,
+    KEYUP,
+    Rect,
+)
 from pyparsing import Any
 
 from pharcobial.constants import (
@@ -97,6 +117,15 @@ class KeyBinding:
         activate: int = K_SPACE,
         escape: int = K_ESCAPE,
         enter: int = K_RETURN,
+        one: int = K_1,
+        two: int = K_2,
+        three: int = K_3,
+        four: int = K_4,
+        five: int = K_5,
+        six: int = K_6,
+        seven: int = K_7,
+        eight: int = K_8,
+        nine: int = K_9,
     ) -> None:
         self.left = left
         self.right = right
@@ -105,10 +134,36 @@ class KeyBinding:
         self.activate = activate
         self.escape = escape
         self.enter = enter
+        self.one = one
+        self.two = two
+        self.three = three
+        self.four = four
+        self.five = five
+        self.six = six
+        self.seven = seven
+        self.eight = eight
+        self.nine = nine
 
     @property
     def movement(self) -> Tuple[int, int, int, int]:
         return (self.left, self.right, self.up, self.down)
+
+    @property
+    def inventory(self) -> Tuple[int, int, int, int, int, int, int, int, int]:
+        return (
+            self.one,
+            self.two,
+            self.three,
+            self.four,
+            self.five,
+            self.six,
+            self.seven,
+            self.eight,
+            self.nine,
+        )
+
+    def number_key_to_int(self, number_key: int) -> int:
+        return self.inventory.index(number_key)
 
 
 @dataclass
