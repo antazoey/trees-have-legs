@@ -28,7 +28,14 @@ class ChatBubble(MobileSprite):
         self.rect = self.sprites[self.parent_id].rect.inflate((0, -5))
         self.timer.update(self)
 
-        if self.visible:
-            for sprite in self.collision._sprites:
-                if sprite.sprite_id == "taylor" and self.rect.colliderect(sprite.hitbox):
-                    sprite.activated()
+        if not self.visible:
+            return
+
+        for sprite in self.collision._sprites:
+            if sprite.sprite_id != Graphics.TAYLOR or not self.sprites[self.parent_id].is_reachable(
+                self.sprites.taylor, scalar=8
+            ):
+                continue
+
+            # Activate sprite.
+            sprite.activated()

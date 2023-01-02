@@ -45,6 +45,7 @@ class Player(Character):
         The user hitting the action key on something.
         """
         self.chat_bubble.visible = True
+        self.audio.play_sound("vocal")
 
     def handle_event(self, event: Event):
         if event.type == UserInput.KEY_DOWN and event.key == self.controller.bindings.activate:

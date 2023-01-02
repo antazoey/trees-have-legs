@@ -1,4 +1,3 @@
-from pharcobial.constants import BLOCK_SIZE
 from pharcobial.sprites.base import NPC
 from pharcobial.types import Positional
 
@@ -14,16 +13,13 @@ class Fire(NPC):
         self.gfx_delay_index = 0
 
     def update(self):
-        if (
-            self.is_reachable(self.sprites.taylor.rect.inflate(BLOCK_SIZE // 2, BLOCK_SIZE // 2))
-            and self.sprites.taylor.hysteria <= 0
-        ):
+        if self.is_reachable(self.sprites.taylor, scalar=1.5) and self.sprites.taylor.hysteria <= 0:
             self.world.end_screen.win()
             self.hp = self.max_hp
             self.sprites.reset()
             return
 
-        if self.is_reachable(self.sprites.player.rect.inflate(BLOCK_SIZE, BLOCK_SIZE)):
+        if self.is_reachable(self.sprites.player, scalar=2):
             self.sprites.player.heal()
 
         if self.gfx_delay_index < self.gfx_delay:

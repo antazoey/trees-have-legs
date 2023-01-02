@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Callable, Dict, Iterable
+from typing import Callable, Dict, Iterable, Union
 
 from pygame import BLEND_RGBA_MULT, SRCALPHA
 from pygame.event import Event
@@ -78,6 +78,13 @@ class BaseSprite(Sprite, ManagerAccess):
         """
         Handle the player activating you. Defaults to do nothing.
         """
+
+    def is_reachable(self, obj: Union[Rect, "BaseSprite"], scalar: float = 1.1) -> bool:
+        rect = obj.hitbox if isinstance(obj, BaseSprite) else obj
+        new_width = round(scalar * rect.width)
+        new_height = round(scalar * rect.height)
+        scaled_rect = rect.inflate(new_width - rect.width, new_height - rect.height)
+        return self.hitbox.colliderect(scaled_rect)
 
 
 class Ease:
@@ -378,12 +385,11 @@ class Character(MobileSprite):
         self.ap = ap
         self.damage_blinker = DamageBlinker(self)
 
-    def deal_damage(self, other: "Character", penality: float = 1):
-        other.handle_attack(self.ap * penality)
+    def deal_damage(self, other: "Character"):
+        other.handle_attack(self.ap)
 
     def handle_attack(self, ap: float | int):
         self.hp -= round(ap)
-
         if self.hp <= 0:
             self.die()
 
@@ -392,10 +398,6 @@ class Character(MobileSprite):
     def die(self):
         game_logger.debug(f"'{self.sprite_id}' died.")
         self.damage_blinker.reset()
-
-    def is_reachable(self, obj: Rect | BaseSprite) -> bool:
-        rect = obj.hitbox if isinstance(obj, BaseSprite) else obj
-        return self.hitbox.colliderect(rect.inflate(2, 2))
 
 
 class NPC(Character):

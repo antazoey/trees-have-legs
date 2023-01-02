@@ -102,7 +102,7 @@ class Tree(NPC):
     def inflict(self, target: BaseSprite):
         if target.sprite_id == self.sprites.player.sprite_id:
             self.set_image("tree-monster-attack")
-            self.deal_damage(self.sprites.player, penality=0.2)
+            self.deal_damage(self.sprites.player)
         elif target.sprite_id == self.sprites.taylor.sprite_id:
             self.sprites.taylor.get_scared(4)
 
@@ -110,9 +110,9 @@ class Tree(NPC):
         self.vision = self.rect.inflate((4 * self.rect.width, 2 * self.rect.height))
         return self.vision
 
-    def deal_damage(self, other: Character, penality: float = 1):
+    def deal_damage(self, other: Character):
         self.image = (
             self.graphics.get(f"{Graphics.TREE}-monster-attack", flip_x=self.forward.x < 0)
             or self.image
         )
-        return super().deal_damage(other, penality)
+        return super().deal_damage(other)

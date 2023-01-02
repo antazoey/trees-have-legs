@@ -4,7 +4,7 @@ from typing import Dict, Iterable, List, Type
 
 from pygame.event import Event
 
-from pharcobial.constants import MAP_VOID, Maps
+from pharcobial.constants import MAP_VOID, Graphics, Maps
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import NPC, BaseSprite
@@ -49,7 +49,7 @@ class SpriteManager(BaseManager):
 
     @cached_property
     def taylor(self) -> Taylor:
-        taylor = self.sprites["taylor"]
+        taylor = self.sprites[Graphics.TAYLOR]
         assert isinstance(taylor, Taylor)
         return taylor
 

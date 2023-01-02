@@ -24,6 +24,7 @@ SpriteID: TypeAlias = str
 GfxID: TypeAlias = str
 MapID: TypeAlias = str
 SaveID: TypeAlias = str
+SfxID: TypeAlias = str
 FontName: TypeAlias = str
 TileKey: TypeAlias = str
 
