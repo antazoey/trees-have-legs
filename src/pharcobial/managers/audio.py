@@ -18,9 +18,13 @@ class AudioManager(BaseManager):
         """
         For handling changes in music (not Sounds).
         """
-        if not self.playing_music:
+        if not self.options.disable_music and not self.playing_music:
             mixer.music.play(-1)  # -1 means loop forever.
             self.playing_music = True
+
+        elif self.options.disable_music and self.playing_music:
+            mixer.music.stop()
+            self.playing_music = False
 
     def load_music(self, sfx_id: SfxID):
         mixer.music.load(str(game_paths.sfx / f"{sfx_id}.ogg"))
@@ -30,6 +34,9 @@ class AudioManager(BaseManager):
         mixer.music.play(*arguments)
 
     def play_sound(self, sfx_id: SfxID):
+        if self.options.disable_sfx:
+            return
+
         if sfx_id not in self.channels:
             self.channels[sfx_id] = mixer.Channel(len(self.channels) + 1)
 

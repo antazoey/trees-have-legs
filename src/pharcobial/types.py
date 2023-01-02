@@ -151,6 +151,9 @@ class GameOptions:
             # Both save and map are None. Load default map.
             self.map_id = DEFAULT_MAP
 
+    def __setitem__(self, key: str, val: Any):
+        setattr(self, key, val)
+
 
 class Visible(Protocol):
     visible: bool

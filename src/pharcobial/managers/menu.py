@@ -6,7 +6,7 @@ from pyparsing import Iterator
 
 from pharcobial.managers.base import ViewController
 from pharcobial.types import MenuItem, UserInput
-from pharcobial.utils import quit
+from pharcobial.utils import noop, quit
 
 
 class Menu(ViewController):
@@ -67,18 +67,42 @@ class Menu(ViewController):
 class OptionsMenu(Menu):
     def __init__(self):
         titles = ["Back"]
-
-        music_suffix = "disabled" if self.options.disable_music else "enabled"
-        titles.append(f"Music ({music_suffix})")
-
-        sfx_suffix = "disabled" if self.options.disable_sfx else "enabled"
-        titles.append(f"Sfx ({sfx_suffix})")
+        titles.append(self._get_bool_setting("Music", not self.options.disable_music))
+        titles.append(self._get_bool_setting("Sfx", not self.options.disable_sfx))
 
         choices: List[MenuItem] = []
         for index, title in enumerate(titles):
-            choices.append(MenuItem(title=title, index=index, action=lambda: None))
+            if title == "Back":
+                action = self.pop
+
+            elif "Music" in title:
+                action = self.change_music_setting
+            elif "Sfx" in title:
+                action = self.change_sfx_setting
+            else:
+                action = noop
+
+            choices.append(MenuItem(title=title, index=index, action=action))
 
         super().__init__("options", choices)
+
+    def change_music_setting(self):
+        self.change_bool_setting("Music", "disable_music")
+
+    def change_sfx_setting(self):
+        self.change_bool_setting("Sfx", "disable_sfx")
+
+    def change_bool_setting(self, name: str, setting_name: str):
+        self.options[setting_name] = not self.options[setting_name]
+        for choice in self.choices:
+            if choice.title.startswith(name):
+                new_title = self._get_bool_setting(name, not self.options[setting_name])
+                choice.title = new_title
+                break
+
+    def _get_bool_setting(self, name: str, val: bool) -> str:
+        suffix = "enabled" if val else "disabled"
+        return f"{name.capitalize()} ({suffix})"
 
 
 class MainMenu(Menu):
@@ -90,8 +114,8 @@ class MainMenu(Menu):
         }
 
         for index, title in enumerate(("Continue", "Options", "Quit")):
-            fn = actions.get(title, self.pop)
-            item = MenuItem(title=title, index=index, action=fn)
+            action = actions.get(title, self.pop)
+            item = MenuItem(title=title, index=index, action=action)
             choices.append(item)
 
         super().__init__("main", choices)

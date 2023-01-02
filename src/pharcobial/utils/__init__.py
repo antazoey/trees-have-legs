@@ -35,3 +35,7 @@ def to_px(val: int) -> int:
 def quit():
     pygame.quit()
     sys.exit()
+
+
+def noop(*args, **kwargs):
+    pass

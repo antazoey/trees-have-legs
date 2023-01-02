@@ -14,6 +14,15 @@ class OptionsManager(BaseManager):
         self.loaded = options
 
     def __getattr__(self, key: str) -> Any:
+        return self[key]
+
+    def __setitem__(self, key: str, value: Any):
+        if not self.loaded:
+            raise ValueError("Options are not loaded.")
+
+        self.loaded[key] = value
+
+    def __getitem__(self, key: str) -> Any:
         """
         Prevents us from having to do
         ``self.options.loaded`` and makes ``self.options`` work.
