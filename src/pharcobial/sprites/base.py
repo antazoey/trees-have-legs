@@ -22,13 +22,17 @@ class BaseSprite(Sprite, ManagerAccess):
         gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional | None,
+        width: int = BLOCK_SIZE,
+        height: int = BLOCK_SIZE,
     ) -> None:
         super().__init__()
         self.sprite_id = sprite_id
         self.gfx_id = gfx_id
 
         self.image: Surface = (
-            self.graphics.get_filled_surface(gfx_id) if gfx_id in RGB else self.graphics[gfx_id]
+            self.graphics.get_filled_surface(gfx_id, width=width, height=height)
+            if gfx_id in RGB
+            else self.graphics[gfx_id]
         )
         self.rect: Rect = self.image.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(hitbox_inflation) if hitbox_inflation else self.rect

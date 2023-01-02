@@ -2,9 +2,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterator, List, Tuple
 
+from pygame import Rect
 from pyparsing import Any
 
-from pharcobial.constants import MAP_VOID
+from pharcobial.constants import BLOCK_SIZE, MAP_VOID
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.types import MapID, Position, Positional, SpriteID, TileKey
@@ -15,12 +16,14 @@ from pharcobial.utils.paths import game_paths
 @dataclass
 class MapCharacterData:
     sprite_id: SpriteID
-    location: Position
+    rect: Rect
 
     @classmethod
     def parse_obj(cls, obj: Dict) -> "MapCharacterData":
         location = Position.parse_coordinates(**obj["location"])
-        return cls(sprite_id=obj["sprite_id"], location=location)
+        size = obj.get("size", {"width": BLOCK_SIZE, "height": BLOCK_SIZE})
+        rect = Rect(left=location.x, top=location.y, **size)
+        return cls(sprite_id=obj["sprite_id"], rect=rect)
 
 
 @dataclass
@@ -28,16 +31,16 @@ class MapMetaData:
     map_id: MapID
     tile_set: Dict[TileKey, Dict[str, Any]]
     player: MapCharacterData
-    npcs: List[MapCharacterData]
+    world_sprites: List[MapCharacterData]
 
     @classmethod
     def parse_file(cls, path: Path) -> "MapMetaData":
         data = safe_load(path)
         data["player"] = MapCharacterData.parse_obj(data["player"])
 
-        npc_list = list(data.get("npcs", []))
-        data["npcs"] = []
-        for npc_obj in npc_list:
+        world_sprites_list = list(data.get("world_sprites", []))
+        data["world_sprites"] = []
+        for npc_obj in world_sprites_list:
             is_multiple = npc_obj.get("multiple", False)
             if is_multiple:
                 sprite_id_format = npc_obj.get("sprite_id")
@@ -45,10 +48,11 @@ class MapMetaData:
                 for idx, location in enumerate(locations):
                     sprite_id = sprite_id_format.format(x=idx)
                     location = Position.parse_coordinates(**location)
-                    data["npcs"].append(MapCharacterData(sprite_id=sprite_id, location=location))
+                    data = {"sprite_id": sprite_id, "location": location}
+                    data["world_sprites"].append(MapCharacterData.parse_obj(data))
 
             else:
-                data["npcs"].append(MapCharacterData.parse_obj(npc_obj))
+                data["world_sprites"].append(MapCharacterData.parse_obj(npc_obj))
 
         if MAP_VOID not in data["tile_set"]:
             data["tile_set"][MAP_VOID] = {"gfx": "black", "collision": True}
@@ -98,12 +102,12 @@ class MapManager(BaseManager):
 
     @property
     def player_start(self) -> Positional:
-        return self.active.metadata.player.location
+        return self.active.metadata.player.rect.topleft
 
     @property
     def start_positions(self) -> Iterator[Tuple[SpriteID, Positional]]:
-        for npc in self.active.metadata.npcs:
-            yield npc.sprite_id, npc.location
+        for sprite in self.active.metadata.world_sprites:
+            yield sprite.sprite_id, sprite.rect.topleft
 
     @property
     def tile_set(self) -> Dict[TileKey, Dict[str, Any]]:

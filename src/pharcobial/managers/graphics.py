@@ -50,8 +50,10 @@ class GraphicsManager(BaseManager):
         gfx.convert_alpha()  # Allows transparency
         return gfx
 
-    def get_filled_surface(self, color: str) -> Surface:
-        surface = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
+    def get_filled_surface(
+        self, color: str, width: int = BLOCK_SIZE, height: int = BLOCK_SIZE
+    ) -> Surface:
+        surface = pygame.Surface((width, height))
         surface.fill(RGB[color])
         return surface
 
