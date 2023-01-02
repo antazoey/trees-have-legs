@@ -137,6 +137,10 @@ class GameOptions:
     # Debug
     debug: bool = False
 
+    # Audio settings
+    disable_music: bool = False
+    disable_sfx: bool = False
+
     def __post_init__(self):
         # Ensure options are valid.
         if self.save_id is not None:

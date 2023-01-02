@@ -5,14 +5,14 @@ import pygame
 from pygame.rect import Rect
 from pygame.surface import Surface
 
-from pharcobial.constants import BLOCK_SIZE, RGB
-from pharcobial.managers.base import BaseManager
+from pharcobial.constants import BLOCK_SIZE, RGB, Graphics
+from pharcobial.managers.base import BaseManager, ManagerAccess
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.taylor import Taylor
 from pharcobial.types import Positional, SpriteID
 
 
-class HUDItem:
+class HUDItem(ManagerAccess):
     def __init__(self, display_surface: Surface) -> None:
         self.display_surface = display_surface
 
@@ -96,6 +96,13 @@ class TaylorCalmBar(Bar):
     def update(self, taylor: Taylor):
         self.current = taylor.hysteria
 
+    def draw(self):
+        super().draw()
+
+        # Draw Taylor indicator.
+        position = (self.rect.x - 5, self.rect.y + 90)
+        self.display.show_graphic(Graphics.TAYLOR, position)
+
 
 class HUDManager(BaseManager):
     """
@@ -117,7 +124,7 @@ class HUDManager(BaseManager):
 
     def draw(self):
         self.health_bar.draw()
-        self.taylor_hysteria_bar.draw()
+        # self.taylor_hysteria_bar.draw()
 
 
 hud_manager = HUDManager()

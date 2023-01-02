@@ -3,6 +3,7 @@ from typing import Iterable
 from pygame import QUIT
 from pygame.event import get as get_events
 
+from pharcobial.constants import Views
 from pharcobial.managers.base import BaseManager
 from pharcobial.types import GameEvent, UserInput
 
@@ -19,7 +20,7 @@ class EventManager(BaseManager):
             # Handle exiting game
             escape_key = self.options.key_bindings.escape
             escape_key_pressed = event.type == UserInput.KEY_DOWN and event.key == escape_key
-            if escape_key_pressed:
+            if escape_key_pressed and Views.MENU not in self.views.active.view_id:
                 yield GameEvent.MENU
                 return  # Return early to prevent double-processing.
 

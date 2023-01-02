@@ -71,7 +71,6 @@ class Game(ManagerAccess):
 
                 case GameEvent.MENU:
                     self.clock.paused = True
-                    self.menu.visible = True
                     self.views.push(self.menu)
                     self.views.active.run()
 

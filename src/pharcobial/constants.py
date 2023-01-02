@@ -35,6 +35,13 @@ class Graphics:
     TAYLOR: "GfxID" = "taylor"
 
 
+class Views:
+    WORLD = "world"
+    MENU = "menu"  # Wrapper
+    MAIN_MENU = "main-menu"
+    OPTIONS_MENU = "options-menu"
+
+
 # Default settings
 DEFAULT_WIDTH = 1200
 DEFAULT_HEIGHT = 800

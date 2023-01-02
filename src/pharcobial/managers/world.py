@@ -3,6 +3,7 @@ from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
 
+from pharcobial.constants import Views
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import ManagerAccess, ViewController
 from pharcobial.sprites.base import NPC, BaseSprite
@@ -78,7 +79,7 @@ class EndScreen(ManagerAccess):
 
 class WorldManager(ViewController):
     def __init__(self) -> None:
-        super().__init__(CameraGroup(self.display.active.screen))
+        super().__init__(Views.WORLD, CameraGroup(self.display.active.screen))
         self.camera = Camera()
         self.group: CameraGroup = self.group
         self.end_screen = EndScreen()

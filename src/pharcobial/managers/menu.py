@@ -1,37 +1,34 @@
 from functools import cached_property
-from typing import Iterable, List
+from typing import List
 
 from pygame.event import Event
+from pyparsing import Iterator
 
 from pharcobial.managers.base import ViewController
 from pharcobial.types import MenuItem, UserInput
 from pharcobial.utils import quit
 
 
-class MenuManager(ViewController):
-    selected: int = 0
+class Menu(ViewController):
+    def __init__(self, menu_id: str, choices: List[MenuItem]):
+        self.choices = choices
+        self.selected = 0
+        super().__init__(f"{menu_id}-menu")
 
-    @cached_property
-    def main(self) -> List[MenuItem]:
-        options = ("Continue", "Quit")
-        items_dict = []
+    def __iter__(self) -> Iterator[MenuItem]:
+        yield from self.choices
 
-        for i, val in enumerate(options):
-            if val == "Quit":
-                fn = quit
-            else:
-                fn = self.hide
+    def __getitem__(self, index: int | slice) -> MenuItem | List[MenuItem]:
+        return self.choices[index]
 
-            item = MenuItem(title=val, index=i, action=fn)
-            items_dict.append(item)
-
-        return items_dict
+    def __len__(self) -> int:
+        return len(self.choices)
 
     def draw(self):
         start_x = self.display.half_width // 2
         start_y = self.display.half_height // 2
 
-        for item in self.main:
+        for item in self.choices:
             if item.index == self.selected:
                 font_size = 36
                 color = "green"
@@ -51,7 +48,7 @@ class MenuManager(ViewController):
             return
 
         if event.key == self.options.key_bindings.escape:
-            self.hide()
+            self.pop()
 
         elif event.key == self.options.key_bindings.down:
             self.selected = (self.selected + 1) % len(self)
@@ -60,19 +57,64 @@ class MenuManager(ViewController):
             self.selected = (self.selected - 1) % len(self)
 
         elif event.key == self.options.key_bindings.enter:
-            item = self.main[self.selected]
+            item = self.choices[self.selected]
             item.action()
 
-    def __len__(self) -> int:
-        return len(self.main)
+    def pop(self):
+        self.views.pop()
 
-    def __iter__(self) -> Iterable[MenuItem]:
-        yield from self.main
 
-    def hide(self):
-        self.visible = False
+class OptionsMenu(Menu):
+    def __init__(self):
+        titles = ["Back"]
+
+        music_suffix = "disabled" if self.options.disable_music else "enabled"
+        titles.append(f"Music ({music_suffix})")
+
+        sfx_suffix = "disabled" if self.options.disable_sfx else "enabled"
+        titles.append(f"Sfx ({sfx_suffix})")
+
+        choices: List[MenuItem] = []
+        for index, title in enumerate(titles):
+            choices.append(MenuItem(title=title, index=index, action=lambda: None))
+
+        super().__init__("options", choices)
+
+
+class MainMenu(Menu):
+    def __init__(self):
+        choices = []
+        actions = {
+            "Quit": quit,
+            "Options": self.go_to_options_menu,
+        }
+
+        for index, title in enumerate(("Continue", "Options", "Quit")):
+            fn = actions.get(title, self.pop)
+            item = MenuItem(title=title, index=index, action=fn)
+            choices.append(item)
+
+        super().__init__("main", choices)
+        self.options_menu = OptionsMenu()
+
+    def pop(self):
         self.views.pop()
         self.clock.paused = False
 
+    def go_to_options_menu(self):
+        self.views.push(self.options_menu)
 
-menu_manager = MenuManager()
+
+class MenuManager(ViewController):
+    @cached_property
+    def main(self) -> Menu:
+        return MainMenu()
+
+    def draw(self):
+        self.main.draw()
+
+    def handle_event(self, event: Event):
+        self.main.handle_event(event)
+
+
+menu_manager = MenuManager("menu")

@@ -156,8 +156,9 @@ class BaseManager(ManagerAccess):
 
 
 class ViewController(BaseManager):
-    def __init__(self, group: AbstractGroup | None = None) -> None:
+    def __init__(self, view_id: str, group: AbstractGroup | None = None) -> None:
         super().__init__()
+        self.view_id = view_id
         self.group = group
 
     def handle_event(self, event: Event):

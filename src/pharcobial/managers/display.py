@@ -113,7 +113,7 @@ class DisplayManager(BaseManager):
 
         if transparent:
             alpha_surface = Surface(graphic.get_size(), SRCALPHA)
-            alpha_surface.fill((255, 255, 255, 90))
+            alpha_surface.fill((255, 255, 255, 10))
             graphic.blit(alpha_surface, (0, 0), special_flags=BLEND_RGBA_MULT)
 
         destination = self._get_destination(graphic, position)

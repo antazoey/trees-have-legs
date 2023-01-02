@@ -53,6 +53,14 @@ def save_id():
     return click.option("--load", "save_id", help="A load a saved game by ID.")
 
 
+def disable_music():
+    return click.option("--disable-music", is_flag=True, help="Disable background music.")
+
+
+def disable_sfx():
+    return click.option("--disable-sfx", is_flag=True, help="Disable sound effects.")
+
+
 def game_options():
     def fn(f):
         f = window_width()(f)
@@ -63,6 +71,8 @@ def game_options():
         f = debug()(f)
         f = map_id()(f)
         f = save_id()(f)
+        f = disable_music()(f)
+        f = disable_sfx()(f)
         return f
 
     return fn
