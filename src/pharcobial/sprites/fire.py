@@ -13,12 +13,15 @@ class Fire(InGameItem):
         self.gfx_delay_index = 0
 
     def update(self):
-        if self.is_reachable(self.sprites.taylor, scalar=1.5) and self.sprites.taylor.hysteria <= 0:
+        if (
+            self.is_accessible(self.sprites.taylor, scalar=1.5)
+            and self.sprites.taylor.hysteria <= 0
+        ):
             self.world.end_screen.win()
             self.sprites.reset()
             return
 
-        if self.is_reachable(self.sprites.player, scalar=2):
+        if self.is_accessible(self.sprites.player, scalar=2):
             self.sprites.player.heal()
 
         if self.gfx_delay_index < self.gfx_delay:

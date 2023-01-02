@@ -7,6 +7,22 @@ from pharcobial.sprites.bubble import ChatBubble
 from pharcobial.types import SpriteID, UserInput
 
 
+class GrabAnimation:
+    def __init__(self) -> None:
+        self.on = False
+        self.time = 10  # frames
+        self.time_index = 0
+
+    def update(self):
+        if not self.on:
+            return
+
+        self.time_index += 1
+        if self.time_index == self.time:
+            self.on = False
+            self.time_index = 0
+
+
 class Player(Character):
     """
     The main character.
@@ -35,6 +51,7 @@ class Player(Character):
         self.direction = self.controller.direction
         self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
+        self.grab_animation = GrabAnimation()
 
     @property
     def is_dead(self) -> bool:
@@ -44,14 +61,24 @@ class Player(Character):
         """
         The user hitting the action key on something.
         """
-        self.chat_bubble.visible = True
-        self.audio.play_sound("vocal")
+        if self.is_accessible(self.sprites["note"], scalar=3):
+            self.grab_animation.on = True
+
+        else:
+            self.chat_bubble.visible = True
+            self.audio.play_sound("vocal")
 
     def handle_event(self, event: Event):
         if event.type == UserInput.KEY_DOWN and event.key == self.controller.bindings.activate:
             self.activate()
 
     def update(self, *args, **kwargs):
+        if self.grab_animation.on:
+            image = self.graphics.get(f"{self.gfx_id}-grab", flip_x=self.forward.x > 0)
+            self.image = image or self.image
+            self.grab_animation.update()
+            return
+
         self.controller.update()
         self.direction = self.controller.direction
         self.forward = self.controller.forward

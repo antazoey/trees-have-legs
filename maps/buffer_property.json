@@ -30,12 +30,8 @@
         {
             "sprite_id": "note",
             "location": {
-                "x": 6,
-                "y": 8
-            },
-            "size": {
-                "width": "BLOCK_SIZE // 4",
-                "height": "BLOCK_SIZE // 4"
+                "x": 7,
+                "y": 9
             }
         },
         {

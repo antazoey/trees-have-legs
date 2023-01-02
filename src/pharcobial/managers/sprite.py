@@ -33,7 +33,7 @@ class SpriteManager(BaseManager):
     def dict(self) -> Dict:
         return {
             "player": self.player.dict(),
-            "npcs": [x.dict() for x in self.world_sprites],
+            "world_sprites": [x.dict() for x in self.world_sprites],
             "tiles": [x.dict() for x in self.tiles],
         }
 

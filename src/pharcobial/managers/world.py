@@ -6,7 +6,7 @@ from pygame.surface import Surface
 from pharcobial.constants import Views
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import ManagerAccess, ViewController
-from pharcobial.sprites.base import WORLD_SPRITE_TYPES, BaseSprite
+from pharcobial.sprites.base import BaseSprite, Character, InGameItem
 from pharcobial.utils.timer import VisibilityTimer
 
 
@@ -17,6 +17,7 @@ class CameraGroup(Group):
 
     def draw_in_view(self, offset: Vector2):
         top_layer = []
+        middle_layer = []
         for sprite in sorted(self.sprites(), key=lambda s: s.rect is not None and s.rect.centery):
             assert isinstance(sprite, BaseSprite)  # for Mypy
             if not sprite.visible:
@@ -24,11 +25,16 @@ class CameraGroup(Group):
 
             # Mypy doesn't realize this is valid.
             offset_pos: Vector2 = sprite.rect.topleft - offset  # type: ignore[operator]
-            if any(isinstance(sprite, t) for t in WORLD_SPRITE_TYPES):
+            if isinstance(sprite, Character):
                 top_layer.append((sprite.image, offset_pos))
+            elif isinstance(sprite, InGameItem):
+                middle_layer.append((sprite.image, offset_pos))
             else:
                 # Draw ground layer
                 self.surface.blit(sprite.image, offset_pos)
+
+        for img, offset in middle_layer:
+            self.surface.blit(img, offset)
 
         for img, offset in top_layer:
             self.surface.blit(img, offset)

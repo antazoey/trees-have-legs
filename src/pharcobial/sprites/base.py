@@ -84,7 +84,7 @@ class BaseSprite(Sprite, ManagerAccess):
         Handle the player activating you. Defaults to do nothing.
         """
 
-    def is_reachable(self, obj: Union[Rect, "BaseSprite"], scalar: float = 1.1) -> bool:
+    def is_accessible(self, obj: Union[Rect, "BaseSprite"], scalar: float = 1.1) -> bool:
         rect = obj.hitbox if isinstance(obj, BaseSprite) else obj
         new_width = round(scalar * rect.width)
         new_height = round(scalar * rect.height)
@@ -154,8 +154,12 @@ class MobileSprite(BaseSprite):
         gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
         hitbox_inflation: Positional | None,
+        width: int = BLOCK_SIZE,
+        height: int = BLOCK_SIZE,
     ) -> None:
-        super().__init__(sprite_id, position, gfx_id, groups, hitbox_inflation)
+        super().__init__(
+            sprite_id, position, gfx_id, groups, hitbox_inflation, width=width, height=height
+        )
         self.max_speed: float = 0
         self.direction = Vector2()
         self.forward = Vector2()

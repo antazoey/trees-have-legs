@@ -76,7 +76,7 @@ class Tree(NPC):
 
     def move_towards_player(self):
         player = self.sprites.player
-        if self.is_reachable(player):
+        if self.is_accessible(player):
             # Attack player.
             self.image = (
                 self.graphics.get(f"{Graphics.TREE}-monster-attack", flip_x=self.forward.x < 0)
