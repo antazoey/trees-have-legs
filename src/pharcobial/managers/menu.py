@@ -4,9 +4,45 @@ from typing import List
 from pygame.event import Event
 from pyparsing import Iterator
 
+from pharcobial.constants import BLOCK_SIZE
 from pharcobial.managers.base import ViewController
 from pharcobial.types import MenuItem, UserInput
 from pharcobial.utils import noop, quit
+
+
+class ControlsScreen(ViewController):
+    def __init__(self) -> None:
+        super().__init__("controls", None)
+        self.last_row = -1
+        self.last_column = -1
+
+    def draw(self):
+        self.draw_title("Movement Keys", 1, 1)
+        for item in (
+            "ARROW UP - Move up",
+            "ARROW DOWN - Move down",
+            "ARROW LEFT - Move left",
+            "ARROW RIGHT - Move right",
+        ):
+            self.draw_item(item, 1, self.last_row + 1)
+
+        self.draw_title("Action Keys", 2, 1)
+        self.draw_item("SPACEBAR - activate", 2, 2)
+
+        for i in range(1, 10):
+            self.draw_item(f"{i} - Inventory item {i}", 2, self.last_row + 1)
+
+    def draw_title(self, title: str, column: int, row: int):
+        self._display(title, column, row, font_size=20)
+
+    def draw_item(self, item: str, column: int, row: int):
+        self._display(item, column, row)
+
+    def _display(self, value: str, column: int, row: int, font_size: int = 16):
+        x = BLOCK_SIZE if column == 1 else BLOCK_SIZE * column * 5
+        self.display.show_text(value, font_size, (x, BLOCK_SIZE * row), "white")
+        self.last_row = row
+        self.last_column = column
 
 
 class Menu(ViewController):
@@ -109,17 +145,20 @@ class MainMenu(Menu):
     def __init__(self):
         choices = []
         actions = {
+            "Continue": self.pop,
             "Quit": quit,
+            "Controls": self.go_to_controls,
             "Options": self.go_to_options_menu,
         }
 
-        for index, title in enumerate(("Continue", "Options", "Quit")):
+        for index, title in enumerate(sorted(list(actions.keys()))):
             action = actions.get(title, self.pop)
             item = MenuItem(title=title, index=index, action=action)
             choices.append(item)
 
         super().__init__("main", choices)
         self.options_menu = OptionsMenu()
+        self.controls_screen = ControlsScreen()
 
     def pop(self):
         self.views.pop()
@@ -127,6 +166,9 @@ class MainMenu(Menu):
 
     def go_to_options_menu(self):
         self.views.push(self.options_menu)
+
+    def go_to_controls(self):
+        self.views.push(self.controls_screen)
 
 
 class MenuManager(ViewController):
