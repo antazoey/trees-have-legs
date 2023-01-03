@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterator, List, Tuple
+from typing import Any, Dict, Iterator, List, Tuple
 
 from pygame import Rect
-from pyparsing import Any
 
 from pharcobial.constants import BLOCK_SIZE, MAP_VOID
 from pharcobial.logging import game_logger

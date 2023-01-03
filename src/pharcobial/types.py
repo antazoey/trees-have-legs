@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Callable, Iterator, List, Protocol, Tuple, TypeAlias, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterator, List, Protocol, Tuple, TypeAlias, Union
 
 from pygame import (
     K_1,
@@ -23,7 +23,6 @@ from pygame import (
     KEYUP,
     Rect,
 )
-from pyparsing import Any
 
 from pharcobial.constants import (
     BLOCK_SIZE,
