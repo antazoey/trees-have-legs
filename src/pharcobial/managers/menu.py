@@ -1,8 +1,7 @@
 from functools import cached_property
-from typing import List
+from typing import List, Iterator
 
 from pygame.event import Event
-from pyparsing import Iterator
 
 from pharcobial.constants import BLOCK_SIZE
 from pharcobial.managers.base import ViewController
