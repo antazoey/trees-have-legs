@@ -196,6 +196,8 @@ class GameOptions:
     disable_music: bool = False
     disable_sfx: bool = False
 
+    stage: int = 0
+
     def __post_init__(self):
         # Ensure options are valid.
         if self.save_id is not None:

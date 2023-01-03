@@ -61,6 +61,10 @@ def disable_sfx():
     return click.option("--disable-sfx", is_flag=True, help="Disable sound effects.")
 
 
+def stage():
+    return click.option("--stage", help="The stage to start on.", default=0, type=int)
+
+
 def game_options():
     def fn(f):
         f = window_width()(f)
@@ -73,6 +77,7 @@ def game_options():
         f = save_id()(f)
         f = disable_music()(f)
         f = disable_sfx()(f)
+        f = stage()(f)
         return f
 
     return fn

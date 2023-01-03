@@ -38,7 +38,7 @@ class Tree(NPC):
         Else, it stands still.
         """
 
-        if self.sprites.player.is_dead:
+        if self.sprites.player.is_dead or self.world.stage != 0:
             self.sleep()
             return
 

@@ -66,6 +66,7 @@ class EndScreen(ManagerAccess):
     def win(self):
         self.gfx_id = "you-won"
         self.visible = True
+        self.world.stage += 1
 
     def lose(self):
         self.gfx_id = "you-died"
@@ -88,6 +89,7 @@ class WorldManager(ViewController):
         self.camera = Camera()
         self.group: CameraGroup = self.group
         self.end_screen = EndScreen()
+        self.stage = self.options.stage
 
     def validate(self):
         assert self.group is not None

@@ -135,8 +135,10 @@ class HUDManager(BaseManager):
 
     def draw(self):
         self.health_bar.draw()
-        self.taylor_hysteria_bar.draw()
         self.inventory.draw()
+
+        if self.world.stage == 0:
+            self.taylor_hysteria_bar.draw()
 
 
 hud_manager = HUDManager()

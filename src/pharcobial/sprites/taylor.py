@@ -1,6 +1,6 @@
 from random import randint
 
-from pharcobial.constants import Graphics
+from pharcobial.constants import BLOCK_SIZE, Graphics
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import NPC
 from pharcobial.types import Positional
@@ -25,6 +25,11 @@ class Taylor(NPC):
         self.made_fist_move = False
 
     def update(self, *args, **kwargs) -> None:
+        if self.world.stage == 1:
+            # Relax by fire.
+            self.force_move((5 * BLOCK_SIZE, 6 * BLOCK_SIZE))
+            return
+
         if self.sprites.player.is_dead:
             self.move(self.start_position)
             self.hysteria = self.max_hysteria
@@ -75,7 +80,7 @@ class Taylor(NPC):
         self.calm()
 
     def calm(self):
-        new_value = randint(-5, 8)
+        new_value = randint(-2, 8)
         new_total = self.hysteria - new_value
         new_total = self._validate_value(new_total)
         self.hysteria = new_total

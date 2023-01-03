@@ -14,7 +14,8 @@ class Fire(InGameItem):
 
     def update(self):
         if (
-            self.is_accessible(self.sprites.taylor, scalar=1.5)
+            self.world.stage == 0
+            and self.is_accessible(self.sprites.taylor, scalar=1.5)
             and self.sprites.taylor.hysteria <= 0
         ):
             self.world.end_screen.win()
