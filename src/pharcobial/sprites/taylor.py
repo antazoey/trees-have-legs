@@ -13,7 +13,7 @@ class Taylor(NPC):
             position,
             Graphics.TAYLOR,
             (self.world.group, self.collision.group),
-            (-20, -10),
+            (-20, -15),
         )
         self.start_position = position
         self.max_speed = 150

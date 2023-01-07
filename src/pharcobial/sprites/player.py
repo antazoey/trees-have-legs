@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from pygame.event import Event
 
@@ -25,6 +25,31 @@ class GrabAnimation:
             self.time_index = 0
 
 
+class Inventory:
+    def __init__(self):
+        self._inventory: Dict[int, InventoryItem] = {}
+
+    def __len__(self) -> int:
+        return len(self._inventory)
+
+    def __contains__(self, name: str) -> bool:
+        return name in [x.name for x in self._inventory.values()]
+
+    def get(self, key: int) -> InventoryItem | None:
+        return self._inventory.get(key)
+
+    def items(self) -> List[Tuple[int, InventoryItem]]:
+        return self._inventory.items()  # type: ignore
+
+    def add(self, name: str, gfx_id: GfxID):
+        if name in self:
+            return
+
+        index = len(self)
+        item = InventoryItem(name=name, gfx_id=gfx_id, index=index)
+        self._inventory[index] = item
+
+
 class Player(Character):
     """
     The main character.
@@ -43,7 +68,7 @@ class Player(Character):
             self.map.player_start,
             character,
             (self.world.group, self.collision.group),
-            (-18, -10),
+            (-18, -18),
             hp,
             max_hp,
             ap,
@@ -54,7 +79,7 @@ class Player(Character):
         self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
         self.grab_animation = GrabAnimation()
-        self.inventory: Dict[int, InventoryItem] = {}
+        self.inventory: Inventory = Inventory()
 
     @property
     def is_dead(self) -> bool:
@@ -64,7 +89,11 @@ class Player(Character):
         """
         The user hitting the action key on something.
         """
-        if self.is_accessible(self.sprites["note"], scalar=3):
+        if (
+            "note" not in self.inventory
+            and "note" in self.sprites
+            and self.is_accessible(self.sprites["note"], scalar=3)
+        ):
             self.grab_animation.on = True
             self.acquire("note", "note")
 
@@ -113,7 +142,5 @@ class Player(Character):
             self.hp += 1
 
     def acquire(self, name: str, gfx_id: GfxID):
-        index = len(self.inventory)
-        item = InventoryItem(name=name, gfx_id=gfx_id, index=index)
-        self.inventory[index] = item
-        del self.sprites[name]
+        self.inventory.add(name, gfx_id)
+        self.sprites.safe_delete(name)

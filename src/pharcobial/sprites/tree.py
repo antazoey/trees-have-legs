@@ -6,7 +6,7 @@ from pygame.sprite import Group
 from pharcobial.constants import Graphics
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import NPC, BaseSprite, Character
-from pharcobial.types import Positional, SpriteID
+from pharcobial.types import Positional, SpriteID, WorldStage
 from pharcobial.utils import chance
 
 
@@ -38,7 +38,7 @@ class Tree(NPC):
         Else, it stands still.
         """
 
-        if self.sprites.player.is_dead or self.world.stage != 0:
+        if self.sprites.player.is_dead or self.world.stage != WorldStage.GET_TAYLOR_BACK:
             self.sleep()
             return
 
@@ -63,6 +63,9 @@ class Tree(NPC):
                     self.come_alive()
 
     def sleep(self):
+        if not self.is_alive:
+            return
+
         self.is_alive = False
         game_logger.debug(f"Tree {self.index} going back to sleep.")
         self.set_image(Graphics.TREE)

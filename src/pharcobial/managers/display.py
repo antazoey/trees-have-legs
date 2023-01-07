@@ -136,6 +136,9 @@ class DisplayManager(BaseManager):
         destination = self._get_destination(surface, position)
         self.active.screen.blit(surface, destination)
 
+    def clear(self):
+        self.active.clear()
+
     def _get_destination(self, base: Surface, value: Positional | str) -> Positional | Rect:
         destination: Positional | Rect
         if value == "center":

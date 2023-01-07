@@ -129,6 +129,7 @@ class WorldManager(ViewController):
 
     def next_stage(self):
         self.stage = WorldStage.next(self.stage)
+        self.display.clear()
         self.load_map()
         self.sprites.create_sprites(skip=["player"])
 

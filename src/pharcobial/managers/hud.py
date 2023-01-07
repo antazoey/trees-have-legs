@@ -100,14 +100,15 @@ class TaylorCalmBar(Bar):
 class InventoryDisplay(HUDItem):
     def __init__(self) -> None:
         super().__init__(self.display.active.screen)
-        self.items = self.sprites.player.inventory
+        self.inventory = self.sprites.player.inventory
 
     def update(self):
-        self.items = self.sprites.player.inventory
+        self.inventory = self.sprites.player.inventory
 
     def draw(self):
-        for index, item in self.items.items():
-            position = (BLOCK_SIZE + index, self.display_surface.get_height() - BLOCK_SIZE * 1.2)
+        for index, item in self.inventory.items():
+            x_offset = BLOCK_SIZE + (1.5 * BLOCK_SIZE * index)
+            position = (x_offset, self.display_surface.get_height() - BLOCK_SIZE * 1.2)
             self.display.show_text(
                 f"{index + 1}", 8, (position[0] + 6, position[1] + 4), "white", antialias=False
             )

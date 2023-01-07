@@ -25,25 +25,44 @@ class SpriteManager(BaseManager):
         if "player" not in skip_keys:
             self.safe_delete("player")
             _ = self.player
-            
+
         if "taylor" not in skip_keys:
             self.safe_delete("taylor")
             # Shows up in world_sprites.
-            
-        self.delete_cached_property("world_sprites")
-        self.delete_cached_property("tiles")
+
+        if "world_sprites" not in skip_keys and "world_sprites" in self.__dict__:
+            for sprite in self.world_sprites:
+                self.safe_delete(sprite.sprite_id)
+
+            del self.__dict__["world_sprites"]
+
+        if "tiles" not in skip_keys and "tiles" in self.__dict__:
+            for tile in self.tiles:
+                self.safe_delete(tile.sprite_id)
+
+            del self.__dict__["tiles"]
+
         _ = self.world_sprites
         _ = self.tiles
-    
-    def safe_delete(self, key: SpriteID):
-        if key in self._sprite_cache:
-            del self[key]
 
-        self.delete_cached_property(key)
-    
+    def __contains__(self, key: SpriteID) -> bool:
+        return self.get(key) is not None
+
+    def get(self, key: SpriteID) -> BaseSprite | None:
+        try:
+            return self[key]
+        except IndexError:
+            return None
+
+    def safe_delete(self, key: SpriteID):
+        if key not in self:
+            return
+
+        del self[key]
+
     def delete_cached_property(self, prop: str):
         if prop in self.__dict__:
-            del self.__dict__[prop] 
+            del self.__dict__[prop]
 
     def dict(self) -> Dict:
         return {
