@@ -16,9 +16,9 @@ class NoteView(ViewController):
     def draw(self):
         self.display.show_graphic(
             "note-close",
-            (0, 0),
-            self.display.width // BLOCK_SIZE,
-            self.display.height // BLOCK_SIZE,
+            "center",
+            self.display.width // (BLOCK_SIZE * 4),
+            self.display.height // (BLOCK_SIZE * 4),
         )
 
 

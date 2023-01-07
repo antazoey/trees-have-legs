@@ -31,4 +31,4 @@ class Ground(Tile):
 
 class Void(Tile):
     def __init__(self, position: Positional) -> None:
-        super().__init__(position, MAP_VOID, (0, -10), (self.world.group, self.collision.group))
+        super().__init__(position, MAP_VOID, (0, 0), (self.world.group, self.collision.group))
