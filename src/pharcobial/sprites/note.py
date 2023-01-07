@@ -3,13 +3,16 @@ from pygame.event import Event
 from pharcobial.constants import BLOCK_SIZE
 from pharcobial.managers.base import ViewController
 from pharcobial.sprites.base import InventorySprite
-from pharcobial.types import Positional, UserInput
+from pharcobial.types import Positional, UserInput, WorldStage
 
 
 class NoteView(ViewController):
     def handle_event(self, event: Event):
         if event.type != UserInput.KEY_DOWN:
             return
+
+        elif self.world.stage == WorldStage.FIND_NOTE:
+            self.world.next_stage()
 
         self.views.pop()
 

@@ -3,7 +3,7 @@ from random import randint
 from pharcobial.constants import BLOCK_SIZE, Graphics
 from pharcobial.logging import game_logger
 from pharcobial.sprites.base import NPC
-from pharcobial.types import Positional
+from pharcobial.types import Positional, WorldStage
 
 
 class Taylor(NPC):
@@ -25,9 +25,14 @@ class Taylor(NPC):
         self.made_fist_move = False
 
     def update(self, *args, **kwargs) -> None:
-        if self.world.stage == 1:
+        if self.world.stage < WorldStage.GET_TAYLOR_BACK:
+            # Not yet in game.
+            return
+
+        elif self.world.stage > WorldStage.GET_TAYLOR_BACK:
             # Relax by fire.
             self.force_move((5 * BLOCK_SIZE, 6 * BLOCK_SIZE))
+            self.set_image(self.sprite_id)
             return
 
         if self.sprites.player.is_dead:

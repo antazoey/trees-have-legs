@@ -78,10 +78,11 @@ class Player(Character):
 
         elif event.type == UserInput.KEY_DOWN and event.key in self.controller.bindings.inventory:
             index = self.controller.bindings.number_key_to_int(event.key)
-            item = self.inventory[index]
-            sprite = self.sprites[item.gfx_id]
-            assert isinstance(sprite, InventorySprite)
-            sprite.activate()
+            item = self.inventory.get(index)
+            if item:
+                sprite = self.sprites[item.gfx_id]
+                assert isinstance(sprite, InventorySprite)
+                sprite.activate()
 
     def update(self, *args, **kwargs):
         if self.grab_animation.on:

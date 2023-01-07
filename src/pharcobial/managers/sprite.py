@@ -4,14 +4,14 @@ from typing import Dict, Iterable, List, Type
 
 from pygame.event import Event
 
-from pharcobial.constants import MAP_VOID, Graphics, Maps
+from pharcobial.constants import MAP_VOID, Graphics
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import BaseManager
 from pharcobial.sprites.base import BaseSprite, WorldSprite
 from pharcobial.sprites.player import Player
 from pharcobial.sprites.taylor import Taylor
 from pharcobial.sprites.tile import Ground, Tile, Void
-from pharcobial.types import MapID, Position, Positional, SpriteID
+from pharcobial.types import Position, Positional, SpriteID
 
 
 class SpriteManager(BaseManager):
@@ -20,15 +20,30 @@ class SpriteManager(BaseManager):
         self._sprite_cache: Dict[SpriteID, BaseSprite] = {}
         self.world_sprite_start_positions: Dict[SpriteID, Positional] = {}
 
-    def init_level(self, map_id: MapID):
-        """
-        Create the sprites needed for the given map ID.
-        """
-
-        assert map_id == Maps.BUFFER_PROPERTY  # Currently only one.
-        _ = self.player
+    def create_sprites(self, skip: List[str] | None = None):
+        skip_keys = skip or []
+        if "player" not in skip_keys:
+            self.safe_delete("player")
+            _ = self.player
+            
+        if "taylor" not in skip_keys:
+            self.safe_delete("taylor")
+            # Shows up in world_sprites.
+            
+        self.delete_cached_property("world_sprites")
+        self.delete_cached_property("tiles")
         _ = self.world_sprites
         _ = self.tiles
+    
+    def safe_delete(self, key: SpriteID):
+        if key in self._sprite_cache:
+            del self[key]
+
+        self.delete_cached_property(key)
+    
+    def delete_cached_property(self, prop: str):
+        if prop in self.__dict__:
+            del self.__dict__[prop] 
 
     def dict(self) -> Dict:
         return {
@@ -119,10 +134,9 @@ class SpriteManager(BaseManager):
 
     def __delitem__(self, key: SpriteID):
         sprite = self[key]
+        sprite.kill()
         if key in self._sprite_cache:
             del self._sprite_cache[key]
-
-        sprite.kill()
 
     def handle_event(self, event: Event):
         self.player.handle_event(event)

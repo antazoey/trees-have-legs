@@ -1,12 +1,15 @@
+from typing import Dict
+
 from pygame.event import Event
 from pygame.math import Vector2
 from pygame.sprite import Group
 from pygame.surface import Surface
 
-from pharcobial.constants import Views
+from pharcobial.constants import Maps, Views
 from pharcobial.logging import game_logger
 from pharcobial.managers.base import ManagerAccess, ViewController
 from pharcobial.sprites.base import BaseSprite, Character, InGameItem
+from pharcobial.types import MapID, WorldStage
 from pharcobial.utils.timer import VisibilityTimer
 
 
@@ -66,7 +69,7 @@ class EndScreen(ManagerAccess):
     def win(self):
         self.gfx_id = "you-won"
         self.visible = True
-        self.world.stage += 1
+        self.world.next_stage()
 
     def lose(self):
         self.gfx_id = "you-died"
@@ -89,7 +92,15 @@ class WorldManager(ViewController):
         self.camera = Camera()
         self.group: CameraGroup = self.group
         self.end_screen = EndScreen()
-        self.stage = self.options.stage
+        self.stage: int = self.options.stage
+        self.stage_maps: Dict[int, MapID] = {
+            0: Maps.FIRE_PIT,
+            1: Maps.BUFFER_PROPERTY,
+            2: Maps.BUFFER_PROPERTY,
+        }
+
+        # Load first map
+        self.load_map()
 
     def validate(self):
         assert self.group is not None
@@ -115,6 +126,14 @@ class WorldManager(ViewController):
 
     def follow(self, sprite: BaseSprite):
         self.camera.followee = sprite
+
+    def next_stage(self):
+        self.stage = WorldStage.next(self.stage)
+        self.load_map()
+        self.sprites.create_sprites(skip=["player"])
+
+    def load_map(self):
+        self.map.load(self.stage_maps[self.stage])
 
 
 world_manager = WorldManager()

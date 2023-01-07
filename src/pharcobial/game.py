@@ -41,7 +41,7 @@ class Game(ManagerAccess):
             manager.validate()
 
         # Load all sprites in this level.
-        self.sprites.init_level(self.options.map_id)
+        self.sprites.create_sprites()
         self.sprites.validate()
 
         # Have camera follow player initially.

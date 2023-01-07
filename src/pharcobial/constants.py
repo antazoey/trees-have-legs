@@ -25,6 +25,7 @@ RGB: Dict[str, "Color"] = {
 
 
 class Maps:
+    FIRE_PIT: "MapID" = "fire_pit"
     BUFFER_PROPERTY: "MapID" = "buffer_property"
 
 
@@ -47,7 +48,6 @@ DEFAULT_WIDTH = 1200
 DEFAULT_HEIGHT = 800
 DEFAULT_FPS = 32
 DEFAULT_FONT_SIZE = 25
-DEFAULT_MAP = Maps.BUFFER_PROPERTY
 
 # Default attributes
 DEFAULT_HP = 100

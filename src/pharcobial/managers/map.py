@@ -117,10 +117,6 @@ class Map:
 
 
 class MapManager(BaseManager):
-    def __init__(self) -> None:
-        super().__init__()
-        self.active = self.load(self.options.map_id)
-
     def __repr__(self) -> str:
         return repr(self.active)
 

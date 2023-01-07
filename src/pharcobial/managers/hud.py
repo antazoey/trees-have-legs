@@ -4,7 +4,7 @@ from pygame.surface import Surface
 
 from pharcobial.constants import BLOCK_SIZE, RGB, Graphics
 from pharcobial.managers.base import BaseManager, ManagerAccess
-from pharcobial.types import Positional
+from pharcobial.types import Positional, WorldStage
 
 
 class HUDItem(ManagerAccess):
@@ -124,20 +124,30 @@ class HUDManager(BaseManager):
 
     def __init__(self) -> None:
         super().__init__()
+
+        # Universal items.
         self.health_bar = HealthBar()
-        self.taylor_hysteria_bar = TaylorCalmBar()
         self.inventory = InventoryDisplay()
+
+        # Part of WorldStage.GET_TAYLOR_BACK
+        self.taylor_hysteria_bar: TaylorCalmBar | None = None
 
     def update(self):
         self.health_bar.update()
-        self.taylor_hysteria_bar.update()
         self.inventory.update()
+
+        if self.world.stage == WorldStage.GET_TAYLOR_BACK:
+            if self.taylor_hysteria_bar is None:
+                self.taylor_hysteria_bar = TaylorCalmBar()
+
+            self.taylor_hysteria_bar.update()
 
     def draw(self):
         self.health_bar.draw()
         self.inventory.draw()
 
-        if self.world.stage == 0:
+        if self.world.stage == WorldStage.GET_TAYLOR_BACK:
+            assert self.taylor_hysteria_bar is not None
             self.taylor_hysteria_bar.draw()
 
 

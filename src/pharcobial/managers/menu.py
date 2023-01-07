@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import List, Iterator
+from typing import Iterator, List
 
 from pygame.event import Event
 

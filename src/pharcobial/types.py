@@ -29,7 +29,6 @@ from pharcobial.constants import (
     DEFAULT_FONT_SIZE,
     DEFAULT_FPS,
     DEFAULT_HEIGHT,
-    DEFAULT_MAP,
     DEFAULT_WIDTH,
 )
 
@@ -172,6 +171,27 @@ class MenuItem:
     action: Callable
 
 
+class WorldStage:
+    FIND_NOTE = 0
+    GET_TAYLOR_BACK = 1
+    GET_LESTER_BACK = 2
+    END = 3
+
+    def __len__(self) -> int:
+        return self.END
+
+    @classmethod
+    def next(cls, previous: int) -> int:
+        if previous < 0:
+            return cls.FIND_NOTE
+
+        elif previous < cls.END:
+            return previous + 1
+
+        else:
+            return cls.END
+
+
 @dataclass
 class GameOptions:
     # Core settings
@@ -182,9 +202,6 @@ class GameOptions:
     full_screen: bool = False
 
     # Game settings
-    map_id: MapID = DEFAULT_MAP
-    """Load a particular map from start."""
-
     save_id: SaveID | None = None  # Set when loading a saved game.
     """Load a saved game. Mutually exclusive with ``map_id``."""
 
@@ -195,17 +212,17 @@ class GameOptions:
     disable_music: bool = False
     disable_sfx: bool = False
 
-    stage: int = 0
+    stage: int = WorldStage.FIND_NOTE
 
     def __post_init__(self):
         # Ensure options are valid.
         if self.save_id is not None:
-            if self.map_id is not None:
-                raise ValueError("Cannot set both map and save IDs.")
+            if self.stage is not None:
+                raise ValueError("Cannot set both stage and save IDs.")
 
-        elif self.map_id is None:
-            # Both save and map are None. Load default map.
-            self.map_id = DEFAULT_MAP
+        elif self.stage is None:
+            # Both save and stage are None. Load start.
+            self.stage = 0
 
     def __setitem__(self, key: str, val: Any):
         setattr(self, key, val)

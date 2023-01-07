@@ -1,5 +1,5 @@
 from pharcobial.sprites.base import InGameItem
-from pharcobial.types import Positional
+from pharcobial.types import Positional, WorldStage
 
 
 class Fire(InGameItem):
@@ -14,7 +14,7 @@ class Fire(InGameItem):
 
     def update(self):
         if (
-            self.world.stage == 0
+            self.world.stage == WorldStage.GET_TAYLOR_BACK
             and self.is_accessible(self.sprites.taylor, scalar=1.5)
             and self.sprites.taylor.hysteria <= 0
         ):

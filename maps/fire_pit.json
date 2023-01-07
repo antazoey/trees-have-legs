@@ -1,0 +1,30 @@
+{
+    "map_id": "fire_pit",
+    "tile_set": {
+        "0": { "gfx": "grass" },
+        "D": { "gfx": "debris", "collision": true }
+    },
+    "player": {
+        "sprite_id": "jules",
+        "location": {
+            "x": 6,
+            "y": 6
+        }
+    },
+    "world_sprites": [
+        {
+            "sprite_id": "fire",
+            "location": {
+                "x": 5,
+                "y": 7
+            }
+        },
+        {
+            "sprite_id": "note",
+            "location": {
+                "x": 2,
+                "y": 11
+            }
+        }
+    ]
+}

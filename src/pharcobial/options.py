@@ -2,13 +2,7 @@ from logging import DEBUG
 
 import click
 
-from pharcobial.constants import (
-    DEFAULT_FONT_SIZE,
-    DEFAULT_FPS,
-    DEFAULT_HEIGHT,
-    DEFAULT_MAP,
-    DEFAULT_WIDTH,
-)
+from pharcobial.constants import DEFAULT_FONT_SIZE, DEFAULT_FPS, DEFAULT_HEIGHT, DEFAULT_WIDTH
 from pharcobial.logging import game_logger
 
 
@@ -45,10 +39,6 @@ def debug():
     return click.option("--debug", is_flag=True, help="Play in full screen mode.", callback=cb)
 
 
-def map_id():
-    return click.option("--map", "map_id", default=DEFAULT_MAP, help="The name of the map to load.")
-
-
 def save_id():
     return click.option("--load", "save_id", help="A load a saved game by ID.")
 
@@ -73,7 +63,6 @@ def game_options():
         f = font_size()(f)
         f = full_screen()(f)
         f = debug()(f)
-        f = map_id()(f)
         f = save_id()(f)
         f = disable_music()(f)
         f = disable_sfx()(f)
