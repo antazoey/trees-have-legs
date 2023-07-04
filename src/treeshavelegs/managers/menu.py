@@ -3,7 +3,7 @@ from typing import Iterator, List
 
 from pygame.event import Event
 
-from treeshavelegs.constants import BLOCK_SIZE
+from treeshavelegs.constants import BLOCK_SIZE, Views
 from treeshavelegs.managers.base import ViewController
 from treeshavelegs.types import MenuItem, UserInput
 from treeshavelegs.utils import noop, quit
@@ -82,8 +82,8 @@ class Menu(ViewController):
         if event.type != UserInput.KEY_DOWN:
             return
 
-        if event.key == self.options.key_bindings.escape:
-            self.pop()
+        elif event.key == self.options.key_bindings.escape:
+            self.escape()
 
         elif event.key == self.options.key_bindings.down:
             self.selected = (self.selected + 1) % len(self)
@@ -98,6 +98,12 @@ class Menu(ViewController):
     def pop(self):
         self.views.pop()
 
+    def escape(self):
+        if self.views.active.view_id == Views.MENU:
+            self.views.goto(self.world)
+        else:
+            self.views.goto(self.menu)
+
 
 class OptionsMenu(Menu):
     def __init__(self):
@@ -108,7 +114,7 @@ class OptionsMenu(Menu):
         choices: List[MenuItem] = []
         for index, title in enumerate(titles):
             if title == "Back":
-                action = self.pop
+                action = self.escape
 
             elif "Music" in title:
                 action = self.change_music_setting
@@ -144,7 +150,7 @@ class MainMenu(Menu):
     def __init__(self):
         choices = []
         actions = {
-            "Continue": self.pop,
+            "Continue": self.go_to_game,
             "Quit": quit,
             "Controls": self.go_to_controls,
             "Options": self.go_to_options_menu,
@@ -163,11 +169,14 @@ class MainMenu(Menu):
         self.views.pop()
         self.clock.paused = False
 
+    def go_to_game(self):
+        self.views.goto(Views.WORLD)
+
     def go_to_options_menu(self):
-        self.views.push(self.options_menu)
+        self.views.goto(self.options_menu)
 
     def go_to_controls(self):
-        self.views.push(self.controls_screen)
+        self.views.goto(self.controls_screen)
 
 
 class MenuManager(ViewController):

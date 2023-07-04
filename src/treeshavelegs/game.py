@@ -48,7 +48,7 @@ class Game(ManagerAccess):
         self.world.follow(self.sprites.player)
 
         # Start off in normal, world mode.
-        self.views.push(self.world)
+        self.views.goto(self.world)
 
     def run(self):
         """
@@ -71,7 +71,7 @@ class Game(ManagerAccess):
 
                 case GameEvent.MENU:
                     self.clock.paused = True
-                    self.views.push(self.menu)
+                    self.views.goto(self.menu)
                     self.views.active.run()
 
                 case GameEvent.CONTINUE:
