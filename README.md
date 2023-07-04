@@ -1,4 +1,4 @@
-# Trees Have LEgs
+# Trees Have Legs
 
 A game made using []().
 
