@@ -1,4 +1,4 @@
-from pharcobial.types import Position
+from treeshavelegs.types import Position
 
 
 class TestPosition:

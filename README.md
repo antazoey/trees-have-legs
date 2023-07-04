@@ -1,6 +1,8 @@
-# Pharcobial
+# Trees Have LEgs
 
-A game (WIP).
+A game made using []().
+
+TODO: Remove this comment once development is more or less complete.
 
 ## Installation
 
@@ -15,11 +17,11 @@ poetry install
 To play, run:
 
 ```bash
-play_pharcobial
+play_thl
 ```
 
 For more options, run:
 
 ```bash
-play_pharcobial --help
+play_thl --help
 ```
