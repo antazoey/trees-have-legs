@@ -26,7 +26,6 @@ class Display:
         font_size: int,
         full_screen: bool = False,
     ) -> None:
-
         modes = DOUBLEBUF
         if full_screen:
             modes |= FULLSCREEN

@@ -142,7 +142,6 @@ class SpriteManager(BaseManager):
 
         # Brute force find it and cache it
         for sprite in self.all_sprites:
-
             if sprite.sprite_id == key:
                 # This sprite is likely requested often.
                 # Cache for faster look-up next time.

@@ -6,7 +6,6 @@ from treeshavelegs.types import GameOptions, KeyBinding
 
 
 class OptionsManager(BaseManager):
-
     key_bindings: KeyBinding = KeyBinding()
     loaded: GameOptions | None = None
 
