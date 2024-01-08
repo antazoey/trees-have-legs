@@ -200,6 +200,7 @@ class GameOptions:
     fps: int = DEFAULT_FPS
     font_size: int = DEFAULT_FONT_SIZE
     full_screen: bool = False
+    raise_exceptions: bool = False
 
     # Game settings
     save_id: SaveID | None = None  # Set when loading a saved game.

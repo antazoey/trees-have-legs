@@ -1,5 +1,6 @@
 import pygame
 
+from treeshavelegs.logging import game_logger
 from treeshavelegs.managers.base import ManagerAccess
 from treeshavelegs.types import GameEvent, GameOptions
 from treeshavelegs.utils import quit
@@ -56,7 +57,13 @@ class Game(ManagerAccess):
         """
         self.running = True
         while self.running:
-            self.react()
+            try:
+                self.react()
+            except Exception as err:
+                if self.options.raise_exceptions:
+                    raise  # Raise this exception
+                else:
+                    game_logger.error(str(err))
 
     def react(self):
         """

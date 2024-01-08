@@ -55,6 +55,12 @@ def stage():
     return click.option("--stage", help="The stage to start on.", default=0, type=int)
 
 
+def raise_exceptions():
+    return click.option(
+        "--raise-exceptions", help="Raise exceptions and crash the game.", is_flag=True
+    )
+
+
 def game_options():
     def fn(f):
         f = window_width()(f)
@@ -67,6 +73,7 @@ def game_options():
         f = disable_music()(f)
         f = disable_sfx()(f)
         f = stage()(f)
+        f = raise_exceptions()(f)
         return f
 
     return fn
