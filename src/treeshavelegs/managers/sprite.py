@@ -7,7 +7,7 @@ from pygame.event import Event
 from treeshavelegs.constants import MAP_VOID, VOID_POS, Graphics
 from treeshavelegs.logging import game_logger
 from treeshavelegs.managers.base import BaseManager
-from treeshavelegs.sprites.base import BaseSprite, WorldSprite
+from treeshavelegs.sprites.base import BaseSprite, InGameItem, WorldSprite
 from treeshavelegs.sprites.player import Player
 from treeshavelegs.sprites.taylor import Taylor
 from treeshavelegs.sprites.tile import Ground, Tile, Void
@@ -19,6 +19,10 @@ class SpriteManager(BaseManager):
         super().__init__()
         self._sprite_cache: Dict[SpriteID, BaseSprite] = {}
         self.world_sprite_start_positions: Dict[SpriteID, Positional] = {}
+
+    @property
+    def in_game_items(self) -> List[InGameItem]:
+        return [s for s in self.world_sprites if isinstance(s, InGameItem) and s.visible]
 
     def create_sprites(self, skip: List[str] | None = None):
         skip_keys = skip or []

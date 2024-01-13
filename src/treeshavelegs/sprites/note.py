@@ -37,5 +37,5 @@ class Note(InventorySprite):
             hitbox_inflation=(-25, -25),
         )
 
-    def activate(self):
+    def select(self):
         self.views.push(NoteView("note-upclose", None))

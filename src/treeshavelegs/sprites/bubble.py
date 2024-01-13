@@ -1,5 +1,8 @@
+from pygame import Surface
+
 from treeshavelegs.constants import Graphics
 from treeshavelegs.sprites.base import InGameItem, WorldSprite
+from treeshavelegs.types import SpriteID
 from treeshavelegs.utils.timer import VisibilityTimer
 
 
@@ -9,6 +12,8 @@ class ChatBubble(InGameItem):
     """
 
     def __init__(self, parent: WorldSprite) -> None:
+        self.image: Surface
+
         super().__init__(
             "{self.parent_id}-bubble",
             Graphics.CHAT_BUBBLE,
@@ -16,8 +21,8 @@ class ChatBubble(InGameItem):
             position=parent.rect.inflate((0, -5)).topleft,
             hitbox_inflation=(0, 0),
         )
-        self.parent_id = parent.sprite_id
-        self.visible = False
+        self.parent_id: SpriteID = parent.sprite_id
+        self.visible: bool = False
         self.timer = VisibilityTimer()
 
     def set_graphic(self, flip_x: bool):

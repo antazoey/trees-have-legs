@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Callable, Dict, Iterable, Union
+from typing import Callable, Dict, Iterable, Union, List, Tuple
 
 from pygame import BLEND_RGBA_MULT, SRCALPHA
 from pygame.event import Event
@@ -18,7 +18,40 @@ from treeshavelegs.constants import (
 )
 from treeshavelegs.logging import game_logger
 from treeshavelegs.managers.base import ManagerAccess
-from treeshavelegs.types import Collision, GfxID, Locatable, Position, Positional, SpriteID
+from treeshavelegs.types import (
+    Collision,
+    GfxID,
+    Locatable,
+    Position,
+    Positional,
+    SpriteID,
+    InventoryItem,
+)
+
+
+class Inventory:
+    def __init__(self):
+        self._inventory: Dict[int, InventoryItem] = {}
+
+    def __len__(self) -> int:
+        return len(self._inventory)
+
+    def __contains__(self, name: str) -> bool:
+        return name in [x.name for x in self._inventory.values()]
+
+    def get(self, key: int) -> InventoryItem | None:
+        return self._inventory.get(key)
+
+    def items(self) -> List[Tuple[int, InventoryItem]]:
+        return self._inventory.items()  # type: ignore
+
+    def add(self, name: str, gfx_id: GfxID):
+        if name in self:
+            return
+
+        index = len(self)
+        item = InventoryItem(name=name, gfx_id=gfx_id, index=index)
+        self._inventory[index] = item
 
 
 class BaseSprite(Sprite, ManagerAccess):
@@ -342,12 +375,25 @@ class MobileSprite(BaseSprite):
 
 
 class InGameItem(MobileSprite):
-    pass
+    def handle_activate(self, activator: "Character"):
+        # Prevent animation from moving character accidentally.
+        activator.force_move(activator.position)
 
 
 class InventorySprite(InGameItem):
-    def activate(self):
-        pass
+    def select(self):
+        # Overidden.
+        return
+
+    def handle_activate(self, activator: "Character"):
+        super().handle_activate(activator)
+
+        # Be aquired.
+        if activator != self.sprites.player:
+            return
+
+        elif self.sprite_id not in activator.inventory and activator.is_accessible(self, scalar=3):
+            activator.acquire(self.sprite_id, self.sprite_id)
 
 
 class DamageBlinker:
@@ -414,10 +460,11 @@ class Character(MobileSprite):
         super().__init__(
             sprite_id, gfx_id, groups, position=position, hitbox_inflation=hitbox_inflation
         )
-        self.hp = hp
-        self.max_hp = max_hp
-        self.ap = ap
+        self.hp: int = hp
+        self.max_hp: int = max_hp
+        self.ap: int = ap
         self.damage_blinker = DamageBlinker(self)
+        self.inventory: Inventory = Inventory()
 
     def deal_damage(self, other: "Character"):
         other.handle_attack(self.ap)
@@ -432,6 +479,10 @@ class Character(MobileSprite):
     def die(self):
         game_logger.debug(f"'{self.sprite_id}' died.")
         self.damage_blinker.reset()
+
+    def acquire(self, name: str, gfx_id: GfxID):
+        self.inventory.add(name, gfx_id)
+        self.sprites.safe_delete(name)
 
 
 class NPC(Character):

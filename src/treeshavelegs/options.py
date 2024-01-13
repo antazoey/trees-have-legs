@@ -7,20 +7,20 @@ from treeshavelegs.logging import game_logger
 
 
 def window_width():
-    return click.option("--window-width", default=DEFAULT_WIDTH, help="Window width", type=int)
+    return click.option("--window-width", default=DEFAULT_WIDTH, help="Window width.", type=int)
 
 
 def window_height():
-    return click.option("--window-height", default=DEFAULT_HEIGHT, help="Window height", type=int)
+    return click.option("--window-height", default=DEFAULT_HEIGHT, help="Window height.", type=int)
 
 
 def fps_option():
-    return click.option("--fps", default=DEFAULT_FPS, help="Frames per second", type=int)
+    return click.option("--fps", default=DEFAULT_FPS, help="Frames per second.", type=int)
 
 
 def font_size():
     return click.option(
-        "--font-size", default=DEFAULT_FONT_SIZE, help="Numeric font size", type=int
+        "--font-size", default=DEFAULT_FONT_SIZE, help="Numeric font size.", type=int
     )
 
 

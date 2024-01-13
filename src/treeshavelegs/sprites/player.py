@@ -1,12 +1,11 @@
-from typing import Dict, List, Tuple
-
+from pygame import Surface
 from pygame.event import Event
 
 from treeshavelegs.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from treeshavelegs.controller import Controller
 from treeshavelegs.sprites.base import Character, InventorySprite
 from treeshavelegs.sprites.bubble import ChatBubble
-from treeshavelegs.types import GfxID, InventoryItem, SpriteID, UserInput
+from treeshavelegs.types import GfxID, SpriteID, UserInput
 
 
 class GrabAnimation:
@@ -25,31 +24,6 @@ class GrabAnimation:
             self.time_index = 0
 
 
-class Inventory:
-    def __init__(self):
-        self._inventory: Dict[int, InventoryItem] = {}
-
-    def __len__(self) -> int:
-        return len(self._inventory)
-
-    def __contains__(self, name: str) -> bool:
-        return name in [x.name for x in self._inventory.values()]
-
-    def get(self, key: int) -> InventoryItem | None:
-        return self._inventory.get(key)
-
-    def items(self) -> List[Tuple[int, InventoryItem]]:
-        return self._inventory.items()  # type: ignore
-
-    def add(self, name: str, gfx_id: GfxID):
-        if name in self:
-            return
-
-        index = len(self)
-        item = InventoryItem(name=name, gfx_id=gfx_id, index=index)
-        self._inventory[index] = item
-
-
 class Player(Character):
     """
     The main character.
@@ -63,6 +37,11 @@ class Player(Character):
         max_hp: int = DEFAULT_MAX_HP,
         ap: int = DEFAULT_AP,
     ):
+        # mypy being dumb
+        self.hp: int
+        self.gfx_id: GfxID
+        self.image: Surface
+
         super().__init__(
             character,
             character,
@@ -79,7 +58,6 @@ class Player(Character):
         self.forward = self.controller.forward
         self.chat_bubble = ChatBubble(self)
         self.grab_animation = GrabAnimation()
-        self.inventory: Inventory = Inventory()
 
     @property
     def is_dead(self) -> bool:
@@ -89,17 +67,16 @@ class Player(Character):
         """
         The user hitting the action key on something.
         """
-        if (
-            "note" not in self.inventory
-            and "note" in self.sprites
-            and self.is_accessible(self.sprites["note"], scalar=3)
-        ):
-            self.grab_animation.on = True
-            self.acquire("note", "note")
 
-        else:
-            self.chat_bubble.visible = True
-            self.audio.play_sound("vocal")
+        for item in self.sprites.in_game_items:
+            if self.is_accessible(item, scalar=3):
+                self.grab_animation.on = True
+                item.handle_activate(self)
+                return
+
+        # Not near anything.
+        self.chat_bubble.visible = True
+        self.audio.play_sound("vocal")
 
     def handle_event(self, event: Event):
         if event.type == UserInput.KEY_DOWN and event.key == self.controller.bindings.activate:
@@ -111,7 +88,7 @@ class Player(Character):
             if item:
                 sprite = self.sprites[item.gfx_id]
                 assert isinstance(sprite, InventorySprite)
-                sprite.activate()
+                sprite.select()
 
     def update(self, *args, **kwargs):
         if self.grab_animation.on:
@@ -142,5 +119,5 @@ class Player(Character):
             self.hp += 1
 
     def acquire(self, name: str, gfx_id: GfxID):
-        self.inventory.add(name, gfx_id)
-        self.sprites.safe_delete(name)
+        self.grab_animation.on = True
+        super().acquire(name, gfx_id)

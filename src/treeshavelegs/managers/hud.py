@@ -63,8 +63,8 @@ class HealthBar(Bar):
             20,
             128,
             "red",
-            self.sprites.player.hp,
-            self.sprites.player.max_hp,
+            int(self.sprites.player.hp),
+            int(self.sprites.player.max_hp),
         )
 
     def update(self):
