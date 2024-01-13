@@ -61,7 +61,7 @@ class Game(ManagerAccess):
         while self.running:
             try:
                 self.react()
-            except Exception as err:
+            except Exception:
                 if self.options.raise_exceptions:
                     raise  # Raise this exception
                 else:

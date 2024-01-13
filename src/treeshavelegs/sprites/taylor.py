@@ -10,10 +10,10 @@ class Taylor(NPC):
     def __init__(self, position: Positional, *args, **kwargs):
         super().__init__(
             Graphics.TAYLOR,
-            position,
             Graphics.TAYLOR,
             (self.world.group, self.collision.group),
-            (-20, -15),
+            position=position,
+            hitbox_inflation=(-20, -15),
         )
         self.start_position = position
         self.max_speed = 150

@@ -65,13 +65,13 @@ class Player(Character):
     ):
         super().__init__(
             character,
-            self.map.player_start,
             character,
             (self.world.group, self.collision.group),
-            (-18, -18),
-            hp,
-            max_hp,
-            ap,
+            position=self.map.player_start,
+            hitbox_inflation=(-18, -18),
+            hp=hp,
+            max_hp=max_hp,
+            ap=ap,
         )
         self.max_speed = speed
         self.controller = Controller(self.options.key_bindings)

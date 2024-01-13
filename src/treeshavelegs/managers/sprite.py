@@ -4,7 +4,7 @@ from typing import Dict, Iterable, List, Type
 
 from pygame.event import Event
 
-from treeshavelegs.constants import MAP_VOID, Graphics
+from treeshavelegs.constants import MAP_VOID, VOID_POS, Graphics
 from treeshavelegs.logging import game_logger
 from treeshavelegs.managers.base import BaseManager
 from treeshavelegs.sprites.base import BaseSprite, WorldSprite
@@ -111,12 +111,12 @@ class SpriteManager(BaseManager):
             # some of these values act as "defaults".
             sprite = sprite_cls(
                 sprite_id=sprite_id,
-                position=pos,
+                position=pos or VOID_POS,
                 gfx_id=sprite_id,
                 groups=(self.world.group, self.collision.group),
                 hitbox_inflation=None,
             )
-            self.world_sprite_start_positions[sprite_id] = pos
+            self.world_sprite_start_positions[sprite_id] = pos or (-1, 1)
             sprite_list.append(sprite)
 
         return sprite_list

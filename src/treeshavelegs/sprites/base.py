@@ -8,7 +8,14 @@ from pygame.rect import Rect
 from pygame.sprite import AbstractGroup, Sprite
 from pygame.surface import Surface
 
-from treeshavelegs.constants import BLOCK_SIZE, DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, RGB
+from treeshavelegs.constants import (
+    BLOCK_SIZE,
+    DEFAULT_AP,
+    DEFAULT_HP,
+    DEFAULT_MAX_HP,
+    RGB,
+    VOID_POS,
+)
 from treeshavelegs.logging import game_logger
 from treeshavelegs.managers.base import ManagerAccess
 from treeshavelegs.types import Collision, GfxID, Locatable, Position, Positional, SpriteID
@@ -18,10 +25,10 @@ class BaseSprite(Sprite, ManagerAccess):
     def __init__(
         self,
         sprite_id: SpriteID,
-        position: Positional,
         gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
-        hitbox_inflation: Positional | None,
+        position: Positional | None = None,
+        hitbox_inflation: Positional | None = None,
         width: int = BLOCK_SIZE,
         height: int = BLOCK_SIZE,
     ) -> None:
@@ -34,9 +41,10 @@ class BaseSprite(Sprite, ManagerAccess):
             if gfx_id in RGB
             else self.graphics[gfx_id]
         )
+        position = position or VOID_POS
         self.rect: Rect = self.image.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(hitbox_inflation) if hitbox_inflation else self.rect
-        self.visible = True
+        self.visible = position != VOID_POS
 
         for group in groups:
             group.add(self)
@@ -150,15 +158,21 @@ class MobileSprite(BaseSprite):
     def __init__(
         self,
         sprite_id: SpriteID,
-        position: Positional,
         gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
-        hitbox_inflation: Positional | None,
+        position: Positional | None = None,
+        hitbox_inflation: Positional | None = None,
         width: int = BLOCK_SIZE,
         height: int = BLOCK_SIZE,
     ) -> None:
         super().__init__(
-            sprite_id, position, gfx_id, groups, hitbox_inflation, width=width, height=height
+            sprite_id,
+            gfx_id,
+            groups,
+            position=position,
+            hitbox_inflation=hitbox_inflation,
+            width=width,
+            height=height,
         )
         self.max_speed: float = 0
         self.direction = Vector2()
@@ -389,15 +403,17 @@ class Character(MobileSprite):
     def __init__(
         self,
         sprite_id: SpriteID,
-        position: Positional,
         gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
-        hitbox_inflation: Positional | None,
+        position: Positional | None = None,
+        hitbox_inflation: Positional | None = None,
         hp: int = DEFAULT_HP,
         max_hp: int = DEFAULT_MAX_HP,
         ap: int = DEFAULT_AP,
     ) -> None:
-        super().__init__(sprite_id, position, gfx_id, groups, hitbox_inflation)
+        super().__init__(
+            sprite_id, gfx_id, groups, position=position, hitbox_inflation=hitbox_inflation
+        )
         self.hp = hp
         self.max_hp = max_hp
         self.ap = ap
@@ -426,15 +442,24 @@ class NPC(Character):
     def __init__(
         self,
         sprite_id: SpriteID,
-        position: Positional,
         gfx_id: GfxID | str,
         groups: Iterable[AbstractGroup],
-        hitbox_inflation: Positional | None,
+        position: Positional | None = None,
+        hitbox_inflation: Positional | None = None,
         hp: int = DEFAULT_HP,
         max_hp: int = DEFAULT_MAX_HP,
         ap: int = DEFAULT_AP,
     ) -> None:
-        super().__init__(sprite_id, position, gfx_id, groups, hitbox_inflation, hp, max_hp, ap)
+        super().__init__(
+            sprite_id,
+            gfx_id,
+            groups,
+            position=position,
+            hitbox_inflation=hitbox_inflation,
+            hp=hp,
+            max_hp=max_hp,
+            ap=ap,
+        )
 
 
 WorldSprite = Union[InGameItem, Character]

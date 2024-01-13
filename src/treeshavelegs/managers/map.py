@@ -39,18 +39,24 @@ def _convert_size(val: int | str) -> int:
 @dataclass
 class MapCharacterData:
     sprite_id: SpriteID
-    rect: Rect
+    rect: Rect | None
 
     @classmethod
     def parse_obj(cls, obj: Dict) -> "MapCharacterData":
-        location = obj["location"]
-        if not isinstance(location, Position):
-            location = Position.parse_coordinates(**location)
+        if "location" in obj:
+            location = obj["location"]
+            if not isinstance(location, Position):
+                location = Position.parse_coordinates(**location)
 
-        size = obj.get("size", {"width": BLOCK_SIZE, "height": BLOCK_SIZE})
-        width = _convert_size(size.get("width", BLOCK_SIZE))
-        height = _convert_size(size.get("height", BLOCK_SIZE))
-        rect = Rect(location.x, location.y, width, height)
+            size = obj.get("size", {"width": BLOCK_SIZE, "height": BLOCK_SIZE})
+            width = _convert_size(size.get("width", BLOCK_SIZE))
+            height = _convert_size(size.get("height", BLOCK_SIZE))
+            rect = Rect(location.x, location.y, width, height)
+
+        else:
+            # Not positional.
+            rect = None
+
         return cls(sprite_id=obj["sprite_id"], rect=rect)
 
 
@@ -126,12 +132,14 @@ class MapManager(BaseManager):
 
     @property
     def player_start(self) -> Positional:
-        return self.active.metadata.player.rect.topleft
+        rect = self.active.metadata.player.rect
+        assert rect, "Player start missing"  # Should never happen, mostly for type checkers.
+        return rect.topleft
 
     @property
-    def start_positions(self) -> Iterator[Tuple[SpriteID, Positional]]:
+    def start_positions(self) -> Iterator[Tuple[SpriteID, Positional | None]]:
         for sprite in self.active.metadata.world_sprites:
-            yield sprite.sprite_id, sprite.rect.topleft
+            yield sprite.sprite_id, sprite.rect.topleft if sprite.rect else None
 
     @property
     def tile_set(self) -> Dict[TileKey, Dict[str, Any]]:

@@ -17,7 +17,13 @@ class Tile(BaseSprite):
     ) -> None:
         self.tile_key = tile_key
         gfx_id = self.map.tile_set[tile_key]["gfx"]
-        super().__init__(f"tile_({position[0]}, {position[1]})", position, gfx_id, groups, hitbox)
+        super().__init__(
+            f"tile_({position[0]}, {position[1]})",
+            gfx_id,
+            groups,
+            position=position,
+            hitbox_inflation=hitbox,
+        )
 
     def __repr__(self) -> str:
         return f"<Tile ({self.rect.x}, {self.rect.y}) {self.tile_key}>"

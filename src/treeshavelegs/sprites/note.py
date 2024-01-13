@@ -31,10 +31,10 @@ class Note(InventorySprite):
     def __init__(self, position: Positional, *args, **kwargs) -> None:
         super().__init__(
             "note",
-            position,
             "note",
             (self.world.group, self.collision.group),
-            (-25, -25),
+            position=position,
+            hitbox_inflation=(-25, -25),
         )
 
     def activate(self):

@@ -16,10 +16,10 @@ class Tree(NPC):
     ):
         super().__init__(
             sprite_id,
-            position,
             Graphics.TREE,
             groups,
-            (-10, -10),
+            position=position,
+            hitbox_inflation=(-10, -10),
         )
         self.max_speed = 64
         self.vision = self.set_vision()

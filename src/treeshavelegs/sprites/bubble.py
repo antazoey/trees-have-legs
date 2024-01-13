@@ -11,10 +11,10 @@ class ChatBubble(InGameItem):
     def __init__(self, parent: WorldSprite) -> None:
         super().__init__(
             "{self.parent_id}-bubble",
-            parent.rect.inflate((0, -5)).topleft,
             Graphics.CHAT_BUBBLE,
             (parent.camera_group,),
-            (0, 0),
+            position=parent.rect.inflate((0, -5)).topleft,
+            hitbox_inflation=(0, 0),
         )
         self.parent_id = parent.sprite_id
         self.visible = False

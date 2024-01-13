@@ -5,7 +5,11 @@ from treeshavelegs.types import Positional, WorldStage
 class Fire(InGameItem):
     def __init__(self, position: Positional, *args, **kwargs) -> None:
         super().__init__(
-            "fire", position, "fire-1", (self.world.group, self.collision.group), (-10, 0)
+            "fire",
+            "fire-1",
+            (self.world.group, self.collision.group),
+            position=position,
+            hitbox_inflation=(-10, 0),
         )
         self.gfx_index = 0
         self.gfx_total = 3
