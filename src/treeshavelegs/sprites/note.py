@@ -12,8 +12,10 @@ class NoteView(ViewController):
             return
 
         elif self.world.stage == WorldStage.FIND_NOTE:
+            # After the first time the note is introduce, progress the stage.
             self.world.next_stage()
 
+        # Any key dismissed the note.
         self.views.pop()
 
     def draw(self):

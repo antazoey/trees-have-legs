@@ -1,3 +1,5 @@
+from traceback import format_exc
+
 import pygame
 
 from treeshavelegs.logging import game_logger
@@ -45,7 +47,7 @@ class Game(ManagerAccess):
         self.sprites.create_sprites()
         self.sprites.validate()
 
-        # Have camera follow player initially.
+        # Have the camera follow the player initially.
         self.world.follow(self.sprites.player)
 
         # Start off in normal, world mode.
@@ -63,7 +65,7 @@ class Game(ManagerAccess):
                 if self.options.raise_exceptions:
                     raise  # Raise this exception
                 else:
-                    game_logger.error(str(err))
+                    game_logger.error(format_exc())
 
     def react(self):
         """
