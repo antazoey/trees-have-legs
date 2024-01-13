@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Callable, Dict, Iterable, Union, List, Tuple
+from typing import Callable, Dict, Iterable, List, Tuple, Union
 
 from pygame import BLEND_RGBA_MULT, SRCALPHA
 from pygame.event import Event
@@ -21,11 +21,11 @@ from treeshavelegs.managers.base import ManagerAccess
 from treeshavelegs.types import (
     Collision,
     GfxID,
+    InventoryItem,
     Locatable,
     Position,
     Positional,
     SpriteID,
-    InventoryItem,
 )
 
 
@@ -381,7 +381,7 @@ class InGameItem(MobileSprite):
 
 
 class InventorySprite(InGameItem):
-    def select(self):
+    def inventory_select(self):
         # Overidden.
         return
 
@@ -389,10 +389,7 @@ class InventorySprite(InGameItem):
         super().handle_activate(activator)
 
         # Be aquired.
-        if activator != self.sprites.player:
-            return
-
-        elif self.sprite_id not in activator.inventory and activator.is_accessible(self, scalar=3):
+        if self.sprite_id not in activator.inventory and activator.is_accessible(self, scalar=3):
             activator.acquire(self.sprite_id, self.sprite_id)
 
 

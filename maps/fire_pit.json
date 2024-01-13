@@ -20,7 +20,7 @@
             }
         },
         {
-            "sprite_id": "note",
+            "sprite_id": "friend-card",
             "location": {
                 "x": 2,
                 "y": 11

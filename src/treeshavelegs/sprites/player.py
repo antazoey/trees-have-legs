@@ -86,9 +86,9 @@ class Player(Character):
             index = self.controller.bindings.number_key_to_int(event.key)
             item = self.inventory.get(index)
             if item:
-                sprite = self.sprites[item.gfx_id]
-                assert isinstance(sprite, InventorySprite)
-                sprite.select()
+                inv_sprite = self.sprites[item.gfx_id]
+                assert isinstance(inv_sprite, InventorySprite)
+                inv_sprite.inventory_select()
 
     def update(self, *args, **kwargs):
         if self.grab_animation.on:

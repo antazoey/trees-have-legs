@@ -172,7 +172,7 @@ class MenuItem:
 
 
 class WorldStage:
-    FIND_NOTE = 0
+    FIND_FRIEND_CARD = 0
     GET_TAYLOR_BACK = 1
     GET_LESTER_BACK = 2
     END = 3
@@ -183,7 +183,7 @@ class WorldStage:
     @classmethod
     def next(cls, previous: int) -> int:
         if previous < 0:
-            return cls.FIND_NOTE
+            return cls.FIND_FRIEND_CARD
 
         elif previous < cls.END:
             return previous + 1
@@ -213,7 +213,7 @@ class GameOptions:
     disable_music: bool = False
     disable_sfx: bool = False
 
-    stage: int = WorldStage.FIND_NOTE
+    stage: int = WorldStage.FIND_FRIEND_CARD
 
     def __post_init__(self):
         # Ensure options are valid.
