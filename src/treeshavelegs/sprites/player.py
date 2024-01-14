@@ -1,11 +1,10 @@
 from pygame import Surface
 from pygame.event import Event
 
-from treeshavelegs.constants import DEFAULT_AP, DEFAULT_HP, DEFAULT_MAX_HP, Graphics
 from treeshavelegs.controller import Controller
 from treeshavelegs.sprites.base import Character, InventorySprite
 from treeshavelegs.sprites.bubble import ChatBubble
-from treeshavelegs.types import GfxID, SpriteID, UserInput
+from treeshavelegs.types import GfxID, UserInput
 
 
 class GrabAnimation:
@@ -25,34 +24,26 @@ class GrabAnimation:
 
 
 class Player(Character):
-    """
-    The main character.
-    """
-
-    def __init__(
-        self,
-        character: SpriteID = Graphics.JULES,
-        speed: int = 128,
-        hp: int = DEFAULT_HP,
-        max_hp: int = DEFAULT_MAX_HP,
-        ap: int = DEFAULT_AP,
-    ):
+    def __init__(self, *args, **kwargs):
         # mypy being dumb
         self.hp: int
         self.gfx_id: GfxID
         self.image: Surface
 
+        character = self.characters.active_character
+        position = kwargs.pop("position", self.map.player_start)
+
         super().__init__(
-            character,
-            character,
+            "player",
+            character.gfx_id,
             (self.world.group, self.collision.group),
-            position=self.map.player_start,
+            position=position,
             hitbox_inflation=(-18, -18),
-            hp=hp,
-            max_hp=max_hp,
-            ap=ap,
+            hp=character.hp,
+            max_hp=character.max_hp,
+            ap=character.ap,
         )
-        self.max_speed = speed
+        self.max_speed = character.max_speed
         self.controller = Controller(self.options.key_bindings)
         self.direction = self.controller.direction
         self.forward = self.controller.forward
@@ -68,13 +59,18 @@ class Player(Character):
         The user hitting the action key on something.
         """
 
-        for item in self.sprites.in_game_items:
+        acted: bool = False
+        for item in self.sprites.interative_sprites:
             if self.is_accessible(item, scalar=3):
                 self.grab_animation.on = True
-                item.handle_activate(self)
-                return
+                result = item.handle_activate(self)
+                if result:
+                    acted = True
 
-        # Not near anything.
+        if acted:
+            return
+
+        # Not near anything.s
         self.chat_bubble.visible = True
         self.audio.play_sound("vocal")
 
@@ -92,7 +88,9 @@ class Player(Character):
 
     def update(self, *args, **kwargs):
         if self.grab_animation.on:
-            image = self.graphics.get(f"{self.gfx_id}-grab", flip_x=self.forward.x > 0)
+            image = self.graphics.get(
+                f"{self.characters.active_character.gfx_id}-grab", flip_x=self.forward.x > 0
+            )
             self.image = image or self.image
             self.grab_animation.update()
             return
@@ -101,7 +99,9 @@ class Player(Character):
         self.direction = self.controller.direction
         self.forward = self.controller.forward
         self.gfx_id = (
-            f"{Graphics.JULES}-damaged" if self.hp < 0.25 * self.max_hp else Graphics.JULES
+            f"{self.characters.active_character.gfx_id}-damaged"
+            if self.hp < 0.25 * self.max_hp
+            else self.characters.active_character.gfx_id
         )
         self.walk_animation.prefix = self.gfx_id
         self.walk()

@@ -26,11 +26,11 @@ class Tree(NPC):
         self.player_is_near: bool = False
         self.is_alive: bool = False
         self.walk_animation.rate_fn = lambda: 10
-        self.walk_animation.prefix = f"{Graphics.TREE}-monster"
+        self.walk_animation.prefix = "tree-monster"
 
     @property
     def index(self) -> int:
-        return int(self.sprite_id.replace(f"{Graphics.TREE}-", ""))
+        return int(self.sprite_id.replace("tree-", ""))
 
     def update(self, *args, **kwargs):
         """
@@ -88,9 +88,9 @@ class Tree(NPC):
             self.deal_damage(player)
             return
 
-        scaring = self.hitbox.colliderect(self.sprites.taylor.hitbox.inflate(2, 2))
+        scaring = self.hitbox.colliderect(self.sprites.runner.hitbox.inflate(2, 2))
         if scaring:
-            self.sprites.taylor.get_scared(2)
+            self.sprites.runner.get_scared(2)
 
         collision = self.walk_towards(self.sprites.player)
 
@@ -106,8 +106,8 @@ class Tree(NPC):
         if target.sprite_id == self.sprites.player.sprite_id:
             self.set_image("tree-monster-attack")
             self.deal_damage(self.sprites.player)
-        elif target.sprite_id == self.sprites.taylor.sprite_id:
-            self.sprites.taylor.get_scared(4)
+        elif target.sprite_id == self.sprites.runner.sprite_id:
+            self.sprites.runner.get_scared(4)
 
     def set_vision(self) -> Rect:
         self.vision = self.rect.inflate((4 * self.rect.width, 2 * self.rect.height))

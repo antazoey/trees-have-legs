@@ -66,6 +66,7 @@ class BaseSprite(Sprite, ManagerAccess):
         height: int = BLOCK_SIZE,
     ) -> None:
         super().__init__()
+
         self.sprite_id = sprite_id
         self.gfx_id = gfx_id
 
@@ -120,17 +121,21 @@ class BaseSprite(Sprite, ManagerAccess):
             self.image = self.graphics[gfx]
             self.gfx_id = gfx
 
-    def activated(self):
-        """
-        Handle the player activating you. Defaults to do nothing.
-        """
-
     def is_accessible(self, obj: Union[Rect, "BaseSprite"], scalar: float = 1.1) -> bool:
         rect = obj.hitbox if isinstance(obj, BaseSprite) else obj
         new_width = round(scalar * rect.width)
         new_height = round(scalar * rect.height)
         scaled_rect = rect.inflate(new_width - rect.width, new_height - rect.height)
         return self.hitbox.colliderect(scaled_rect)
+
+
+class Interactive:
+    def handle_activate(self, activator: "BaseSprite") -> bool:
+        """
+        Handle a character activating you. Defaults to doing nothing.
+        Returns ``True``if enacted on.
+        """
+        return False
 
 
 class Ease:
@@ -218,7 +223,7 @@ class MobileSprite(BaseSprite):
             ease = self.ease.effect if self.accelerating else 1 / self.ease.effect
             return round(self.max_speed / 24 * ease)
 
-        return Walk(self.sprite_id, get_rate)
+        return Walk(self.gfx_id, get_rate)
 
     @property
     def speed(self) -> float:
@@ -371,26 +376,7 @@ class MobileSprite(BaseSprite):
             self.walk_towards((x_behind, y_behind))
         else:
             self.ease.reset()
-            self.image = self.graphics.get(self.sprite_id, flip_x=self.forward.x > 0) or self.image
-
-
-class InGameItem(MobileSprite):
-    def handle_activate(self, activator: "Character"):
-        # Prevent animation from moving character accidentally.
-        activator.force_move(activator.position)
-
-
-class InventorySprite(InGameItem):
-    def inventory_select(self):
-        # Overidden.
-        return
-
-    def handle_activate(self, activator: "Character"):
-        super().handle_activate(activator)
-
-        # Be aquired.
-        if self.sprite_id not in activator.inventory and activator.is_accessible(self, scalar=3):
-            activator.acquire(self.sprite_id, self.sprite_id)
+            self.image = self.graphics.get(self.gfx_id, flip_x=self.forward.x > 0) or self.image
 
 
 class DamageBlinker:
@@ -442,7 +428,41 @@ class DamageBlinker:
         self.on_blink = True
 
 
-class Character(MobileSprite):
+class InteractiveSprite(MobileSprite, Interactive):
+    pass
+
+
+class InGameItem(InteractiveSprite):
+    def handle_activate(self, activator: "BaseSprite") -> bool:
+        # Prevent animation from moving character accidentally.
+        if isinstance(activator, Character):
+            activator.force_move(activator.position)
+            return True
+
+        return False
+
+
+class InventorySprite(InGameItem):
+    def inventory_select(self):
+        # Overidden.
+        return
+
+    def handle_activate(self, activator: "BaseSprite") -> bool:
+        super().handle_activate(activator)
+
+        # Be aquired.
+        if (
+            isinstance(activator, Character)
+            and self.sprite_id not in activator.inventory
+            and activator.is_accessible(self, scalar=3)
+        ):
+            activator.acquire(self.sprite_id, self.gfx_id)
+            return True
+
+        return False
+
+
+class Character(InteractiveSprite):
     def __init__(
         self,
         sprite_id: SpriteID,

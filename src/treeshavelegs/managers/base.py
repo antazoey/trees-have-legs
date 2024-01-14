@@ -7,6 +7,7 @@ from pygame.sprite import AbstractGroup
 
 if TYPE_CHECKING:
     from .audio import AudioManager
+    from .character import CharacterManager
     from .clock import ClockManager
     from .collision import CollisionManager
     from .display import DisplayManager
@@ -33,6 +34,13 @@ class ManagerAccess:
         Controls audio and SFX.
         """
         return cast("AudioManager", self._("audio"))
+
+    @cached_property
+    def characters(self) -> "CharacterManager":
+        """
+        Control which character the player is and track character data.
+        """
+        return cast("CharacterManager", self._("character"))
 
     @cached_property
     def clock(self) -> "ClockManager":
@@ -170,6 +178,8 @@ class ViewController(BaseManager):
         """
         Update sprites in the sprite group.
         """
+        # TODO: Check if this method is actually called.
+        #   It doesn't seem to be when I log or set bp.
         if self.group:
             self.group.update(*args, **kwargs)
 

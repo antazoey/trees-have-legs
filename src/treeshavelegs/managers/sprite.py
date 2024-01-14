@@ -4,12 +4,12 @@ from typing import Dict, Iterable, List, Type
 
 from pygame.event import Event
 
-from treeshavelegs.constants import MAP_VOID, VOID_POS, Graphics
+from treeshavelegs.constants import MAP_VOID, VOID_POS
 from treeshavelegs.logging import game_logger
 from treeshavelegs.managers.base import BaseManager
-from treeshavelegs.sprites.base import BaseSprite, InGameItem, WorldSprite
+from treeshavelegs.sprites.base import BaseSprite, InteractiveSprite, WorldSprite
 from treeshavelegs.sprites.player import Player
-from treeshavelegs.sprites.taylor import Taylor
+from treeshavelegs.sprites.runner import Runner
 from treeshavelegs.sprites.tile import Ground, Tile, Void
 from treeshavelegs.types import Position, Positional, SpriteID
 
@@ -21,18 +21,11 @@ class SpriteManager(BaseManager):
         self.world_sprite_start_positions: Dict[SpriteID, Positional] = {}
 
     @property
-    def in_game_items(self) -> List[InGameItem]:
-        return [s for s in self.world_sprites if isinstance(s, InGameItem) and s.visible]
+    def interative_sprites(self) -> List[InteractiveSprite]:
+        return [s for s in self.world_sprites if isinstance(s, InteractiveSprite) and s.visible]
 
     def create_sprites(self, skip: List[str] | None = None):
         skip_keys = skip or []
-        if "player" not in skip_keys:
-            self.safe_delete("player")
-            _ = self.player
-
-        if "taylor" not in skip_keys:
-            self.safe_delete("taylor")
-            # Shows up in world_sprites.
 
         if "world_sprites" not in skip_keys and "world_sprites" in self.__dict__:
             for sprite in self.world_sprites:
@@ -86,10 +79,10 @@ class SpriteManager(BaseManager):
         return player
 
     @cached_property
-    def taylor(self) -> Taylor:
-        taylor = self.sprites[Graphics.TAYLOR]
-        assert isinstance(taylor, Taylor)
-        return taylor
+    def runner(self) -> Runner:
+        runner = self.sprites["runner"]
+        assert isinstance(runner, Runner)
+        return runner
 
     @cached_property
     def tiles(self) -> List[Tile]:

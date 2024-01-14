@@ -5,7 +5,7 @@
         "D": { "gfx": "debris", "collision": true }
     },
     "player": {
-        "sprite_id": "jules",
+        "sprite_id": "player",
         "location": {
             "x": 6,
             "y": 6

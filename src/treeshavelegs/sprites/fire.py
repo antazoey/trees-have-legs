@@ -1,4 +1,4 @@
-from treeshavelegs.sprites.base import InGameItem
+from treeshavelegs.sprites.base import BaseSprite, InGameItem
 from treeshavelegs.types import Positional, WorldStage
 
 
@@ -19,8 +19,8 @@ class Fire(InGameItem):
     def update(self):
         if (
             self.world.stage == WorldStage.GET_TAYLOR_BACK
-            and self.is_accessible(self.sprites.taylor, scalar=1.5)
-            and self.sprites.taylor.hysteria <= 0
+            and self.is_accessible(self.sprites.runner, scalar=1.5)
+            and self.sprites.runner.hysteria <= 0
         ):
             self.world.end_screen.win()
             self.sprites.reset()
@@ -37,3 +37,9 @@ class Fire(InGameItem):
             self.gfx_index = (self.gfx_index + 1) % self.gfx_total
             self.set_image(f"fire-{self.gfx_index + 1}")
             self.gfx_delay_index = 0
+
+    def handle_activate(self, activator: BaseSprite) -> bool:
+        super().handle_activate(activator)
+
+        # Allow to activate others near the fire as well.
+        return False

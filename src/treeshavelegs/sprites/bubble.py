@@ -1,7 +1,7 @@
 from pygame import Surface
 
 from treeshavelegs.constants import Graphics
-from treeshavelegs.sprites.base import InGameItem, WorldSprite
+from treeshavelegs.sprites.base import InGameItem, Interactive, WorldSprite
 from treeshavelegs.types import SpriteID
 from treeshavelegs.utils.timer import VisibilityTimer
 
@@ -15,7 +15,7 @@ class ChatBubble(InGameItem):
         self.image: Surface
 
         super().__init__(
-            "{self.parent_id}-bubble",
+            "chat-bubble",
             Graphics.CHAT_BUBBLE,
             (parent.camera_group,),
             position=parent.rect.inflate((0, -5)).topleft,
@@ -37,10 +37,11 @@ class ChatBubble(InGameItem):
             return
 
         for sprite in self.collision._sprites:
-            if sprite.sprite_id != Graphics.TAYLOR or not self.sprites[
-                self.parent_id
-            ].is_accessible(self.sprites.taylor, scalar=4):
+            if sprite.sprite_id != "runner" or not self.sprites[self.parent_id].is_accessible(
+                self.sprites.runner, scalar=4
+            ):
                 continue
 
             # Activate sprite.
-            sprite.activated()
+            assert isinstance(sprite, Interactive)  # for mypy
+            sprite.handle_activate(self)

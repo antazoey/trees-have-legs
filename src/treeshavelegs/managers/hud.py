@@ -2,7 +2,7 @@ import pygame
 from pygame.rect import Rect
 from pygame.surface import Surface
 
-from treeshavelegs.constants import BLOCK_SIZE, RGB, Graphics
+from treeshavelegs.constants import BLOCK_SIZE, RGB
 from treeshavelegs.managers.base import BaseManager, ManagerAccess
 from treeshavelegs.types import Positional, WorldStage
 
@@ -73,7 +73,7 @@ class HealthBar(Bar):
         self.max = player.max_hp
 
 
-class TaylorCalmBar(Bar):
+class CalmBar(Bar):
     def __init__(self) -> None:
         super().__init__(
             self.display.active.screen,
@@ -81,20 +81,20 @@ class TaylorCalmBar(Bar):
             128,
             20,
             "blue",
-            int(self.sprites.taylor.hysteria),
-            int(self.sprites.taylor.max_hysteria),
+            int(self.sprites.runner.hysteria),
+            int(self.sprites.runner.max_hysteria),
             horizontal=False,
         )
 
     def update(self):
-        self.current = self.sprites.taylor.hysteria
+        self.current = self.sprites.runner.hysteria
 
     def draw(self):
         super().draw()
 
         # Draw Taylor indicator.
         position = (self.rect.x - 5, self.rect.y + 90)
-        self.display.show_graphic(Graphics.TAYLOR, position)
+        self.display.show_graphic(self.characters.runner.gfx_id, position)
 
 
 class InventoryDisplay(HUDItem):
@@ -131,25 +131,25 @@ class HUDManager(BaseManager):
         self.inventory = InventoryDisplay()
 
         # Part of WorldStage.GET_TAYLOR_BACK
-        self.taylor_hysteria_bar: TaylorCalmBar | None = None
+        self.runner_hysteria_bar: CalmBar | None = None
 
     def update(self):
         self.health_bar.update()
         self.inventory.update()
 
         if self.world.stage == WorldStage.GET_TAYLOR_BACK:
-            if self.taylor_hysteria_bar is None:
-                self.taylor_hysteria_bar = TaylorCalmBar()
+            if self.runner_hysteria_bar is None:
+                self.runner_hysteria_bar = CalmBar()
 
-            self.taylor_hysteria_bar.update()
+            self.runner_hysteria_bar.update()
 
     def draw(self):
         self.health_bar.draw()
         self.inventory.draw()
 
         if self.world.stage == WorldStage.GET_TAYLOR_BACK:
-            assert self.taylor_hysteria_bar is not None
-            self.taylor_hysteria_bar.draw()
+            assert self.runner_hysteria_bar is not None
+            self.runner_hysteria_bar.draw()
 
 
 hud_manager = HUDManager()

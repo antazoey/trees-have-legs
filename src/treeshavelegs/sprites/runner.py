@@ -1,16 +1,16 @@
 from random import randint
 
-from treeshavelegs.constants import BLOCK_SIZE, Graphics
+from treeshavelegs.constants import BLOCK_SIZE
 from treeshavelegs.logging import game_logger
-from treeshavelegs.sprites.base import NPC
+from treeshavelegs.sprites.base import NPC, BaseSprite
 from treeshavelegs.types import Positional, WorldStage
 
 
-class Taylor(NPC):
+class Runner(NPC):
     def __init__(self, position: Positional, *args, **kwargs):
         super().__init__(
-            Graphics.TAYLOR,
-            Graphics.TAYLOR,
+            "runner",
+            self.characters.runner.gfx_id,
             (self.world.group, self.collision.group),
             position=position,
             hitbox_inflation=(-20, -15),
@@ -32,7 +32,7 @@ class Taylor(NPC):
         elif self.world.stage > WorldStage.GET_TAYLOR_BACK:
             # Relax by fire.
             self.force_move((5 * BLOCK_SIZE, 6 * BLOCK_SIZE))
-            self.set_image(self.sprite_id)
+            self.set_image(self.characters.runner.gfx_id)
             return
 
         if self.sprites.player.is_dead:
@@ -80,9 +80,21 @@ class Taylor(NPC):
 
         self.attention_threshold = randint(*self.attention_threshold_range)
 
-    def activated(self):
-        # The user calms Taylor.
-        self.calm()
+    def handle_activate(self, activator: BaseSprite) -> bool:
+        if (
+            activator.sprite_id.endswith("-bubble")
+            and self.world.stage <= WorldStage.GET_TAYLOR_BACK
+        ):
+            # The user calms Taylor.
+            self.calm()
+
+        elif activator == self.sprites.player and self.world.stage > WorldStage.GET_TAYLOR_BACK:
+            # Switch characters.
+            active_character_id = self.characters.active_character_id
+            self.characters.change_character(self.characters.runner_id)
+            self.characters.change_runner(active_character_id)
+
+        return True
 
     def calm(self):
         new_value = randint(-2, 8)
